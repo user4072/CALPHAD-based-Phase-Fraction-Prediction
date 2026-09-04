@@ -1,0 +1,31 @@
+{
+  "system": "femnni",
+  "n_rows": 8880,
+  "eligible_phases": [
+    "NP_ALPHA_MN",
+    "NP_BCC_A2",
+    "NP_BETA_MN",
+    "NP_FCC_A1",
+    "NP_LIQUID",
+    "NP_MNNI",
+    "NP_MNNI2"
+  ],
+  "active_phases": [
+    "NP_BCC_A2",
+    "NP_BETA_MN",
+    "NP_FCC_A1",
+    "NP_LIQUID"
+  ],
+  "active_threshold": 0.005,
+  "occurrence": {
+    "NP_ALPHA_MN": 0.0018018018018018018,
+    "NP_BCC_A2": 0.0652027027027027,
+    "NP_BETA_MN": 0.005968468468468468,
+    "NP_FCC_A1": 0.7600225225225226,
+    "NP_LIQUID": 0.23209459459459458,
+    "NP_MNNI": 0.002815315315315315,
+    "NP_MNNI2": 0.0
+  },
+  "excluded_mass_fraction": 0.0015446727141261998,
+  "max_sum_deviation": 1.8860955020016945e-09
+}

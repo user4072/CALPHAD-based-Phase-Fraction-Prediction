@@ -1,0 +1,53 @@
+{
+  "n_boot": 10000,
+  "fecrni": {
+    "best_mlp": "mlp_renorm",
+    "n_rows": 5336,
+    "mean_diff_mlp_minus_rf": -0.0073725826817585246,
+    "ci95": [
+      -0.008496147426113538,
+      -0.006269798572017418
+    ],
+    "p_mlp_worse": 0.0
+  },
+  "fecrmn": {
+    "best_mlp": "mlp_sig_norm",
+    "n_rows": 5336,
+    "mean_diff_mlp_minus_rf": -0.005925501191531893,
+    "ci95": [
+      -0.006702439344769932,
+      -0.0051399737012053
+    ],
+    "p_mlp_worse": 0.0
+  },
+  "fecrmo": {
+    "best_mlp": "mlp_sig_norm",
+    "n_rows": 5333,
+    "mean_diff_mlp_minus_rf": 0.00026772194399806435,
+    "ci95": [
+      -0.000543536711555001,
+      0.001092383992606413
+    ],
+    "p_mlp_worse": 0.7386
+  },
+  "fecrv": {
+    "best_mlp": "mlp_renorm",
+    "n_rows": 5336,
+    "mean_diff_mlp_minus_rf": 0.0011479276336974873,
+    "ci95": [
+      -0.0007092410097020865,
+      0.0030349558298102706
+    ],
+    "p_mlp_worse": 0.8837
+  },
+  "femnni": {
+    "best_mlp": "mlp_renorm",
+    "n_rows": 5336,
+    "mean_diff_mlp_minus_rf": 0.00820684103211492,
+    "ci95": [
+      0.00678305771717672,
+      0.009697545287302541
+    ],
+    "p_mlp_worse": 1.0
+  }
+}

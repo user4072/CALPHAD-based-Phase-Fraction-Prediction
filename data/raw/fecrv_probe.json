@@ -1,0 +1,44 @@
+{
+  "system": "fecrv",
+  "n_points": 2000,
+  "n_ok": 2000,
+  "eligible": [
+    "ALPHA_MN",
+    "BCC_A2",
+    "BCC_B2",
+    "BCC_DISL",
+    "BETA_MN",
+    "C15_LAVES",
+    "CHI_A12",
+    "EPS_CARB",
+    "ETA",
+    "ETA_CARB",
+    "FCC_A1",
+    "FE24C10",
+    "HCP_A3",
+    "H_BCC",
+    "KSI_CARBIDE",
+    "KSI_FE5C2",
+    "LAVES_PHASE",
+    "LIQUID",
+    "MU_PHASE_I",
+    "PDFE_L12",
+    "PDMN_B2",
+    "PDMN_P",
+    "SIGMA",
+    "TIB2",
+    "ZET"
+  ],
+  "active_counts": {
+    "BCC_A2": 1626,
+    "FCC_A1": 129,
+    "SIGMA": 232,
+    "LIQUID": 194
+  },
+  "rate": {
+    "BCC_A2": 0.813,
+    "FCC_A1": 0.0645,
+    "SIGMA": 0.116,
+    "LIQUID": 0.097
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "fecrni": {
+    "system": "fecrni",
+    "n_points": 1500,
+    "n_ok": 1500,
+    "n_eligible": 28,
+    "n_active": 4,
+    "max_abs_dNP": 3.7717790002389506e-10,
+    "max_abs_dNP_phase": "FCC_A1",
+    "max_abs_dGM_J_per_mol": 1.5619145415257663e-05,
+    "points_with_dNP_gt_1e-3": 0,
+    "missing_phases": []
+  },
+  "fecrmn": {
+    "system": "fecrmn",
+    "n_points": 1500,
+    "n_ok": 1500,
+    "n_eligible": 31,
+    "n_active": 7,
+    "max_abs_dNP": 2.4685806836177715e-09,
+    "max_abs_dNP_phase": "SIGMA",
+    "max_abs_dGM_J_per_mol": 3.758855746127665e-05,
+    "points_with_dNP_gt_1e-3": 0,
+    "missing_phases": []
+  },
+  "fecrmo": {
+    "system": "fecrmo",
+    "n_points": 1500,
+    "n_ok": 1499,
+    "n_eligible": 29,
+    "n_active": 9,
+    "max_abs_dNP": 0.7088592988856399,
+    "max_abs_dNP_phase": "MU_PHASE",
+    "max_abs_dGM_J_per_mol": 629.987940226114,
+    "points_with_dNP_gt_1e-3": 3,
+    "missing_phases": [
+      "BCC_A2",
+      "LAVES_PHASE",
+      "MU_PHASE"
+    ]
+  },
+  "fecrv": {
+    "system": "fecrv",
+    "n_points": 1500,
+    "n_ok": 1500,
+    "n_eligible": 25,
+    "n_active": 4,
+    "max_abs_dNP": 2.49893361559117e-09,
+    "max_abs_dNP_phase": "SIGMA",
+    "max_abs_dGM_J_per_mol": 7.795816054567695e-05,
+    "points_with_dNP_gt_1e-3": 0,
+    "missing_phases": []
+  },
+  "femnni": {
+    "system": "femnni",
+    "n_points": 1500,
+    "n_ok": 1500,
+    "n_eligible": 29,
+    "n_active": 7,
+    "max_abs_dNP": 2.733864246096118e-10,
+    "max_abs_dNP_phase": "FCC_A1",
+    "max_abs_dGM_J_per_mol": 1.4060540706850588e-05,
+    "points_with_dNP_gt_1e-3": 0,
+    "missing_phases": []
+  }
+}

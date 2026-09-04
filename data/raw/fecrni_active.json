@@ -1,0 +1,25 @@
+{
+  "system": "fecrni",
+  "n_rows": 8880,
+  "eligible_phases": [
+    "NP_BCC_A2",
+    "NP_FCC_A1",
+    "NP_LIQUID",
+    "NP_SIGMA"
+  ],
+  "active_phases": [
+    "NP_BCC_A2",
+    "NP_FCC_A1",
+    "NP_LIQUID",
+    "NP_SIGMA"
+  ],
+  "active_threshold": 0.005,
+  "occurrence": {
+    "NP_BCC_A2": 0.36261261261261263,
+    "NP_FCC_A1": 0.7363738738738739,
+    "NP_LIQUID": 0.11936936936936937,
+    "NP_SIGMA": 0.23963963963963963
+  },
+  "excluded_mass_fraction": 0.0,
+  "max_sum_deviation": 9.782973098282355e-09
+}

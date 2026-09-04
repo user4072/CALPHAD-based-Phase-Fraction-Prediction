@@ -1,0 +1,39 @@
+{
+  "system": "fecrmo",
+  "n_rows": 8877,
+  "eligible_phases": [
+    "NP_BCC_A2",
+    "NP_CHI_A12",
+    "NP_FCC_A1",
+    "NP_LAVES_PHASE",
+    "NP_LIQUID",
+    "NP_MU_PHASE",
+    "NP_MU_PHASE_I",
+    "NP_R_PHASE",
+    "NP_SIGMA"
+  ],
+  "active_phases": [
+    "NP_BCC_A2",
+    "NP_CHI_A12",
+    "NP_FCC_A1",
+    "NP_LAVES_PHASE",
+    "NP_LIQUID",
+    "NP_MU_PHASE",
+    "NP_R_PHASE",
+    "NP_SIGMA"
+  ],
+  "active_threshold": 0.005,
+  "occurrence": {
+    "NP_BCC_A2": 0.6352371296609215,
+    "NP_CHI_A12": 0.1269573053959671,
+    "NP_FCC_A1": 0.021178326011039767,
+    "NP_LAVES_PHASE": 0.2585332882730652,
+    "NP_LIQUID": 0.058803649881716796,
+    "NP_MU_PHASE": 0.1990537343697195,
+    "NP_MU_PHASE_I": 0.001013856032443393,
+    "NP_R_PHASE": 0.04010363861664977,
+    "NP_SIGMA": 0.47606173256730877
+  },
+  "excluded_mass_fraction": 0.000476926128426925,
+  "max_sum_deviation": 3.317455332663144e-08
+}

@@ -1,0 +1,119 @@
+== 1. Region-matched band controls ==
+  fecrmn  T_band_mlp_renorm      region-matched(ratio-of-means) 1.18x (was random-ctrl 0.96x)
+  fecrmn  X2_band_mlp_renorm     region-matched(ratio-of-means) 1.46x (was random-ctrl 0.85x)
+  fecrmn  T_band_mlp_sig_norm    region-matched(ratio-of-means) 1.29x (was random-ctrl 1.01x)
+  fecrmn  X2_band_mlp_sig_norm   region-matched(ratio-of-means) 1.76x (was random-ctrl 0.93x)
+  fecrmn  T_band_rf_renorm       region-matched(ratio-of-means) 1.33x (was random-ctrl 0.86x)
+  fecrmn  X2_band_rf_renorm      region-matched(ratio-of-means) 2.05x (was random-ctrl 1.57x)
+  fecrmn  T_band_xgb_renorm      region-matched(ratio-of-means) 1.64x (was random-ctrl 1.22x)
+  fecrmn  X2_band_xgb_renorm     region-matched(ratio-of-means) 1.92x (was random-ctrl 1.50x)
+  fecrmo  T_band_mlp_renorm      region-matched(ratio-of-means) 1.08x (was random-ctrl 1.74x)
+  fecrmo  X2_band_mlp_renorm     region-matched(ratio-of-means) 1.74x (was random-ctrl 1.02x)
+  fecrmo  T_band_mlp_sig_norm    region-matched(ratio-of-means) 1.13x (was random-ctrl 2.13x)
+  fecrmo  X2_band_mlp_sig_norm   region-matched(ratio-of-means) 1.58x (was random-ctrl 1.16x)
+  fecrmo  T_band_rf_renorm       region-matched(ratio-of-means) 1.94x (was random-ctrl 2.23x)
+  fecrmo  X2_band_rf_renorm      region-matched(ratio-of-means) 2.18x (was random-ctrl 1.86x)
+  fecrmo  T_band_xgb_renorm      region-matched(ratio-of-means) 2.16x (was random-ctrl 2.31x)
+  fecrmo  X2_band_xgb_renorm     region-matched(ratio-of-means) 2.54x (was random-ctrl 2.14x)
+  fecrni  T_band_mlp_renorm      region-matched(ratio-of-means) 2.83x (was random-ctrl 1.33x)
+  fecrni  X2_band_mlp_renorm     region-matched(ratio-of-means) 1.86x (was random-ctrl 1.62x)
+  fecrni  T_band_mlp_sig_norm    region-matched(ratio-of-means) 2.79x (was random-ctrl 1.38x)
+  fecrni  X2_band_mlp_sig_norm   region-matched(ratio-of-means) 1.67x (was random-ctrl 1.53x)
+  fecrni  T_band_rf_renorm       region-matched(ratio-of-means) 2.14x (was random-ctrl 1.31x)
+  fecrni  X2_band_rf_renorm      region-matched(ratio-of-means) 3.01x (was random-ctrl 3.10x)
+  fecrni  T_band_xgb_renorm      region-matched(ratio-of-means) 2.76x (was random-ctrl 1.73x)
+  fecrni  X2_band_xgb_renorm     region-matched(ratio-of-means) 2.42x (was random-ctrl 2.24x)
+  fecrv   T_band_mlp_renorm      region-matched(ratio-of-means) 0.91x (was random-ctrl 1.73x)
+  fecrv   X2_band_mlp_renorm     region-matched(ratio-of-means) 2.06x (was random-ctrl 0.49x)
+  fecrv   T_band_mlp_sig_norm    region-matched(ratio-of-means) 0.94x (was random-ctrl 2.57x)
+  fecrv   X2_band_mlp_sig_norm   region-matched(ratio-of-means) 1.33x (was random-ctrl 0.52x)
+  fecrv   T_band_rf_renorm       region-matched(ratio-of-means) 3.89x (was random-ctrl 4.93x)
+  fecrv   X2_band_rf_renorm      region-matched(ratio-of-means) 2.29x (was random-ctrl 1.87x)
+  fecrv   T_band_xgb_renorm      region-matched(ratio-of-means) 3.23x (was random-ctrl 4.23x)
+  fecrv   X2_band_xgb_renorm     region-matched(ratio-of-means) 2.32x (was random-ctrl 1.89x)
+  femnni  T_band_mlp_renorm      region-matched(ratio-of-means) 1.06x (was random-ctrl 0.18x)
+  femnni  X2_band_mlp_renorm     region-matched(ratio-of-means) 1.19x (was random-ctrl 0.04x)
+  femnni  T_band_mlp_sig_norm    region-matched(ratio-of-means) 1.13x (was random-ctrl 0.20x)
+  femnni  X2_band_mlp_sig_norm   region-matched(ratio-of-means) 1.26x (was random-ctrl 0.08x)
+  femnni  T_band_rf_renorm       region-matched(ratio-of-means) 2.63x (was random-ctrl 1.55x)
+  femnni  X2_band_rf_renorm      region-matched(ratio-of-means) 1.44x (was random-ctrl 0.73x)
+  femnni  T_band_xgb_renorm      region-matched(ratio-of-means) 2.97x (was random-ctrl 2.00x)
+  femnni  X2_band_xgb_renorm     region-matched(ratio-of-means) 1.55x (was random-ctrl 0.75x)
+== 2. Extrapolation seen/unseen structure ==
+  fecrmn  T_extrap   unseen=['LIQUID'] const-near-mean-MAE=0.2234 vs model MAEs mlp_renorm=0.1262, mlp_sig_norm=0.1266, rf_renorm=0.1524, xgb_renorm=0.1536
+  fecrmn  X2_extrap  unseen=['CR3MN5'] const-near-mean-MAE=0.2041 vs model MAEs mlp_renorm=0.0458, mlp_sig_norm=0.0526, rf_renorm=0.0788, xgb_renorm=0.0860
+  fecrmo  T_extrap   unseen=['LIQUID', 'R_PHASE'] const-near-mean-MAE=0.1533 vs model MAEs mlp_renorm=0.0823, mlp_sig_norm=0.0796, rf_renorm=0.1073, xgb_renorm=0.1054
+  fecrmo  X2_extrap  unseen=[] const-near-mean-MAE=0.1493 vs model MAEs mlp_renorm=0.0668, mlp_sig_norm=0.0689, rf_renorm=0.1052, xgb_renorm=0.1082
+  fecrni  T_extrap   unseen=['LIQUID'] const-near-mean-MAE=0.3325 vs model MAEs mlp_renorm=0.2227, mlp_sig_norm=0.2241, rf_renorm=0.2346, xgb_renorm=0.2327
+  fecrni  X2_extrap  unseen=[] const-near-mean-MAE=0.2944 vs model MAEs mlp_renorm=0.1721, mlp_sig_norm=0.1709, rf_renorm=0.2152, xgb_renorm=0.2267
+  fecrv   T_extrap   unseen=['LIQUID'] const-near-mean-MAE=0.3072 vs model MAEs mlp_renorm=0.0994, mlp_sig_norm=0.0991, rf_renorm=0.1937, xgb_renorm=0.1972
+  fecrv   X2_extrap  unseen=[] const-near-mean-MAE=0.2078 vs model MAEs mlp_renorm=0.0464, mlp_sig_norm=0.0478, rf_renorm=0.0761, xgb_renorm=0.1015
+  femnni  T_extrap   unseen=['LIQUID'] const-near-mean-MAE=0.1899 vs model MAEs mlp_renorm=0.1823, mlp_sig_norm=0.1822, rf_renorm=0.1834, xgb_renorm=0.1841
+  femnni  X2_extrap  unseen=['ALPHA_MN', 'BETA_MN', 'MNNI'] const-near-mean-MAE=0.1279 vs model MAEs mlp_renorm=0.0143, mlp_sig_norm=0.0129, rf_renorm=0.0279, xgb_renorm=0.0329
+== 3. Gibbs-phase-rule violations (>3 phases above threshold) ==
+  fecrmn: gt(1e-3)=0.0000 mlp_renorm=0.0000 rf_renorm=0.0081
+  fecrmo: gt(1e-3)=0.0000 mlp_renorm=0.0339 rf_renorm=0.0893
+  fecrni: gt(1e-3)=0.0000 mlp_renorm=0.0000 rf_renorm=0.0000
+  fecrv: gt(1e-3)=0.0000 mlp_renorm=0.0000 rf_renorm=0.0000
+  femnni: gt(1e-3)=0.0000 mlp_renorm=0.0000 rf_renorm=0.0013
+== 4. Active-cells MAE and tail statistics ==
+  fecrmn: MLP all=0.0081 active=0.0352 P95=0.0267 | RF all=0.0133 active=0.0486 P95=0.0737
+  fecrmo: MLP all=0.0159 active=0.0617 P95=0.0531 | RF all=0.0123 active=0.0457 P95=0.0687
+  fecrni: MLP all=0.0106 active=0.0228 P95=0.0439 | RF all=0.0180 active=0.0350 P95=0.0817
+  fecrv: MLP all=0.0149 active=0.0310 P95=0.0224 | RF all=0.0137 active=0.0307 P95=0.0707
+  femnni: MLP all=0.0140 active=0.0739 P95=0.0001 | RF all=0.0058 active=0.0249 P95=0.0101
+== 5. Macro-F1 (zero-positive phases excluded) + AUPRC ==
+  fecrmn: MLP F1 0.522 -> excl 0.580 | RF F1 0.592 -> excl 0.659 | zero-pos: []
+  fecrmo: MLP F1 0.600 -> excl 0.600 | RF F1 0.629 -> excl 0.629 | zero-pos: []
+  fecrni: MLP F1 0.927 -> excl 0.927 | RF F1 0.846 -> excl 0.846 | zero-pos: []
+  fecrv: MLP F1 0.718 -> excl 0.718 | RF F1 0.785 -> excl 0.785 | zero-pos: []
+  femnni: MLP F1 0.312 -> excl 0.364 | RF F1 0.504 -> excl 0.588 | zero-pos: ['MNNI2']
+== 6. F1 under band holdouts ==
+  fecrmn  mlp_renorm interp F1=0.522 T-band=0.332 X2-band=0.489
+  fecrmn  rf_renorm  interp F1=0.592 T-band=0.375 X2-band=0.407
+  fecrmo  mlp_renorm interp F1=0.600 T-band=0.412 X2-band=0.560
+  fecrmo  rf_renorm  interp F1=0.629 T-band=0.416 X2-band=0.504
+  fecrni  mlp_renorm interp F1=0.927 T-band=0.635 X2-band=0.912
+  fecrni  rf_renorm  interp F1=0.846 T-band=0.525 X2-band=0.786
+  fecrv   mlp_renorm interp F1=0.718 T-band=0.471 X2-band=0.712
+  fecrv   rf_renorm  interp F1=0.785 T-band=0.519 X2-band=0.638
+  femnni  mlp_renorm interp F1=0.312 T-band=0.256 X2-band=0.281
+  femnni  rf_renorm  interp F1=0.504 T-band=0.214 X2-band=0.281
+== 7. Fe-Cr-V random-control audit ==
+  mlp_renorm: s42=0.0286 s123=0.0135 s2024=0.0281
+  mlp_sig_norm: s42=0.0165 s123=0.0136 s2024=0.0137
+  rf_renorm: s42=0.0160 s123=0.0166 s2024=0.0139
+  xgb_renorm: s42=0.0191 s123=0.0204 s2024=0.0188
+== 8. Sparsemax per-seed spread ==
+  fecrmn: [0.0087, 0.0088, 0.0463] mean=0.0212 std=0.0177
+  fecrmo: [0.0181, 0.037, 0.1166] mean=0.0573 std=0.0427
+  fecrni: [0.0528, 0.0673, 0.0131] mean=0.0444 std=0.0229
+  fecrv: [0.0532, 0.0201, 0.018] mean=0.0304 std=0.0161
+  femnni: [0.0186, 0.0148, 0.0792] mean=0.0375 std=0.0295
+== 9. renorm identity check ==
+  fecrni s42: max|renorm(sigmoid) - renorm_pred| = 7.12e-01
+  fecrni s123: max|renorm(sigmoid) - renorm_pred| = 3.18e-01
+  fecrni s2024: max|renorm(sigmoid) - renorm_pred| = 4.05e-01
+  femnni s42: max|renorm(sigmoid) - renorm_pred| = 5.74e-01
+  femnni s123: max|renorm(sigmoid) - renorm_pred| = 5.75e-01
+  femnni s2024: max|renorm(sigmoid) - renorm_pred| = 4.21e-01
+== 10. Rejected candidates ==
+  fecrmn: 8880 valid candidates (of 11,220 raw draws, 2340 design-filter exclusions) -> 8880 accepted (0 solver rejections)
+    design exclusions by strategy: {'S1_LHS': 1040, 'S3_isothermal': 275, 'S4_liquidus': 1025}
+  fecrmo: 8880 valid candidates (of 11,220 raw draws, 2340 design-filter exclusions) -> 8877 accepted (3 solver rejections)
+    rejected: x=(0.239, 0.392) T=900 [S1_LHS]
+    rejected: x=(0.261, 0.630) T=710 [S1_LHS]
+    rejected: x=(0.334, 0.175) T=1081 [S1_LHS]
+    design exclusions by strategy: {'S1_LHS': 1040, 'S3_isothermal': 275, 'S4_liquidus': 1025}
+  fecrni: 8880 valid candidates (of 11,220 raw draws, 2340 design-filter exclusions) -> 8880 accepted (0 solver rejections)
+    design exclusions by strategy: {'S1_LHS': 1040, 'S3_isothermal': 275, 'S4_liquidus': 1025}
+  fecrv: 8880 valid candidates (of 11,220 raw draws, 2340 design-filter exclusions) -> 8880 accepted (0 solver rejections)
+    design exclusions by strategy: {'S1_LHS': 1040, 'S3_isothermal': 275, 'S4_liquidus': 1025}
+  femnni: 8880 valid candidates (of 11,220 raw draws, 2340 design-filter exclusions) -> 8880 accepted (0 solver rejections)
+    design exclusions by strategy: {'S1_LHS': 1040, 'S3_isothermal': 275, 'S4_liquidus': 1025}
+== 11. MLP forward-pass latency ==
+  4-phase head: 2.1 us/row (batch), 419 us (single query) | speedup 1.18e+06 (batch), 5.97e+03 (single)
+  7-phase head: 3.1 us/row (batch), 602 us (single query) | speedup 8.17e+05 (batch), 4.15e+03 (single)
+  (CUDA present but CPU numbers reported as the conservative deployment reference)
+
+Saved E:\projects\pycalphad\fe_surrogate\analysis_revision\revision_analyses.json

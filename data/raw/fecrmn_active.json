@@ -1,0 +1,32 @@
+{
+  "system": "fecrmn",
+  "n_rows": 8880,
+  "eligible_phases": [
+    "NP_ALPHA_MN",
+    "NP_BCC_A2",
+    "NP_BETA_MN",
+    "NP_CR3MN5",
+    "NP_FCC_A1",
+    "NP_LIQUID",
+    "NP_SIGMA"
+  ],
+  "active_phases": [
+    "NP_ALPHA_MN",
+    "NP_BCC_A2",
+    "NP_FCC_A1",
+    "NP_LIQUID",
+    "NP_SIGMA"
+  ],
+  "active_threshold": 0.005,
+  "occurrence": {
+    "NP_ALPHA_MN": 0.007432432432432433,
+    "NP_BCC_A2": 0.5751126126126126,
+    "NP_BETA_MN": 0.0045045045045045045,
+    "NP_CR3MN5": 0.00033783783783783786,
+    "NP_FCC_A1": 0.2768018018018018,
+    "NP_LIQUID": 0.1472972972972973,
+    "NP_SIGMA": 0.31385135135135134
+  },
+  "excluded_mass_fraction": 0.0032722930194124086,
+  "max_sum_deviation": 1.2341542010574358e-08
+}

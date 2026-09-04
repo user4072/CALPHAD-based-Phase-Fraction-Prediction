@@ -1,0 +1,51 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# --- Superseded manuscript versions and scratch backups ---
+paper/Manuscript (2).docx
+paper/_backup_*.docx
+paper/_backup_*.pptx
+paper/_m3_text.txt
+paper/_dump_m3.py
+paper/_batch*.py
+paper/_citations.py
+paper/_tmp_*.docx
+
+# --- LaTeX build artefacts ---
+paper/paper_cms.aux
+paper/paper_cms.log
+paper/paper_cms.out
+paper/paper_cms.spl
+paper/paper_cms.pdf
+paper/paper_cms.docx
+
+# --- Superseded graphical abstract ---
+Graphical_Abstract_v2*
+
+# --- Thermodynamic databases (licensed MatCalc source + derivatives; NOT redistributable) ---
+databases/*.tdb
+
+# --- Superseded model checkpoints (legacy GATv2 / MLP-80 phase, kept locally) ---
+models/gatv2/
+models/mlp/
+models/_v2_backup/
+
+# --- Run logs / stderr captures (pipeline stdout; results live in the JSONs) ---
+models/*.err
+models/*.log
+data/raw/*.log
+data/raw/*.err
+analysis_revision/*.log
+analysis_revision/*.err
+
+# --- docx editing helpers (one-off revision tooling, kept locally) ---
+paper/docx_edit.py
+
+# --- OS / editor ---
+Thumbs.db
+.DS_Store
+~$*
