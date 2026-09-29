@@ -50,7 +50,7 @@ def load_data():
 
 def cluster_split(X, Y, seed):
     """64/16/20 split stratified by phase-assemblage cluster (k-means, k=6)."""
-    coords = np.column_stack([X[:, :3], (X[:, 3] - 700) / 1300])
+    coords = np.column_stack([X[:, :-1], (X[:, -1] - 700) / 1300])
     km = KMeans(n_clusters=6, random_state=seed, n_init=10).fit(coords)
     idx = np.arange(len(X))
     tr, va, te = [], [], []

@@ -54,13 +54,23 @@ def run_one(args):
 
 def probe(cfg, phases, n, seed=7):
     rng = np.random.default_rng(seed)
+    br = cfg.get("box_ranges")
     conds = []
     for _ in range(n):
-        fracs = rng.dirichlet([0.5, 0.3, 0.2])
-        fracs = np.clip(fracs, 1e-4, None)
-        fracs = fracs / fracs.sum()
+        if br:
+            # Sample inside the design box so probe-active == design-realizable
+            # (no dead target channels like MNNI2 in the ternary study).
+            free = [rng.uniform(br[c][0], br[c][1]) for c in cfg["comps"][1:]]
+            s = sum(free)
+            if s > 0.95:
+                free = [x * 0.95 / s for x in free]
+        else:
+            k = len(cfg["comps_species"]) + 1
+            fracs = rng.dirichlet(np.ones(k)) if k != 3 else \
+                rng.dirichlet([0.5, 0.3, 0.2])
+            free = list(fracs[1:])
         cond = {v.T: float(rng.uniform(cfg["t_min"], cfg["t_max"])), v.P: P}
-        for sp, frac in zip(cfg["comps_species"], fracs[1:]):
+        for sp, frac in zip(cfg["comps_species"], free):
             cond[v.X(sp)] = float(frac)
         conds.append(cond)
     with mp.Pool(N_WORKERS, initializer=_init_worker,

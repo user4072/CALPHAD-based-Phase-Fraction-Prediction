@@ -80,4 +80,24 @@ SYSTEMS = {
         "sigma_focus": {"low": [0.15, 0.50, 700.0], "high": [0.02, 0.25, 1250.0]},
         "t_min": 700.0, "t_max": 2000.0,
     },
+    "fecrnic": {
+        "name": "Fe-Cr-Ni-C",
+        "tdb": os.path.join(HERE, "databases", "fecrnic_quaternary.tdb"),
+        "dataset": os.path.join(HERE, "data", "raw", "dataset_fecrnic.csv"),
+        "checkpoint": os.path.join(HERE, "data", "raw", "checkpoint_fecrnic.csv"),
+        "elements": ["FE", "CR", "NI", "C", "VA"],
+        "comps": ["Fe", "Cr", "Ni", "C"],
+        "comps_species": ["CR", "NI", "C"],
+        # Phase set is probe-driven (see data/raw/fecrnic_probe.json); these
+        # fields are placeholders so generic table code can iterate safely.
+        "phases": [],
+        "phase_cols": [],
+        "box": {"Fe": 0.55, "Cr": 0.30, "Ni": 0.30, "C": 0.30},
+        # Cr+Ni+carbon ranges of the steel design box (mole fractions).
+        "box_ranges": {"Cr": [0.001, 0.35], "Ni": [0.001, 0.30],
+                       "C": [0.001, 0.05]},
+        "sigma_focus": {"low": [0.10, 0.005, 700.0],
+                        "high": [0.30, 0.045, 1150.0]},
+        "t_min": 700.0, "t_max": 2000.0,
+    },
 }

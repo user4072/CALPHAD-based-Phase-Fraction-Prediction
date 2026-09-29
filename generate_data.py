@@ -48,9 +48,11 @@ def _init_worker(tdb_path):
 def run_eq(args):
     cfg = args["cfg"]
     names, cols = args["names"], args["cols"]
-    x1, x2, temperature = args["point"]
-    row = {cfg["comps"][0]: 1.0 - x1 - x2, cfg["comps"][1]: x1, cfg["comps"][2]: x2,
-           "T": temperature}
+    *free, temperature = args["point"]
+    row = {cfg["comps"][0]: 1.0 - sum(free)}
+    for comp, val in zip(cfg["comps"][1:], free):
+        row[comp] = float(val)
+    row["T"] = temperature
     for col in cols:
         row[col] = 0.0
     for prop in ["GM", "HM", "SM", "CPM"]:
@@ -58,7 +60,7 @@ def run_eq(args):
     row["converged"] = False
     try:
         cond = {v.T: temperature, v.P: P}
-        for sp, val in zip(cfg["comps_species"], [x1, x2]):
+        for sp, val in zip(cfg["comps_species"], free):
             cond[v.X(sp)] = val
         eq = equilibrium(_db, cfg["elements"], list(names), cond, max_iterations=500)
         ph = np.asarray(eq.Phase.values).flatten()
@@ -86,6 +88,65 @@ def generate_tasks(cfg):
     tasks = []
     rng = np.random.default_rng(42)
     t_min, t_max = cfg["t_min"], cfg["t_max"]
+    n_free = len(cfg["comps_species"])
+
+    if n_free > 2:
+        # ---- Quaternary steel design box (Fe balance, Cr+Ni+C ranges) ----
+        br = cfg["box_ranges"]
+        r_cr, r_ni, r_c = (br["Cr"], br["Ni"], br["C"])
+
+        def _ok(c1, c2, c3):
+            return c1 + c2 + c3 <= 0.95
+
+        logger.info("Strategy 1: steel box, uniform T")
+        while len(tasks) < 5000:
+            c1 = rng.uniform(*r_cr)
+            c2 = rng.uniform(*r_ni)
+            c3 = rng.uniform(*r_c)
+            if _ok(c1, c2, c3):
+                tasks.append((c1, c2, c3, float(rng.uniform(t_min, t_max))))
+
+        logger.info("Strategy 2: low-alloy / Fe-rich")
+        while len(tasks) < 7500:
+            c1 = rng.uniform(0.0, 0.10)
+            c2 = rng.uniform(0.0, 0.10)
+            c3 = rng.uniform(0.001, 0.02)
+            if _ok(c1, c2, c3):
+                tasks.append((c1, c2, c3, float(rng.uniform(700.0, 1900.0))))
+
+        logger.info("Strategy 3: carbide zone (high Cr, high C, low T)")
+        while len(tasks) < 10500:
+            c1 = rng.uniform(0.10, r_cr[1])
+            c2 = rng.uniform(0.0, r_ni[1])
+            c3 = rng.uniform(0.01, r_c[1])
+            if _ok(c1, c2, c3):
+                tasks.append((c1, c2, c3, float(rng.uniform(700.0, 1150.0))))
+
+        logger.info("Strategy 4: isothermal grids")
+        for T in [900, 1100, 1300, 1500, 1700]:
+            for c1 in np.linspace(0.01, 0.30, 7):
+                for c2 in np.linspace(0.01, 0.25, 6):
+                    for c3 in [0.002, 0.01, 0.03, 0.05]:
+                        if _ok(c1, c2, c3):
+                            tasks.append((float(c1), float(c2), float(c3), float(T)))
+
+        logger.info("Strategy 5: liquidus zone")
+        while len(tasks) < 12500:
+            c1 = rng.uniform(0.0, r_cr[1])
+            c2 = rng.uniform(0.0, r_ni[1])
+            c3 = rng.uniform(0.001, 0.03)
+            if 0.45 <= c1 + c2 <= 0.65 and _ok(c1, c2, c3):
+                tasks.append((c1, c2, c3, float(rng.uniform(1500.0, 2000.0))))
+
+        logger.info("Strategy 6: near-pure Fe (A3-A4 region)")
+        while len(tasks) < 13200:
+            c1 = rng.uniform(0.0, 0.04)
+            c2 = rng.uniform(0.0, 0.04)
+            c3 = rng.uniform(0.0005, 0.005)
+            tasks.append((c1, c2, c3, float(rng.uniform(700.0, 1811.0))))
+        return tasks
+
+    # ---- Original ternary strategies (unchanged) ----
     sf = cfg["sigma_focus"]
 
     logger.info("Strategy 1: LHS Gibbs triangle, Fe-weighted")
@@ -137,6 +198,8 @@ def generate_tasks(cfg):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--system", choices=sorted(SYSTEMS), required=True)
+    ap.add_argument("--limit", type=int, default=None,
+                    help="use only the first N tasks (smoke test)")
     args = ap.parse_args()
     cfg = SYSTEMS[args.system]
 
@@ -157,13 +220,17 @@ def main():
     logger.info(f"Total tasks: {len(tasks)}")
     rng = np.random.default_rng(42)
     rng.shuffle(tasks)
+    if args.limit:
+        tasks = tasks[:args.limit]
+        logger.info(f"--limit: using {len(tasks)} tasks")
 
     done = {}
     if os.path.exists(cfg["checkpoint"]):
         existing = pd.read_csv(cfg["checkpoint"])
         if set(phase_cols).issubset(existing.columns):
             for _, r in existing.iterrows():
-                done[(r[cfg["comps"][1]], r[cfg["comps"][2]], r["T"])] = r.to_dict()
+                key = tuple(float(r[c]) for c in cfg["comps"][1:]) + (float(r["T"]),)
+                done[key] = r.to_dict()
             logger.info(f"Resuming: {len(done)} rows already present")
         else:
             logger.warning("Checkpoint schema mismatch (incomplete phase set); discarding")
