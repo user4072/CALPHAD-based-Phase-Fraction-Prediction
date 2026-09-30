@@ -45,6 +45,13 @@ analysis_revision/*.err
 # --- docx editing helpers (one-off revision tooling, kept locally) ---
 paper/docx_edit.py
 
+# --- Anchor-evaluation checkpoints (retrainable via paper/anchor_eval.py) ---
+paper/anchor_data/anchor_ckpts/
+
+# --- Audit / latex scratch captures ---
+paper/audit_out*.txt
+paper/pdflatex_run*.log
+
 # --- OS / editor ---
 Thumbs.db
 .DS_Store
