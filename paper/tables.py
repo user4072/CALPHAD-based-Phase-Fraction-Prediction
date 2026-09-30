@@ -1,4 +1,4 @@
-"""Emit the paper's LaTeX table bodies from the stored artefacts.
+﻿"""Emit the paper's LaTeX table bodies from the stored artefacts.
 
 Every number in paper_cms.tex comes from this script; nothing is hand-typed.
 Each table body is written to its own file, paper/tab/<name>.tex, holding one
@@ -146,14 +146,14 @@ for s in SYS:
     best[s] = min(cand, key=cand.get)
 W("\\scriptsize")
 W("\\setlength{\\tabcolsep}{3pt}")
-W("\\renewcommand{\\arraystretch}{1.2}")
+W("\\renewcommand{\\arraystretch}{1.1}")
 W("\\begin{tabular}{ll" + "c" * len(SYS) + "}")
 W("\\toprule")
 W(" & Model & " + " & ".join(LBL[s] for s in SYS) + " \\\\")
 W("\\midrule")
-group = {0: "\\multirow{2}{*}{\\rotatebox{90}{\\scriptsize off-simplex}}",
-         1: "\\multirow{5}{*}{\\rotatebox{90}{\\scriptsize on-simplex}}",
-         2: "\\multirow{4}{*}{\\rotatebox{90}{\\scriptsize baselines}}"}
+group = {0: "\\multirow{2}{*}{\\rotatebox{90}{\\tiny off-simplex}}",
+         1: "\\multirow{5}{*}{\\rotatebox{90}{\\tiny on-simplex}}",
+         2: "\\multirow{4}{*}{\\rotatebox{90}{\\tiny baselines}}"}
 seen = set()
 for key, lab, g in ROWS:
     if key is None:
@@ -252,6 +252,7 @@ MODELS = [("mlp_renorm", "MLP renorm"), ("mlp_sig_norm", "MLP sigmoid/$\\Sigma$"
 if BH:
     W("\\scriptsize")
     W("\\setlength{\\tabcolsep}{3pt}")
+    W("\\resizebox{\\textwidth}{!}{")
     W("\\begin{tabular}{ll" + "c" * len(SYS) + "}")
     W("\\toprule")
     W("Held-out region & Model & " + " & ".join(LBL[s] for s in SYS) + " \\\\")
@@ -281,7 +282,7 @@ if BH:
         W(f"{'penalty $T$/$x_2$' if key == MODELS[0][0] else ''} & {mlab} & "
           + " & ".join(cells) + " \\\\")
     W("\\bottomrule")
-    W("\\end{tabular}")
+    W("\\end{tabular}}")
 else:
     W("% block_holdout_<sys>.json not present -- run holdout_eval.py")
 emit("holdout")
@@ -291,6 +292,7 @@ W("% Table 7: strict out-of-range extrapolation")
 if EX:
     W("\\scriptsize")
     W("\\setlength{\\tabcolsep}{3pt}")
+    W("\\resizebox{\\textwidth}{!}{")
     W("\\begin{tabular}{ll" + "c" * len(SYS) + "}")
     W("\\toprule")
     W("Region & Model & " + " & ".join(LBL[s] for s in SYS) + " \\\\")
@@ -322,7 +324,7 @@ if EX:
         W(f"{'penalty $x_2$/$T$' if key == MODELS[0][0] else ''} & {mlab} & "
           + " & ".join(cells) + " \\\\")
     W("\\bottomrule")
-    W("\\end{tabular}")
+    W("\\end{tabular}}")
 else:
     W("% holdout_extrap_<sys>.json not present -- run holdout_eval.py "
       "--mode extrap")
@@ -331,6 +333,9 @@ emit("extrap")
 # ---------------------------------------------------------------- Table 8
 W("% Table 8: ablations, Fe-Cr-Ni")
 d = results("fecrni")
+W("\\footnotesize")
+W("\\setlength{\\tabcolsep}{4pt}")
+W("\\resizebox{\\textwidth}{!}{")
 W("\\begin{tabular}{llcc}")
 W("\\toprule")
 W("Ablation & Setting & renorm & sigmoid/$\\Sigma$ \\\\")
@@ -370,7 +375,7 @@ for key, lab in [("mlp_sigmoid", "none"), ("mlp_penalty_1", "$\\lambda=1$"),
     c = agg(d, key, "consistency")[0]
     W(f" & {lab} & \\multicolumn{{2}}{{c}}{{{mae_cell(m, sd)}, closure {sci(c)}}} \\\\")
 W("\\bottomrule")
-W("\\end{tabular}")
+W("\\end{tabular}}")
 emit("ablation")
 
 # ---------------------------------------------------------------- Table 9
@@ -448,4 +453,365 @@ for s in SYS:
 W("\\bottomrule")
 W("\\end{tabular}")
 emit("perseed")
+
+
+# ======================================================================
+# Shared helpers for the extension tables (12--15)
+# ======================================================================
+def jload(path):
+    if not os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def fmtv(x):
+    """Fixed point for O(1) numbers, scientific otherwise."""
+    ax = abs(x)
+    if ax == 0:
+        return "0"
+    if ax < 1e-3 or ax >= 1e3:
+        return sci(x)
+    if ax < 1:
+        return f"{x:.2f}"
+    return f"{x:.1f}"
+
+
+ESYS = ["fecrnic", "fecrc"]
+ELBL = dict(LBL, fecrnic="Fe--Cr--Ni--C", fecrc="Fe--Cr--C")
+
+
+def remedy_rows():
+    """macro-AUPRC per remedy family plus the gated/MLP MAE ratio."""
+    rows = {}
+    rem = jload(os.path.join(M, "results_remedy.json"))
+    if rem:
+        for s, c in rem["comparison"].items():
+            b = c["baseline_macro_auprc"]
+            rows[s] = {"mlp_renorm": b["mlp"], "rf": b["rf"], "xgb": b["xgb"],
+                       "knn": b["knn"],
+                       "weighted": c["remedy"]["weighted"]["macro_auprc"],
+                       "gated": c["remedy"]["gated"]["macro_auprc"],
+                       "ratio": c["remedy"]["gated"]["mae_ratio_vs_mlp"]}
+    det = jload(os.path.join(ROOT, "analysis_revision", "detection_fecrnic.json"))
+    rem4 = jload(os.path.join(M, "results_remedy_fecrnic.json"))
+    if det and rem4:
+        f = det["families"]
+        c = rem4["comparison"]["fecrnic"]
+        rows["fecrnic"] = {
+            "mlp_renorm": f["mlp_renorm"]["macro_auprc"],
+            "rf": f["rf_renorm"]["macro_auprc"],
+            "xgb": f["xgb_renorm"]["macro_auprc"],
+            "knn": f["knn_renorm"]["macro_auprc"],
+            "weighted": f["weighted"]["macro_auprc"],
+            "gated": f["gated"]["macro_auprc"],
+            "ratio": c["remedy"]["gated"]["mae_ratio_vs_mlp"]}
+    rem3 = jload(os.path.join(M, "results_remedy_fecrc.json"))
+    if rem3:
+        c = rem3["comparison"]["fecrc"]
+        b = c["baseline_macro_auprc"]
+        rows["fecrc"] = {"mlp_renorm": b["mlp"], "rf": b["rf"], "xgb": b["xgb"],
+                         "knn": b["knn"],
+                         "weighted": c["remedy"]["weighted"]["macro_auprc"],
+                         "gated": c["remedy"]["gated"]["macro_auprc"],
+                         "ratio": c["remedy"]["gated"]["mae_ratio_vs_mlp"]}
+    return rows
+
+
+def phase_set(system):
+    """Phase-set validation block: analysis_revision first, summary second."""
+    p = jload(os.path.join(ROOT, "analysis_revision",
+                           f"phase_set_validation_{system}.json"))
+    if isinstance(p, dict):
+        if system in p:
+            return p[system]
+        if "n_points" in p:
+            return p
+    s = jload(os.path.join(M, f"results_{system}_summary.json"))
+    return (s or {}).get("phase_set_validation")
+
+
+# ---------------------------------------------------------------- Table 12
+W("% Table 12: output-space geometry of the evaluated families")
+PJ = jload(os.path.join(M, "projection_ablation.json"))
+if PJ:
+    FAM = [("mlp_sigmoid", "MLP (sigmoid)"), ("ridge", "ridge"),
+           ("knn", "$k$-NN"), ("rf", "random forest"), ("xgb", "XGBoost")]
+    FLAB = dict(FAM)
+    ag = PJ["aggregate_mean_sd_over_seeds"]
+    W("\\footnotesize")
+    W("\\setlength{\\tabcolsep}{4pt}")
+    W("\\resizebox{\\textwidth}{!}{")
+    W("\\begin{tabular}{l" + "c" * (len(SYS) + 1) + "}")
+    W("\\toprule")
+    W("Family/quantity & " + " & ".join(LBL[s] for s in SYS)
+      + " & min cell \\\\")
+    W("\\midrule")
+    W("\\multicolumn{7}{l}{\\emph{(A) negative-cell fraction (\\% of "
+      "test-set cells), mean over 3 seeds}} \\\\")
+    for key, lab in FAM:
+        cells = [f"{100 * ag[s][key]['neg_frac_cells_mean']:.1f}" for s in SYS]
+        worst = min(ag[s][key]["min_cell_mean"] for s in SYS)
+        cells.append("0" if worst == 0 else sci(worst))
+        W(f"{lab} & " + " & ".join(cells) + " \\\\")
+    W("\\addlinespace")
+    W("\\multicolumn{7}{l}{\\emph{(B) row-sum closure $|\\sum_k \\hat y_k - 1|$, "
+      "mean over 3 seeds}} \\\\")
+    for key in ["ridge", "knn"]:
+        cells = [sci(ag[s][key]["closure_mean_mean"]) for s in SYS]
+        W(f"{FLAB[key]} & " + " & ".join(cells) + " & --- \\\\")
+    W("\\addlinespace")
+    W("\\multicolumn{7}{l}{\\emph{(C) MLP (sigmoid): test MAE, raw "
+      "$\\to$ projected vs.\\ stored renorm variant}} \\\\")
+    for key, lab in [("mae_raw_mean", "raw output"),
+                     ("mae_projected_mean",
+                      "projected (clip $[0,1]$, $/{\\textstyle\\sum_k}$)"),
+                     ("mae_stored_variant_mean", "stored renorm variant")]:
+        cells = [f"{ag[s]['mlp_sigmoid'][key]:.4f}" for s in SYS]
+        W(f"{lab} & " + " & ".join(cells) + " & --- \\\\")
+    W("\\midrule")
+    def rng(key, field):
+        v = [ag[s][key][field] for s in SYS]
+        return min(v), max(v)
+
+    rn = rng("ridge", "neg_frac_cells_mean")
+    xn = rng("xgb", "neg_frac_cells_mean")
+    rcl = rng("ridge", "closure_mean_mean")
+    scl = rng("mlp_sigmoid", "closure_mean_mean")
+    rfcl = rng("rf", "closure_mean_mean")
+    e = int(np.floor(np.log10(max(rcl))))
+    W("\\multicolumn{7}{l}{\\scriptsize Sigmoid/RF/$k$-NN emit no negative "
+      f"cells; sigmoid closure {100 * scl[0]:.1f}--{100 * scl[1]:.1f}\\%, "
+      f"RF {100 * rfcl[0]:.1f}--{100 * rfcl[1]:.1f}\\% "
+      "(Table~\\ref{tab:closure}).} \\\\")
+    W("\\multicolumn{7}{l}{\\scriptsize Ridge closes to "
+      f"$\\sim\\!10^{{{e}}}$ yet {100 * rn[0]:.1f}--{100 * rn[1]:.1f}\\% "
+      f"of cells are negative; XGBoost {100 * xn[0]:.1f}--"
+      f"{100 * xn[1]:.1f}\\%.}} \\\\")
+    W("\\bottomrule")
+    W("\\end{tabular}}")
+else:
+    W("% projection_ablation.json not present -- run projection_ablation.py")
+emit("projection")
+
+# ---------------------------------------------------------------- Table 13
+W("% Table 13: presence-gated remedy, macro-AUPRC and gated/MLP MAE ratio")
+REM = SYS + ["fecrnic", "fecrc"]
+rr = remedy_rows()
+if rr and all(s in rr for s in REM):
+    FAMS = [("mlp_renorm", "MLP renorm"), ("rf", "RF"), ("xgb", "XGB"),
+            ("knn", "$k$-NN"), ("weighted", "weighted"), ("gated", "gated")]
+    W("\\footnotesize")
+    W("\\setlength{\\tabcolsep}{4pt}")
+    W("\\begin{tabular}{l" + "c" * 7 + "}")
+    W("\\toprule")
+    W("& \\multicolumn{6}{c}{macro-AUPRC (3 seeds)} & gated/MLP \\\\")
+    W("\\cmidrule(lr){2-7}")
+    W("System & " + " & ".join(lab for _, lab in FAMS)
+      + " & MAE ratio \\\\")
+    W("\\midrule")
+    for s in REM:
+        vals = [rr[s][k] for k, _ in FAMS]
+        best = max(vals)
+        cells = [f"\\textbf{{{v:.3f}}}" if v == best else f"{v:.3f}"
+                 for v in vals]
+        W(f"{ELBL[s]} & " + " & ".join(cells)
+          + f" & {rr[s]['ratio']:.2f} \\\\")
+    W("\\midrule")
+    W("\\multicolumn{8}{l}{\\scriptsize Ratio $>1$: the gated head costs MAE "
+      "relative to MLP renorm.} \\\\")
+    W("\\bottomrule")
+    W("\\end{tabular}")
+else:
+    W("% results_remedy*.json not present -- run remedy.py")
+emit("remedy")
+
+# ---------------------------------------------------------------- Table 14
+W("% Table 14: scope-extension systems Fe-Cr-Ni-C and Fe-Cr-C")
+SUM = {s: jload(os.path.join(M, f"results_{s}_summary.json")) for s in ESYS}
+if all(SUM.values()):
+    W("\\scriptsize")
+    W("\\setlength{\\tabcolsep}{4pt}")
+
+    # (A) dataset and target statistics
+    W("\\begin{tabular}{lrrrrrr}")
+    W("\\toprule")
+    W("\\multicolumn{7}{l}{\\emph{(A) dataset and target statistics}} \\\\")
+    W("System & Eligible & $K$ & Rows & $\\max|\\Sigma y-1|$ & box (\\%) "
+      "& $T$ (K) \\\\")
+    W("\\midrule")
+    for s in ESYS:
+        ds, psv = SUM[s]["dataset"], SUM[s]["phase_set_validation"]
+        tr = ds["T_range_K"]
+        W(f"{ELBL[s]} & {psv['n_eligible']} & "
+          f"{len(ds['probe_active_counts'])} & {ds['rows']:,} & "
+          f"{sci(ds['max_abs_sum_np_minus_1'])} & "
+          f"{100 * ds['in_stainless_box_fraction']:.1f} & "
+          f"{tr[0]:.0f}--{tr[1]:.0f} \\\\")
+    W("\\bottomrule")
+    W("\\end{tabular}")
+    W("")
+    W("\\vspace{0.7em}")
+
+    # (B) test MAE by head and baseline
+    HEAD14 = [("mlp_sigmoid", "sigmoid"), ("mlp_softmax", "softmax"),
+              ("mlp_renorm", "renorm"), ("mlp_sig_norm", "sigmoid/$\\Sigma$"),
+              ("mlp_sparsemax", "sparsemax"), ("mlp_residue", "residue")]
+    BASE14 = [("rf_renorm", "random forest"), ("xgb_renorm", "XGBoost"),
+              ("knn_renorm", "$k$-NN"), ("ridge_renorm", "ridge")]
+    allk = [k for k, _ in HEAD14] + [k for k, _ in BASE14]
+    best = {s: min(allk, key=lambda k: SUM[s]["heads_mae_mean_over_seeds"].get(
+        k, SUM[s]["baselines_mae_mean_over_seeds"].get(k, np.inf)))
+            for s in ESYS}
+    W("\\begin{tabular}{lcc}")
+    W("\\toprule")
+    W("\\multicolumn{3}{l}{\\emph{(B) test MAE, mean over 3 seeds}} \\\\")
+    W("Model & " + " & ".join(ELBL[s] for s in ESYS) + " \\\\")
+    W("\\midrule")
+    W("\\multicolumn{3}{l}{\\scriptsize MLP heads} \\\\")
+    for key, lab in HEAD14:
+        cells = []
+        for s in ESYS:
+            v = SUM[s]["heads_mae_mean_over_seeds"][key]
+            cells.append(f"\\textbf{{{v:.4f}}}" if best[s] == key
+                         else f"{v:.4f}")
+        W(f"{lab} & " + " & ".join(cells) + " \\\\")
+    W("\\addlinespace")
+    W("\\multicolumn{3}{l}{\\scriptsize baselines} \\\\")
+    for key, lab in BASE14:
+        cells = []
+        for s in ESYS:
+            v = SUM[s]["baselines_mae_mean_over_seeds"][key]
+            cells.append(f"\\textbf{{{v:.4f}}}" if best[s] == key
+                         else f"{v:.4f}")
+        W(f"{lab} & " + " & ".join(cells) + " \\\\")
+    W("\\bottomrule")
+    W("\\end{tabular}")
+    W("")
+    W("\\vspace{0.7em}")
+
+    # (C) spatial holdout and extrapolation
+    band = {s: SUM[s]["holdout"]["band"]["per_block_mean_mae"] for s in ESYS}
+    ext = {s: SUM[s]["holdout"]["extrap"]["per_block_mean_mae"] for s in ESYS}
+    cx = {}
+    e_c = jload(os.path.join(M, "holdout_extrap_c_fecrc.json"))
+    if e_c:
+        far = [d["mean_mae"] for k, d in e_c.items()
+               if k.startswith("C_extrap_") and "_ctrl_" not in k]
+        ctl = [d["mean_mae"] for k, d in e_c.items()
+               if k.startswith("C_extrap_ctrl_")]
+        if far and ctl:
+            cx["fecrc"] = (float(np.mean(far)), float(np.mean(ctl)))
+    W("\\begin{tabular}{lcc}")
+    W("\\toprule")
+    W("\\multicolumn{3}{l}{\\emph{(C) spatial holdout and extrapolation "
+      "(mean test MAE, all models)}} \\\\")
+    W("Protocol & " + " & ".join(ELBL[s] for s in ESYS) + " \\\\")
+    W("\\midrule")
+
+    def cC(vals):
+        return " & ".join(f"{vals(s):.4f}" for s in ESYS)
+
+    for lab, val in [("random control (band)", "random_ctrl"),
+                     ("$T$ band", "T_band"), ("$x_2$ band", "X2_band")]:
+        W(f"{lab} & {cC(lambda s, v=val: band[s][v])} \\\\")
+    W("penalty $T$ / $x_2$ & "
+      + " & ".join(f"{band[s]['T_band'] / band[s]['random_ctrl']:.2f} / "
+                   f"{band[s]['X2_band'] / band[s]['random_ctrl']:.2f}"
+                   for s in ESYS) + " \\\\")
+    W("\\addlinespace")
+    for lab, val in [("random control ($x_2$)", "X2_extrap_ctrl"),
+                     ("$x_2$ extrapolation", "X2_extrap"),
+                     ("random control ($T$)", "T_extrap_ctrl"),
+                     ("$T$ extrapolation", "T_extrap")]:
+        W(f"{lab} & " + " & ".join(f"{ext[s][val]:.4f}" for s in ESYS)
+          + " \\\\")
+    W("penalty $x_2$ / $T$ & "
+      + " & ".join(f"{ext[s]['X2_extrap'] / ext[s]['X2_extrap_ctrl']:.2f} / "
+                   f"{ext[s]['T_extrap'] / ext[s]['T_extrap_ctrl']:.2f}"
+                   for s in ESYS) + " \\\\")
+    if cx:
+        W("\\addlinespace")
+        W("random control (C) & "
+          + " & ".join(f"{cx[s][1]:.4f}" if s in cx else "---" for s in ESYS)
+          + " \\\\")
+        W("$C$ extrapolation & "
+          + " & ".join(f"{cx[s][0]:.4f}" if s in cx else "---" for s in ESYS)
+          + " \\\\")
+        W("penalty $C$ & "
+          + " & ".join(f"{cx[s][0] / cx[s][1]:.2f}" if s in cx else "---"
+                       for s in ESYS) + " \\\\")
+    W("\\bottomrule")
+    W("\\end{tabular}")
+    W("")
+    W("\\vspace{0.7em}")
+
+    # (D) phase-set validation
+    W("\\begin{tabular}{lrrrrr}")
+    W("\\toprule")
+    W("\\multicolumn{6}{l}{\\emph{(D) phase-set validation (probe-active "
+      "vs.\\ full set)}} \\\\")
+    W("System & Points & OK & $>10^{-3}$ & $\\max|\\Delta NP|$ "
+      "& $\\max|\\Delta G|$ (J/mol) \\\\")
+    W("\\midrule")
+    for s in ESYS:
+        p = phase_set(s)
+        if not p:
+            W(f"{ELBL[s]} & \\multicolumn{{5}}{{c}}{{---}} \\\\")
+            continue
+        W(f"{ELBL[s]} & {p['n_points']} & {p['n_ok']} & "
+          f"{p['points_with_dNP_gt_1e-3']} & {fmtv(p['max_abs_dNP'])} & "
+          f"{fmtv(p['max_abs_dGM_J_per_mol'])} \\\\")
+    W("\\bottomrule")
+    W("\\end{tabular}")
+else:
+    W("% results_fecrnic/fecrc_summary.json not present -- run scope "
+      "extension pipeline")
+emit("extension")
+
+# ---------------------------------------------------------------- Table 15
+W("% Table 15: anchor transition temperatures, surrogate vs CALPHAD vs DTA")
+AN = jload(os.path.join(ROOT, "paper", "anchor_data", "anchor_eval.json"))
+if AN:
+    W("\\footnotesize")
+    W("\\setlength{\\tabcolsep}{4pt}")
+    W("\\resizebox{\\textwidth}{!}{")
+    W("\\begin{tabular}{llrrrrrr}")
+    W("\\toprule")
+    W("& & \\multicolumn{3}{c}{transition temperature ($^{\\circ}$C)} "
+      "& \\multicolumn{3}{c}{$\\Delta T$ (K)} \\\\")
+    W("\\cmidrule(lr){3-5}\\cmidrule(lr){6-8}")
+    W("Alloy & Composition (wt\\%) & Published & CALPHAD & Surrogate "
+      "& sur$-$cal & cal$-$exp & sur$-$exp \\\\")
+    W("\\midrule")
+    for key, lab in [("A", "Drozdov\\'a A"), ("B", "Drozdov\\'a B"),
+                     ("C", "Drozdov\\'a C"),
+                     ("Y_21.0Cr-16.6Ni", "Yamada 21Cr--16Ni")]:
+        a = AN["alloys"][key]
+        head = AN["meta"]["primary_head"][a["system"]]
+        pub = a["published"]
+        tkey = pub["corresponds_to_computed_transition"]
+        cal = a["calphad"][tkey]
+        sur = a["surrogate"][head]["ensemble_transitions"][tkey]
+        exp = pub["value_C"]
+        comp = ", ".join(
+            f"{el} {v:.1f}" if float(v) == int(float(v)) else f"{el} {v:g}"
+            for el, v in a["wt_pct"].items() if el != "Fe")
+        q = pub["quantity"].split("_")[-1]
+        pcell = f"$T_{{\\mathrm{{{q}}}}}$ {exp:.0f}"
+        W(f"{lab} & {comp} & {pcell} & {cal:.0f} & {sur:.0f} & "
+          f"{sur - cal:+.0f} & {cal - exp:+.0f} & {sur - exp:+.0f} \\\\")
+    W("\\midrule")
+    W("\\multicolumn{8}{l}{\\scriptsize $T_L\\leftrightarrow$ last solid, "
+      "$T_P$/$T_S\\leftrightarrow$ first liquid; detected at liquid "
+      "fraction $10^{-4}$ on the sustained branch.} \\\\")
+    W("\\multicolumn{8}{l}{\\scriptsize Composition in wt\\% (Fe balance); "
+      "surrogate = 3-seed ensemble, primary head (Fe--Cr--C: "
+      "sigmoid/$\\Sigma$; Fe--Cr--Ni: renorm).} \\\\")
+    W("\\bottomrule")
+    W("\\end{tabular}}")
+else:
+    W("% anchor_eval.json not present -- run anchor_eval.py")
+emit("anchor")
+
 print(f"tables -> {TAB}")

@@ -11,6 +11,9 @@ Inputs (all produced by the pipeline, nothing hand-entered):
     models/residue_sweep_<sys>.json     train_mlp.py --residue-sweep
     models/block_holdout_<sys>.json   holdout_eval.py
     models/pred_<sys>_<tag>_s<seed>.npz train_mlp.py / train_baselines.py
+    models/results_remedy*.json       train_remedy.py
+    analysis_revision/detection_fecrnic.json
+    paper/anchor_data/anchor_eval.json  paper/anchor_eval.py
 
 Usage: py -3.12 paper/figures.py
 """
@@ -631,6 +634,130 @@ def fig6_failures():
     save(fig, "fig6_failures")
 
 
+# --------------------------------------------------------------------------
+def remedy_rows():
+    """macro-AUPRC per remedy family (mirrors paper/tables.py)."""
+    def load(p):
+        return json.load(open(p)) if os.path.exists(p) else None
+
+    rows = {}
+    rem = load(os.path.join(M, "results_remedy.json"))
+    if rem:
+        for s, c in rem["comparison"].items():
+            b = c["baseline_macro_auprc"]
+            rows[s] = {"mlp_renorm": b["mlp"], "rf": b["rf"], "xgb": b["xgb"],
+                       "knn": b["knn"],
+                       "weighted": c["remedy"]["weighted"]["macro_auprc"],
+                       "gated": c["remedy"]["gated"]["macro_auprc"]}
+    det = load(os.path.join(ROOT, "analysis_revision", "detection_fecrnic.json"))
+    if det:
+        f = det["families"]
+        rows["fecrnic"] = {"mlp_renorm": f["mlp_renorm"]["macro_auprc"],
+                           "rf": f["rf_renorm"]["macro_auprc"],
+                           "xgb": f["xgb_renorm"]["macro_auprc"],
+                           "knn": f["knn_renorm"]["macro_auprc"],
+                           "weighted": f["weighted"]["macro_auprc"],
+                           "gated": f["gated"]["macro_auprc"]}
+    rem3 = load(os.path.join(M, "results_remedy_fecrc.json"))
+    if rem3:
+        c = rem3["comparison"]["fecrc"]
+        b = c["baseline_macro_auprc"]
+        rows["fecrc"] = {"mlp_renorm": b["mlp"], "rf": b["rf"],
+                         "xgb": b["xgb"], "knn": b["knn"],
+                         "weighted": c["remedy"]["weighted"]["macro_auprc"],
+                         "gated": c["remedy"]["gated"]["macro_auprc"]}
+    return rows
+
+
+def fig8_remedy():
+    """Presence detection: baselines vs the weighted / gated remedies."""
+    labs = dict(LBL, fecrnic="Fe-Cr-Ni-C", fecrc="Fe-Cr-C")
+    fams = [("mlp_renorm", "MLP renorm", C["renorm"]),
+            ("rf", "random forest", C["random forest"]),
+            ("xgb", "XGBoost", C["XGBoost"]),
+            ("knn", "$k$-NN", C["$k$-NN"]),
+            ("weighted", "weighted", "#4c72b0"),
+            ("gated", "gated", "#c44e52")]
+    systems = SYS + ["fecrnic", "fecrc"]
+    rows = remedy_rows()
+    missing = [s for s in systems if s not in rows]
+    if missing:
+        print(f"  results_remedy*.json missing {missing} -- skipping fig8")
+        return
+
+    fig = plt.figure(figsize=(FULLW, 0.44 * FULLW))
+    ax = fig.add_subplot(111)
+    xs = np.arange(len(systems))
+    w = 0.8 / len(fams)
+    for i, (key, lab, col) in enumerate(fams):
+        ax.bar(xs + (i - (len(fams) - 1) / 2) * w,
+               [rows[s][key] for s in systems], width=w, color=col,
+               label=lab, zorder=2)
+    ax.set_xticks(xs)
+    ax.set_xticklabels([labs[s] for s in systems], rotation=20, fontsize=6.6)
+    ax.set_xlim(-0.6, len(systems) - 0.4)
+    ax.set_ylim(0, 1.05)
+    ax.set_ylabel("macro-AUPRC")
+    legend_below(ax, 3, y=-0.36)
+    panel(ax, "a", "presence detection: baselines, weighted and gated remedies")
+    save(fig, "fig8_remedy")
+
+
+def fig9_anchor():
+    """Anchor alloys: CALPHAD and surrogate liquid/solid fractions vs DTA."""
+    p = os.path.join(ROOT, "paper", "anchor_data", "anchor_eval.json")
+    if not os.path.exists(p):
+        print("  anchor_eval.json missing -- skipping fig9")
+        return
+    an = json.load(open(p))
+    keys = ["A", "B", "C", "Y_21.0Cr-16.6Ni"]
+    names = {"A": "Drozdov\u00e1 A", "B": "Drozdov\u00e1 B",
+             "C": "Drozdov\u00e1 C", "Y_21.0Cr-16.6Ni": "Yamada Y"}
+    letters = "abcd"
+
+    fig = plt.figure(figsize=(FULLW, 0.52 * FULLW))
+    gs = fig.add_gridspec(3, 2, height_ratios=(1, 1, 0.17))
+    handles = labels = None
+    for i, key in enumerate(keys):
+        ax = fig.add_subplot(gs[i // 2, i % 2])
+        a = an["alloys"][key]
+        head = an["meta"]["primary_head"][a["system"]]
+        sw = a["sweep"]
+        t = sw["T_C"]
+        ax.plot(t, sw["NP_LIQUID_calphad"], color="#4c72b0", lw=1.0,
+                label="liquid, CALPHAD")
+        ax.plot(t, sw[f"NP_LIQUID_sur_ens_{head}"], color="#4c72b0", lw=1.0,
+                ls="--", label="liquid, surrogate")
+        ax.plot(t, sw["solid_calphad"], color="#dd8452", lw=1.0,
+                label="total solid, CALPHAD")
+        pub = a["published"]
+        val = pub["value_C"]
+        q = pub["quantity"].split("_")[-1]
+        guide(ax.axvline(val, color="0.45", ls=":", lw=0.9,
+                         label="published (DTA)"))
+        ax.annotate(f"$T_{{\\mathrm{{{q}}}}}$ {val:.0f} $^\\circ$C",
+                    xy=(val + 8, 1.14), ha="left", va="center", fontsize=6.4)
+        comp = ", ".join(f"{el} {v:g}" for el, v in a["wt_pct"].items()
+                         if el != "Fe")
+        ax.set_xlim(1380, 1570)
+        ax.set_ylim(-0.06, 1.32)
+        ax.set_yticks([0, 0.5, 1.0])
+        if i >= 2:
+            ax.set_xlabel("$T$ ($^\\circ$C)")
+        if i % 2 == 0:
+            ax.set_ylabel("phase fraction")
+        panel(ax, letters[i], f"{names[key]}: {comp} (bal. Fe)")
+        if handles is None:
+            handles, labels = ax.get_legend_handles_labels()
+
+    lax = fig.add_subplot(gs[2, :])
+    lax.axis("off")
+    lax.legend(handles, labels, loc="center", ncol=4, fontsize=6.8,
+               frameon=False, columnspacing=1.1, handlelength=1.4,
+               handletextpad=0.45, borderpad=0.3)
+    save(fig, "fig9_anchor")
+
+
 if __name__ == "__main__":
     print("figures ->", FIG)
     fig1_dataset()
@@ -640,3 +767,5 @@ if __name__ == "__main__":
     fig5_holdout()
     fig6_failures()
     fig7_extrap()
+    fig8_remedy()
+    fig9_anchor()
