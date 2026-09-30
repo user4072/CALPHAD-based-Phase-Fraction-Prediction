@@ -1,0 +1,914 @@
+{
+  "system": "fecrc",
+  "protocol": {
+    "source": "analysis_revision/revision_analyses.py::detection_recomputed",
+    "positive_threshold": 0.001,
+    "auprc": "sklearn average_precision_score, per phase, zero-positive phases excluded from macros",
+    "f1": "phase_classification threshold 1e-3",
+    "seeds": [
+      42,
+      123,
+      2024
+    ],
+    "families": {
+      "mlp_sigmoid": "mlp_sigmoid_192x192x192_huber",
+      "mlp_renorm": "mlp_renorm_192x192x192_huber",
+      "mlp_sig_norm": "mlp_sig_norm_192x192x192_huber",
+      "rf_raw": "rf_raw_std",
+      "rf_renorm": "rf_renorm_std",
+      "xgb_raw": "xgb_raw_std",
+      "xgb_renorm": "xgb_renorm_std",
+      "knn_raw": "knn_raw_std",
+      "knn_renorm": "knn_renorm_std",
+      "weighted": "weighted_192x192x192",
+      "gated": "gated_192x192x192"
+    }
+  },
+  "phases": [
+    "BCC_A2",
+    "BCC_DISL",
+    "CEMENTITE",
+    "FCC_A1",
+    "GRAPHITE",
+    "LIQUID",
+    "M23C6",
+    "M7C3",
+    "SIGMA"
+  ],
+  "families": {
+    "mlp_sigmoid": {
+      "n_seeds": 3,
+      "macro_auprc": 0.5564571265197819,
+      "macro_auprc_phase_means": 0.5564571265197817,
+      "macro_f1_with_zero_pos": 0.5161362640635652,
+      "macro_f1_zero_pos_excluded": 0.5161362640635652,
+      "zero_positive_phases": [],
+      "per_phase_auprc": {
+        "BCC_A2": 0.99929606899922,
+        "BCC_DISL": 0.011062966284496607,
+        "CEMENTITE": 0.011974137380637325,
+        "FCC_A1": 0.9978974907953623,
+        "GRAPHITE": 0.008226922217185283,
+        "LIQUID": 0.9992243089665619,
+        "M23C6": 0.9988063095911451,
+        "M7C3": 0.9785670822227033,
+        "SIGMA": 0.0030588522207244096
+      },
+      "carbide_macro_auprc": 0.4993936128529178,
+      "per_seed": [
+        {
+          "seed": 42,
+          "macro_f1_with_zero_pos": 0.5143652372560013,
+          "macro_f1_zero_pos_excluded": 0.5143652372560013,
+          "macro_auprc": 0.5574134992469488,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9991850814666798,
+            "BCC_DISL": 0.011368417024296357,
+            "CEMENTITE": 0.018454986173619767,
+            "FCC_A1": 0.996692127734882,
+            "GRAPHITE": 0.011763094244702864,
+            "LIQUID": 0.999343943472885,
+            "M23C6": 0.9990131729138056,
+            "M7C3": 0.9786834486485778,
+            "SIGMA": 0.002217221543090642
+          }
+        },
+        {
+          "seed": 123,
+          "macro_f1_with_zero_pos": 0.5164500531819356,
+          "macro_f1_zero_pos_excluded": 0.5164500531819356,
+          "macro_auprc": 0.5555242238143312,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9991381875437095,
+            "BCC_DISL": 0.007774792836876666,
+            "CEMENTITE": 0.009704118383378268,
+            "FCC_A1": 0.9989195018089645,
+            "GRAPHITE": 0.006484561451819989,
+            "LIQUID": 0.9990783396817453,
+            "M23C6": 0.9983147988242609,
+            "M7C3": 0.9758394851119557,
+            "SIGMA": 0.004464228686268762
+          }
+        },
+        {
+          "seed": 2024,
+          "macro_f1_with_zero_pos": 0.5175935017527586,
+          "macro_f1_zero_pos_excluded": 0.5175935017527586,
+          "macro_auprc": 0.5564336564980654,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9995649379872706,
+            "BCC_DISL": 0.0140456889923168,
+            "CEMENTITE": 0.007763307584913939,
+            "FCC_A1": 0.9980808428422401,
+            "GRAPHITE": 0.006433110955032993,
+            "LIQUID": 0.9992506437450552,
+            "M23C6": 0.9990909570353685,
+            "M7C3": 0.9811783129075761,
+            "SIGMA": 0.0024951064328138247
+          }
+        }
+      ],
+      "npz_tag": "mlp_sigmoid_192x192x192_huber"
+    },
+    "mlp_renorm": {
+      "n_seeds": 3,
+      "macro_auprc": 0.5590398035857775,
+      "macro_auprc_phase_means": 0.5590398035857774,
+      "macro_f1_with_zero_pos": 0.5149162651680393,
+      "macro_f1_zero_pos_excluded": 0.5149162651680393,
+      "zero_positive_phases": [],
+      "per_phase_auprc": {
+        "BCC_A2": 0.9993124846626786,
+        "BCC_DISL": 0.011638912980916868,
+        "CEMENTITE": 0.03591105178819098,
+        "FCC_A1": 0.9978110981568209,
+        "GRAPHITE": 0.010065144076552417,
+        "LIQUID": 0.9992758215474796,
+        "M23C6": 0.9988787386062249,
+        "M7C3": 0.9758235023251682,
+        "SIGMA": 0.0026414781279648996
+      },
+      "carbide_macro_auprc": 0.5051696091990342,
+      "per_seed": [
+        {
+          "seed": 42,
+          "macro_f1_with_zero_pos": 0.5134005734207694,
+          "macro_f1_zero_pos_excluded": 0.5134005734207694,
+          "macro_auprc": 0.5638043221009623,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9991735793584101,
+            "BCC_DISL": 0.01608355878391603,
+            "CEMENTITE": 0.07350020101211223,
+            "FCC_A1": 0.9964941877185303,
+            "GRAPHITE": 0.013889249563403719,
+            "LIQUID": 0.9993511922234017,
+            "M23C6": 0.9989575920482987,
+            "M7C3": 0.9747028302533406,
+            "SIGMA": 0.0020865079472468014
+          }
+        },
+        {
+          "seed": 123,
+          "macro_f1_with_zero_pos": 0.5152845857204809,
+          "macro_f1_zero_pos_excluded": 0.5152845857204809,
+          "macro_auprc": 0.5559609829137124,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9992810312178351,
+            "BCC_DISL": 0.007299039194616417,
+            "CEMENTITE": 0.015467500423574462,
+            "FCC_A1": 0.9989481068362124,
+            "GRAPHITE": 0.008276288821321986,
+            "LIQUID": 0.9991444189295368,
+            "M23C6": 0.9984794499688392,
+            "M7C3": 0.973300793840426,
+            "SIGMA": 0.0034522169910494787
+          }
+        },
+        {
+          "seed": 2024,
+          "macro_f1_with_zero_pos": 0.5160636363628677,
+          "macro_f1_zero_pos_excluded": 0.5160636363628677,
+          "macro_auprc": 0.5573541057426579,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9994828434117906,
+            "BCC_DISL": 0.011534140964218158,
+            "CEMENTITE": 0.018765453928886233,
+            "FCC_A1": 0.9979909999157203,
+            "GRAPHITE": 0.00802989384493155,
+            "LIQUID": 0.9993318534895,
+            "M23C6": 0.9991991738015369,
+            "M7C3": 0.9794668828817383,
+            "SIGMA": 0.002385709445598418
+          }
+        }
+      ],
+      "npz_tag": "mlp_renorm_192x192x192_huber"
+    },
+    "mlp_sig_norm": {
+      "n_seeds": 3,
+      "macro_auprc": 0.7483372491671955,
+      "macro_auprc_phase_means": 0.7483372491671955,
+      "macro_f1_with_zero_pos": 0.645368198055689,
+      "macro_f1_zero_pos_excluded": 0.645368198055689,
+      "zero_positive_phases": [],
+      "per_phase_auprc": {
+        "BCC_A2": 0.9995215629170672,
+        "BCC_DISL": 0.7543612088242586,
+        "CEMENTITE": 0.6196631481834534,
+        "FCC_A1": 0.9978958851321007,
+        "GRAPHITE": 0.3875007604408964,
+        "LIQUID": 0.9992408910254045,
+        "M23C6": 0.9985314164143458,
+        "M7C3": 0.9754115920696673,
+        "SIGMA": 0.0029087774975659533
+      },
+      "carbide_macro_auprc": 0.7452767292770908,
+      "per_seed": [
+        {
+          "seed": 42,
+          "macro_f1_with_zero_pos": 0.6122265100360242,
+          "macro_f1_zero_pos_excluded": 0.6122265100360242,
+          "macro_auprc": 0.6998444690096222,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9994102908590052,
+            "BCC_DISL": 0.6928065074429869,
+            "CEMENTITE": 0.5576833521923668,
+            "FCC_A1": 0.9966718523055517,
+            "GRAPHITE": 0.07720317102396013,
+            "LIQUID": 0.9994046931098541,
+            "M23C6": 0.9988153335540914,
+            "M7C3": 0.974331006227029,
+            "SIGMA": 0.002274014371754551
+          }
+        },
+        {
+          "seed": 123,
+          "macro_f1_with_zero_pos": 0.6662829160409889,
+          "macro_f1_zero_pos_excluded": 0.6662829160409889,
+          "macro_auprc": 0.7805618964726654,
+          "per_phase_auprc": {
+            "BCC_A2": 0.999516365029095,
+            "BCC_DISL": 0.7701574920997191,
+            "CEMENTITE": 0.7477326049728483,
+            "FCC_A1": 0.9989876652064239,
+            "GRAPHITE": 0.5312295830606284,
+            "LIQUID": 0.9991350527907864,
+            "M23C6": 0.998164312108372,
+            "M7C3": 0.976062944207174,
+            "SIGMA": 0.004071048778941534
+          }
+        },
+        {
+          "seed": 2024,
+          "macro_f1_with_zero_pos": 0.6575951680900539,
+          "macro_f1_zero_pos_excluded": 0.6575951680900539,
+          "macro_auprc": 0.764605382019299,
+          "per_phase_auprc": {
+            "BCC_A2": 0.999638032863101,
+            "BCC_DISL": 0.8001196269300701,
+            "CEMENTITE": 0.553573487385145,
+            "FCC_A1": 0.9980281378843265,
+            "GRAPHITE": 0.5540695272381005,
+            "LIQUID": 0.9991829271755731,
+            "M23C6": 0.998614603580574,
+            "M7C3": 0.9758408257747992,
+            "SIGMA": 0.0023812693420017742
+          }
+        }
+      ],
+      "npz_tag": "mlp_sig_norm_192x192x192_huber"
+    },
+    "rf_raw": {
+      "n_seeds": 3,
+      "macro_auprc": 0.8954780889728545,
+      "macro_auprc_phase_means": 0.8954780889728546,
+      "macro_f1_with_zero_pos": 0.7440640491002547,
+      "macro_f1_zero_pos_excluded": 0.7440640491002547,
+      "zero_positive_phases": [],
+      "per_phase_auprc": {
+        "BCC_A2": 0.9978470696946689,
+        "BCC_DISL": 0.9701437448073347,
+        "CEMENTITE": 0.7375891837122817,
+        "FCC_A1": 0.9963999008680764,
+        "GRAPHITE": 0.8234248579728057,
+        "LIQUID": 0.9989401042772124,
+        "M23C6": 0.9969365460997436,
+        "M7C3": 0.9787884806040287,
+        "SIGMA": 0.5592329127195389
+      },
+      "carbide_macro_auprc": 0.8841847670972149,
+      "per_seed": [
+        {
+          "seed": 42,
+          "macro_f1_with_zero_pos": 0.7354887298487623,
+          "macro_f1_zero_pos_excluded": 0.7354887298487623,
+          "macro_auprc": 0.8812865382573825,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9980647645655163,
+            "BCC_DISL": 0.9445367824847426,
+            "CEMENTITE": 0.6539744346476659,
+            "FCC_A1": 0.9960007859189995,
+            "GRAPHITE": 0.8315285549335854,
+            "LIQUID": 0.9985173372698435,
+            "M23C6": 0.997392355961337,
+            "M7C3": 0.9748026867253706,
+            "SIGMA": 0.5367611418093824
+          }
+        },
+        {
+          "seed": 123,
+          "macro_f1_with_zero_pos": 0.7570555600126777,
+          "macro_f1_zero_pos_excluded": 0.7570555600126777,
+          "macro_auprc": 0.9099728786848238,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9978326572010703,
+            "BCC_DISL": 0.9687982433025912,
+            "CEMENTITE": 0.8116003750523667,
+            "FCC_A1": 0.9959713467783788,
+            "GRAPHITE": 0.8514783605866876,
+            "LIQUID": 0.9993197395507584,
+            "M23C6": 0.9959781478864136,
+            "M7C3": 0.9816142020488559,
+            "SIGMA": 0.5871628357562917
+          }
+        },
+        {
+          "seed": 2024,
+          "macro_f1_with_zero_pos": 0.7396478574393237,
+          "macro_f1_zero_pos_excluded": 0.7396478574393237,
+          "macro_auprc": 0.8951748499763572,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9976437873174202,
+            "BCC_DISL": 0.9970962086346701,
+            "CEMENTITE": 0.7471927414368125,
+            "FCC_A1": 0.9972275699068509,
+            "GRAPHITE": 0.7872676583981442,
+            "LIQUID": 0.9989832360110351,
+            "M23C6": 0.99743913445148,
+            "M7C3": 0.9799485530378591,
+            "SIGMA": 0.5537747605929424
+          }
+        }
+      ],
+      "npz_tag": "rf_raw_std"
+    },
+    "rf_renorm": {
+      "n_seeds": 3,
+      "macro_auprc": 0.8958440422416373,
+      "macro_auprc_phase_means": 0.8958440422416375,
+      "macro_f1_with_zero_pos": 0.7433505402060231,
+      "macro_f1_zero_pos_excluded": 0.7433505402060231,
+      "zero_positive_phases": [],
+      "per_phase_auprc": {
+        "BCC_A2": 0.9978997928074032,
+        "BCC_DISL": 0.9702835021576023,
+        "CEMENTITE": 0.7324364926334238,
+        "FCC_A1": 0.9962993092805603,
+        "GRAPHITE": 0.8313042960425195,
+        "LIQUID": 0.9989431781109928,
+        "M23C6": 0.9969668591177699,
+        "M7C3": 0.9787874243623129,
+        "SIGMA": 0.5596755256621518
+      },
+      "carbide_macro_auprc": 0.8848737680390065,
+      "per_seed": [
+        {
+          "seed": 42,
+          "macro_f1_with_zero_pos": 0.7356042670607449,
+          "macro_f1_zero_pos_excluded": 0.7356042670607449,
+          "macro_auprc": 0.8802522750512423,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9980067950456929,
+            "BCC_DISL": 0.9441227212022119,
+            "CEMENTITE": 0.6420028311822132,
+            "FCC_A1": 0.9956531451174625,
+            "GRAPHITE": 0.8371827244106144,
+            "LIQUID": 0.9985203460530139,
+            "M23C6": 0.9974134382623442,
+            "M7C3": 0.9748509221218351,
+            "SIGMA": 0.5345175520657927
+          }
+        },
+        {
+          "seed": 123,
+          "macro_f1_with_zero_pos": 0.7554869671751184,
+          "macro_f1_zero_pos_excluded": 0.7554869671751184,
+          "macro_auprc": 0.9103287743742131,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9980352043915799,
+            "BCC_DISL": 0.9696315766359247,
+            "CEMENTITE": 0.8181820885401692,
+            "FCC_A1": 0.9960499916325386,
+            "GRAPHITE": 0.851463652319947,
+            "LIQUID": 0.9993553567436857,
+            "M23C6": 0.9960499774188496,
+            "M7C3": 0.9815737404743864,
+            "SIGMA": 0.5826173812108372
+          }
+        },
+        {
+          "seed": 2024,
+          "macro_f1_with_zero_pos": 0.7389603863822063,
+          "macro_f1_zero_pos_excluded": 0.7389603863822063,
+          "macro_auprc": 0.8969510772994567,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9976573789849368,
+            "BCC_DISL": 0.9970962086346702,
+            "CEMENTITE": 0.7371245581778891,
+            "FCC_A1": 0.9971947910916799,
+            "GRAPHITE": 0.8052665113969972,
+            "LIQUID": 0.9989538315362786,
+            "M23C6": 0.997437161672116,
+            "M7C3": 0.9799376104907169,
+            "SIGMA": 0.5618916437098255
+          }
+        }
+      ],
+      "npz_tag": "rf_renorm_std"
+    },
+    "xgb_raw": {
+      "n_seeds": 3,
+      "macro_auprc": 0.8946693713227795,
+      "macro_auprc_phase_means": 0.8946693713227796,
+      "macro_f1_with_zero_pos": 0.6215225516023309,
+      "macro_f1_zero_pos_excluded": 0.6215225516023309,
+      "zero_positive_phases": [],
+      "per_phase_auprc": {
+        "BCC_A2": 0.9980801271128223,
+        "BCC_DISL": 0.9284498326215571,
+        "CEMENTITE": 0.7537477066435105,
+        "FCC_A1": 0.9961319257197653,
+        "GRAPHITE": 0.762151369290795,
+        "LIQUID": 0.9978856602380435,
+        "M23C6": 0.9962352873298003,
+        "M7C3": 0.973387277098268,
+        "SIGMA": 0.6459551558504525
+      },
+      "carbide_macro_auprc": 0.8713804100905934,
+      "per_seed": [
+        {
+          "seed": 42,
+          "macro_f1_with_zero_pos": 0.6251116362313884,
+          "macro_f1_zero_pos_excluded": 0.6251116362313884,
+          "macro_auprc": 0.8898104505936971,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9983218734190525,
+            "BCC_DISL": 0.913563182424946,
+            "CEMENTITE": 0.6139146437695564,
+            "FCC_A1": 0.9955870374994851,
+            "GRAPHITE": 0.8322766437055544,
+            "LIQUID": 0.9980341950004042,
+            "M23C6": 0.9962033971478895,
+            "M7C3": 0.9691274870694372,
+            "SIGMA": 0.6912655953069486
+          }
+        },
+        {
+          "seed": 123,
+          "macro_f1_with_zero_pos": 0.6383532778015256,
+          "macro_f1_zero_pos_excluded": 0.6383532778015256,
+          "macro_auprc": 0.8972871487056379,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9978119428441191,
+            "BCC_DISL": 0.92853998475659,
+            "CEMENTITE": 0.8861199086948612,
+            "FCC_A1": 0.9956929759792931,
+            "GRAPHITE": 0.6908455918881863,
+            "LIQUID": 0.9982055314313228,
+            "M23C6": 0.9956376870185706,
+            "M7C3": 0.9766528215153676,
+            "SIGMA": 0.6060778942224306
+          }
+        },
+        {
+          "seed": 2024,
+          "macro_f1_with_zero_pos": 0.6011027407740788,
+          "macro_f1_zero_pos_excluded": 0.6011027407740788,
+          "macro_auprc": 0.8969105146690032,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9981065650752956,
+            "BCC_DISL": 0.9432463306831355,
+            "CEMENTITE": 0.7612085674661142,
+            "FCC_A1": 0.9971157636805176,
+            "GRAPHITE": 0.763331872278644,
+            "LIQUID": 0.9974172542824032,
+            "M23C6": 0.9968647778229408,
+            "M7C3": 0.9743815227099992,
+            "SIGMA": 0.6405219780219781
+          }
+        }
+      ],
+      "npz_tag": "xgb_raw_std"
+    },
+    "xgb_renorm": {
+      "n_seeds": 3,
+      "macro_auprc": 0.897321513453769,
+      "macro_auprc_phase_means": 0.897321513453769,
+      "macro_f1_with_zero_pos": 0.6216393071871411,
+      "macro_f1_zero_pos_excluded": 0.6216393071871411,
+      "zero_positive_phases": [],
+      "per_phase_auprc": {
+        "BCC_A2": 0.9980526665810917,
+        "BCC_DISL": 0.9279179280141067,
+        "CEMENTITE": 0.7518660191072177,
+        "FCC_A1": 0.9961414479500234,
+        "GRAPHITE": 0.7754473433491796,
+        "LIQUID": 0.9979657997951055,
+        "M23C6": 0.9961973623968379,
+        "M7C3": 0.9734468970956263,
+        "SIGMA": 0.6588581567947318
+      },
+      "carbide_macro_auprc": 0.8742394054872153,
+      "per_seed": [
+        {
+          "seed": 42,
+          "macro_f1_with_zero_pos": 0.6263666156003044,
+          "macro_f1_zero_pos_excluded": 0.6263666156003044,
+          "macro_auprc": 0.8912685068803226,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9981482022237465,
+            "BCC_DISL": 0.9150050028399808,
+            "CEMENTITE": 0.612146813459216,
+            "FCC_A1": 0.995554671387617,
+            "GRAPHITE": 0.8363728168929855,
+            "LIQUID": 0.9980342592844629,
+            "M23C6": 0.9960832755405895,
+            "M7C3": 0.9693481208866949,
+            "SIGMA": 0.7007233994076099
+          }
+        },
+        {
+          "seed": 123,
+          "macro_f1_with_zero_pos": 0.6373178551736935,
+          "macro_f1_zero_pos_excluded": 0.6373178551736935,
+          "macro_auprc": 0.8984025610038964,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9979519324965758,
+            "BCC_DISL": 0.9262655762823293,
+            "CEMENTITE": 0.8877642803212661,
+            "FCC_A1": 0.9955983605800374,
+            "GRAPHITE": 0.7010386070233422,
+            "LIQUID": 0.9983256274613483,
+            "M23C6": 0.9956353197684865,
+            "M7C3": 0.9766183943082188,
+            "SIGMA": 0.606424950793463
+          }
+        },
+        {
+          "seed": 2024,
+          "macro_f1_with_zero_pos": 0.6012334507874254,
+          "macro_f1_zero_pos_excluded": 0.6012334507874254,
+          "macro_auprc": 0.9022934724770878,
+          "per_phase_auprc": {
+            "BCC_A2": 0.998057865022953,
+            "BCC_DISL": 0.9424832049200098,
+            "CEMENTITE": 0.7556869635411712,
+            "FCC_A1": 0.9972713118824154,
+            "GRAPHITE": 0.7889306061312111,
+            "LIQUID": 0.9975375126395053,
+            "M23C6": 0.9968734918814376,
+            "M7C3": 0.9743741760919651,
+            "SIGMA": 0.6694261201831225
+          }
+        }
+      ],
+      "npz_tag": "xgb_renorm_std"
+    },
+    "knn_raw": {
+      "n_seeds": 3,
+      "macro_auprc": 0.8973444738284332,
+      "macro_auprc_phase_means": 0.8973444738284331,
+      "macro_f1_with_zero_pos": 0.7725167744030929,
+      "macro_f1_zero_pos_excluded": 0.7725167744030929,
+      "zero_positive_phases": [],
+      "per_phase_auprc": {
+        "BCC_A2": 0.9959873570250886,
+        "BCC_DISL": 0.8120635670169302,
+        "CEMENTITE": 0.7257072295287225,
+        "FCC_A1": 0.9922704032253679,
+        "GRAPHITE": 0.7831641203426858,
+        "LIQUID": 0.9961077302880779,
+        "M23C6": 0.9971394978871584,
+        "M7C3": 0.9656985207852914,
+        "SIGMA": 0.8079618383565753
+      },
+      "carbide_macro_auprc": 0.8679273421359646,
+      "per_seed": [
+        {
+          "seed": 42,
+          "macro_f1_with_zero_pos": 0.7659330253766179,
+          "macro_f1_zero_pos_excluded": 0.7659330253766179,
+          "macro_auprc": 0.8677763061952688,
+          "per_phase_auprc": {
+            "BCC_A2": 0.996372109801664,
+            "BCC_DISL": 0.6820782454756803,
+            "CEMENTITE": 0.656540900643191,
+            "FCC_A1": 0.991479546738809,
+            "GRAPHITE": 0.8169473728496661,
+            "LIQUID": 0.9963433431825475,
+            "M23C6": 0.9982352301471615,
+            "M7C3": 0.9655034817479645,
+            "SIGMA": 0.7064865251707356
+          }
+        },
+        {
+          "seed": 123,
+          "macro_f1_with_zero_pos": 0.7819483466837005,
+          "macro_f1_zero_pos_excluded": 0.7819483466837005,
+          "macro_auprc": 0.9073264434802043,
+          "per_phase_auprc": {
+            "BCC_A2": 0.995261280648994,
+            "BCC_DISL": 0.856885094097429,
+            "CEMENTITE": 0.8047050484180637,
+            "FCC_A1": 0.9915999218072538,
+            "GRAPHITE": 0.7116289191215901,
+            "LIQUID": 0.9963797138383588,
+            "M23C6": 0.9959126018286315,
+            "M7C3": 0.9605892210853271,
+            "SIGMA": 0.8529761904761904
+          }
+        },
+        {
+          "seed": 2024,
+          "macro_f1_with_zero_pos": 0.7696689511489603,
+          "macro_f1_zero_pos_excluded": 0.7696689511489603,
+          "macro_auprc": 0.916930671809826,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9963286806246077,
+            "BCC_DISL": 0.8972273614776811,
+            "CEMENTITE": 0.7158757395249122,
+            "FCC_A1": 0.9937317411300408,
+            "GRAPHITE": 0.8209160690568013,
+            "LIQUID": 0.9956001338433274,
+            "M23C6": 0.9972706616856821,
+            "M7C3": 0.9710028595225821,
+            "SIGMA": 0.8644227994227995
+          }
+        }
+      ],
+      "npz_tag": "knn_raw_std"
+    },
+    "knn_renorm": {
+      "n_seeds": 3,
+      "macro_auprc": 0.8973444738284332,
+      "macro_auprc_phase_means": 0.8973444738284331,
+      "macro_f1_with_zero_pos": 0.7725167744030929,
+      "macro_f1_zero_pos_excluded": 0.7725167744030929,
+      "zero_positive_phases": [],
+      "per_phase_auprc": {
+        "BCC_A2": 0.9959873570250886,
+        "BCC_DISL": 0.8120635670169302,
+        "CEMENTITE": 0.7257072295287225,
+        "FCC_A1": 0.9922704032253679,
+        "GRAPHITE": 0.7831641203426858,
+        "LIQUID": 0.9961077302880779,
+        "M23C6": 0.9971394978871584,
+        "M7C3": 0.9656985207852914,
+        "SIGMA": 0.8079618383565753
+      },
+      "carbide_macro_auprc": 0.8679273421359646,
+      "per_seed": [
+        {
+          "seed": 42,
+          "macro_f1_with_zero_pos": 0.7659330253766179,
+          "macro_f1_zero_pos_excluded": 0.7659330253766179,
+          "macro_auprc": 0.8677763061952688,
+          "per_phase_auprc": {
+            "BCC_A2": 0.996372109801664,
+            "BCC_DISL": 0.6820782454756803,
+            "CEMENTITE": 0.656540900643191,
+            "FCC_A1": 0.991479546738809,
+            "GRAPHITE": 0.8169473728496661,
+            "LIQUID": 0.9963433431825475,
+            "M23C6": 0.9982352301471615,
+            "M7C3": 0.9655034817479645,
+            "SIGMA": 0.7064865251707356
+          }
+        },
+        {
+          "seed": 123,
+          "macro_f1_with_zero_pos": 0.7819483466837005,
+          "macro_f1_zero_pos_excluded": 0.7819483466837005,
+          "macro_auprc": 0.9073264434802043,
+          "per_phase_auprc": {
+            "BCC_A2": 0.995261280648994,
+            "BCC_DISL": 0.856885094097429,
+            "CEMENTITE": 0.8047050484180637,
+            "FCC_A1": 0.9915999218072538,
+            "GRAPHITE": 0.7116289191215901,
+            "LIQUID": 0.9963797138383588,
+            "M23C6": 0.9959126018286315,
+            "M7C3": 0.9605892210853271,
+            "SIGMA": 0.8529761904761904
+          }
+        },
+        {
+          "seed": 2024,
+          "macro_f1_with_zero_pos": 0.7696689511489603,
+          "macro_f1_zero_pos_excluded": 0.7696689511489603,
+          "macro_auprc": 0.916930671809826,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9963286806246077,
+            "BCC_DISL": 0.8972273614776811,
+            "CEMENTITE": 0.7158757395249122,
+            "FCC_A1": 0.9937317411300408,
+            "GRAPHITE": 0.8209160690568013,
+            "LIQUID": 0.9956001338433274,
+            "M23C6": 0.9972706616856821,
+            "M7C3": 0.9710028595225821,
+            "SIGMA": 0.8644227994227995
+          }
+        }
+      ],
+      "npz_tag": "knn_renorm_std"
+    },
+    "weighted": {
+      "n_seeds": 3,
+      "macro_auprc": 0.8042374996756078,
+      "macro_auprc_phase_means": 0.8042374996756078,
+      "macro_f1_with_zero_pos": 0.6887859523432672,
+      "macro_f1_zero_pos_excluded": 0.6887859523432672,
+      "zero_positive_phases": [],
+      "per_phase_auprc": {
+        "BCC_A2": 0.9989795065111832,
+        "BCC_DISL": 0.8353704082692915,
+        "CEMENTITE": 0.7241513532244803,
+        "FCC_A1": 0.9969793908769677,
+        "GRAPHITE": 0.7145942539573863,
+        "LIQUID": 0.9989543385987636,
+        "M23C6": 0.9982274149760494,
+        "M7C3": 0.9676580940076974,
+        "SIGMA": 0.0032227366586510104
+      },
+      "carbide_macro_auprc": 0.8511577790414033,
+      "per_seed": [
+        {
+          "seed": 42,
+          "macro_f1_with_zero_pos": 0.6978270665673801,
+          "macro_f1_zero_pos_excluded": 0.6978270665673801,
+          "macro_auprc": 0.7933980285515272,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9990237561076774,
+            "BCC_DISL": 0.7747483012506535,
+            "CEMENTITE": 0.6435604461484229,
+            "FCC_A1": 0.9956879574727757,
+            "GRAPHITE": 0.7538125282155564,
+            "LIQUID": 0.9992003756738289,
+            "M23C6": 0.9986170836721939,
+            "M7C3": 0.9735841309966166,
+            "SIGMA": 0.0023476774260193923
+          }
+        },
+        {
+          "seed": 123,
+          "macro_f1_with_zero_pos": 0.678284801873525,
+          "macro_f1_zero_pos_excluded": 0.678284801873525,
+          "macro_auprc": 0.7999840760483707,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9985339462605223,
+            "BCC_DISL": 0.8489527368323694,
+            "CEMENTITE": 0.7962903950903528,
+            "FCC_A1": 0.9980817979073224,
+            "GRAPHITE": 0.5957566108582324,
+            "LIQUID": 0.9988539440981934,
+            "M23C6": 0.9978032234622711,
+            "M7C3": 0.9610041956264626,
+            "SIGMA": 0.004579834299609589
+          }
+        },
+        {
+          "seed": 2024,
+          "macro_f1_with_zero_pos": 0.6902459885888967,
+          "macro_f1_zero_pos_excluded": 0.6902459885888967,
+          "macro_auprc": 0.8193303944269257,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9993808171653498,
+            "BCC_DISL": 0.8824101867248517,
+            "CEMENTITE": 0.7326032184346651,
+            "FCC_A1": 0.9971684172508049,
+            "GRAPHITE": 0.7942136227983705,
+            "LIQUID": 0.9988086960242681,
+            "M23C6": 0.9982619377936829,
+            "M7C3": 0.9683859554000136,
+            "SIGMA": 0.00274069825032405
+          }
+        }
+      ],
+      "npz_tag": "weighted_192x192x192"
+    },
+    "gated": {
+      "n_seeds": 3,
+      "macro_auprc": 0.9215349549248306,
+      "macro_auprc_phase_means": 0.9215349549248307,
+      "macro_f1_with_zero_pos": 0.8324680097676379,
+      "macro_f1_zero_pos_excluded": 0.8324680097676379,
+      "zero_positive_phases": [],
+      "per_phase_auprc": {
+        "BCC_A2": 0.9989942593401104,
+        "BCC_DISL": 0.8964203915835949,
+        "CEMENTITE": 0.800394073335326,
+        "FCC_A1": 0.9966390774464265,
+        "GRAPHITE": 0.8075349830669502,
+        "LIQUID": 0.9992200239142609,
+        "M23C6": 0.9995585801532076,
+        "M7C3": 0.9903391100214223,
+        "SIGMA": 0.8047140954621773
+      },
+      "carbide_macro_auprc": 0.8994566866442265,
+      "per_seed": [
+        {
+          "seed": 42,
+          "macro_f1_with_zero_pos": 0.8230585583841165,
+          "macro_f1_zero_pos_excluded": 0.8230585583841165,
+          "macro_auprc": 0.9102446203367693,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9990554076356751,
+            "BCC_DISL": 0.8213921249346834,
+            "CEMENTITE": 0.7524152753139736,
+            "FCC_A1": 0.9953381644468124,
+            "GRAPHITE": 0.8782714530812687,
+            "LIQUID": 0.9988932529946626,
+            "M23C6": 0.9997217439908992,
+            "M7C3": 0.990025416044205,
+            "SIGMA": 0.7570887445887445
+          }
+        },
+        {
+          "seed": 123,
+          "macro_f1_with_zero_pos": 0.8569759178498187,
+          "macro_f1_zero_pos_excluded": 0.8569759178498187,
+          "macro_auprc": 0.9269600845215843,
+          "per_phase_auprc": {
+            "BCC_A2": 0.9987903234110933,
+            "BCC_DISL": 0.9314914945466435,
+            "CEMENTITE": 0.8560812144862878,
+            "FCC_A1": 0.9975041298363968,
+            "GRAPHITE": 0.7283528199527189,
+            "LIQUID": 0.9995123737124274,
+            "M23C6": 0.9994668021382787,
+            "M7C3": 0.9892604106849743,
+            "SIGMA": 0.8421811919254374
+          }
+        },
+        {
+          "seed": 2024,
+          "macro_f1_with_zero_pos": 0.8173695530689785,
+          "macro_f1_zero_pos_excluded": 0.8173695530689785,
+          "macro_auprc": 0.9274001599161382,
+          "per_phase_auprc": {
+            "BCC_A2": 0.999137046973563,
+            "BCC_DISL": 0.9363775552694578,
+            "CEMENTITE": 0.7926857302057163,
+            "FCC_A1": 0.9970749380560701,
+            "GRAPHITE": 0.8159806761668629,
+            "LIQUID": 0.9992544450356927,
+            "M23C6": 0.9994871943304453,
+            "M7C3": 0.9917315033350875,
+            "SIGMA": 0.8148723498723499
+          }
+        }
+      ],
+      "npz_tag": "gated_192x192x192"
+    }
+  },
+  "missing_tags": [],
+  "key_question": {
+    "carbide_phases": [
+      "M23C6",
+      "M7C3",
+      "CEMENTITE",
+      "GRAPHITE"
+    ],
+    "carbides_not_targeted": [
+      "M3C2",
+      "M6C",
+      "KSI_CARBIDE",
+      "EPS_CARB",
+      "ETA_CARB",
+      "FE24C10",
+      "KSI_FE5C2",
+      "ETA"
+    ],
+    "carbide_macro_auprc_by_family": {
+      "mlp_sigmoid": 0.4993936128529178,
+      "mlp_renorm": 0.5051696091990342,
+      "mlp_sig_norm": 0.7452767292770908,
+      "rf_raw": 0.8841847670972149,
+      "rf_renorm": 0.8848737680390065,
+      "xgb_raw": 0.8713804100905934,
+      "xgb_renorm": 0.8742394054872153,
+      "knn_raw": 0.8679273421359646,
+      "knn_renorm": 0.8679273421359646,
+      "weighted": 0.8511577790414033,
+      "gated": 0.8994566866442265
+    },
+    "gated_vs_baselines": {
+      "rf_raw": {
+        "gated_minus_family": 0.01527191954701157,
+        "gated_wins": true
+      },
+      "rf_renorm": {
+        "gated_minus_family": 0.014582918605219986,
+        "gated_wins": true
+      },
+      "xgb_raw": {
+        "gated_minus_family": 0.028076276553633095,
+        "gated_wins": true
+      },
+      "xgb_renorm": {
+        "gated_minus_family": 0.025217281157011162,
+        "gated_wins": true
+      },
+      "knn_raw": {
+        "gated_minus_family": 0.03152934450826195,
+        "gated_wins": true
+      },
+      "knn_renorm": {
+        "gated_minus_family": 0.03152934450826195,
+        "gated_wins": true
+      }
+    },
+    "gated_beats_all_tree_knn": true,
+    "gated_beats_rf_xgb_knn_renorm": true
+  }
+}

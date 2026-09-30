@@ -1,0 +1,21 @@
+{
+  "fecrc": {
+    "system": "fecrc",
+    "n_points": 1500,
+    "n_ok": 1497,
+    "n_eligible": 32,
+    "n_active": 9,
+    "max_abs_dNP": 0.9518167319255824,
+    "max_abs_dNP_phase": "BCC_A2",
+    "max_abs_dGM_J_per_mol": 35.73479684109407,
+    "points_with_dNP_gt_1e-3": 9,
+    "missing_phases": [
+      "BCC_A2",
+      "BCC_DISL",
+      "CEMENTITE",
+      "GRAPHITE",
+      "H_BCC",
+      "M7C3"
+    ]
+  }
+}

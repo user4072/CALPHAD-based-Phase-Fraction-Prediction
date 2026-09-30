@@ -193,7 +193,46 @@ def detection_metrics(y_t, y_p, names):
     }
 
 
-def load_baselines():
+BASELINE_NPZ_TAGS = {
+    "mlp": "mlp_renorm_192x192x192_huber",
+    "rf": "rf_renorm_std",
+    "xgb": "xgb_renorm_std",
+    "knn": "knn_renorm_std",
+}
+
+
+def detection_baseline_from_npz(system, names):
+    """Same protocol as analysis_revision/detection_fecrnic.py, built from the
+    stored prediction npz files. Used for systems absent from
+    revision_analyses.json (fecrc and anything newer)."""
+    out = {}
+    for _m, tag in BASELINE_NPZ_TAGS.items():
+        per_phase = {n: [] for n in names}
+        macros = []
+        n_seeds = 0
+        for seed in SEEDS:
+            p = os.path.join(MODELS_DIR, f"pred_{system}_{tag}_s{seed}.npz")
+            if not os.path.exists(p):
+                continue
+            d = np.load(p)
+            det_m = detection_metrics(d["y_true"], d["y_pred"], names)
+            if det_m["macro_auprc"] is not None:
+                macros.append(det_m["macro_auprc"])
+            for n, v in det_m["per_phase_auprc"].items():
+                per_phase[n].append(v)
+            n_seeds += 1
+        if not n_seeds:
+            continue
+        out[f"{tag}"] = {
+            "n_seeds": n_seeds,
+            "macro_AUPRC": float(np.mean(macros)) if macros else None,
+            "per_phase_AUPRC": {n: (float(np.mean(v)) if v else None)
+                                for n, v in per_phase.items()},
+        }
+    return out
+
+
+def load_baselines(systems):
     with open(REVISION_JSON, encoding="utf-8") as f:
         det = json.load(f)["detection_recomputed"]
     mae = {}
@@ -213,6 +252,18 @@ def load_baselines():
                     if f"{tag}_s{s}" in src]
             row[model] = float(np.mean(vals)) if vals else None
         mae[system] = row
+    for system in systems:
+        if system in det and det[system]:
+            continue
+        _, names = active_phases(system)
+        built = detection_baseline_from_npz(system, names)
+        if built:
+            det[system] = built
+            print(f"[{system}] detection baselines recomputed from npz: "
+                  f"{sorted(built)}", flush=True)
+        else:
+            print(f"[{system}] no npz baselines found; comparison left empty",
+                  flush=True)
     return det, mae
 
 
@@ -318,7 +369,7 @@ def main():
                           "variants": args.variants, "systems": args.systems,
                           "split": "cluster_split 64/16/20, SEEDS",
                           "protocol": "revision_analyses.detection_recomputed"}}
-    det, base_mae = load_baselines()
+    det, base_mae = load_baselines(args.systems)
     if os.path.exists(RESULTS_PATH):
         prev = json.load(open(RESULTS_PATH, encoding="utf-8"))
         results["runs"] = prev.get("runs", {})
