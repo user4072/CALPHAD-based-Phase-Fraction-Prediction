@@ -1,0 +1,39 @@
+{
+  "system": "fecrnic",
+  "n_rows": 13192,
+  "eligible_phases": [
+    "NP_BCC_A2",
+    "NP_BCC_DISL",
+    "NP_CEMENTITE",
+    "NP_FCC_A1",
+    "NP_GRAPHITE",
+    "NP_LIQUID",
+    "NP_M23C6",
+    "NP_M7C3",
+    "NP_SIGMA"
+  ],
+  "active_phases": [
+    "NP_BCC_A2",
+    "NP_BCC_DISL",
+    "NP_FCC_A1",
+    "NP_GRAPHITE",
+    "NP_LIQUID",
+    "NP_M23C6",
+    "NP_M7C3",
+    "NP_SIGMA"
+  ],
+  "active_threshold": 0.005,
+  "occurrence": {
+    "NP_BCC_A2": 0.23514251061249242,
+    "NP_BCC_DISL": 0.012431776834445117,
+    "NP_CEMENTITE": 0.001440266828380837,
+    "NP_FCC_A1": 0.7623559733171619,
+    "NP_GRAPHITE": 0.011218920557913887,
+    "NP_LIQUID": 0.20664038811400848,
+    "NP_M23C6": 0.3595360824742268,
+    "NP_M7C3": 0.24598241358399028,
+    "NP_SIGMA": 0.08702243784111582
+  },
+  "excluded_mass_fraction": 7.219135672622587e-05,
+  "max_sum_deviation": 8.212422297759758e-09
+}

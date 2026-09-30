@@ -45,9 +45,9 @@ def _init_worker(tdb_path, elig):
 
 def run_one(args):
     cfg, point = args
-    x1, x2, temperature = point
+    *free, temperature = point
     cond = {v.T: temperature, v.P: P}
-    for sp, val in zip(cfg["comps_species"], [x1, x2]):
+    for sp, val in zip(cfg["comps_species"], free):
         cond[v.X(sp)] = val
     try:
         eq = equilibrium(_db, cfg["elements"], list(_elig), cond)
@@ -72,8 +72,10 @@ def validate_system(system, n, out):
     df = pd.read_csv(cfg["dataset"])
     rng = np.random.default_rng(11)  # same seed as the original validation
     idx = rng.choice(len(df), min(n, len(df)), replace=False)
-    points = [(float(df.iloc[i][cfg["comps"][1]]), float(df.iloc[i][cfg["comps"][2]]),
-               float(df.iloc[i]["T"])) for i in idx]
+    # One point per dataset row: the independent composition coordinates
+    # (comps[1:], e.g. Cr/Ni for ternaries, Cr/Ni/C for fecrnic) + T.
+    points = [tuple(float(df.iloc[i][c]) for c in cfg["comps"][1:])
+              + (float(df.iloc[i]["T"]),) for i in idx]
 
     print(f"[{system}] re-solving {len(points)} points with full eligible set "
           f"({len(elig)} phases)...", flush=True)
@@ -129,11 +131,18 @@ def validate_system(system, n, out):
 
 
 def main():
+    global OUT
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, default=1500)
     ap.add_argument("--systems", nargs="+",
                     default=["fecrni", "fecrmn", "fecrmo", "fecrv", "femnni"])
+    ap.add_argument("--out", type=str, default=None,
+                    help="results JSON (default analysis_revision/"
+                         "phase_set_validation.json); pass a system-specific "
+                         "path to avoid touching existing results")
     args = ap.parse_args()
+    if args.out:
+        OUT = os.path.abspath(args.out)
     out = {}
     if os.path.exists(OUT):
         with open(OUT) as f:

@@ -62,13 +62,13 @@ class MLP4(nn.Module):
     """3 hidden layers of width 192, LayerNorm + SiLU + Dropout."""
 
     def __init__(self, n_phases=4, head="sigmoid", residue_drop=None, power=2.0,
-                 hidden=(192, 192, 192)):
+                 hidden=(192, 192, 192), n_in=4):
         super().__init__()
         self.head = head
         self.n_phases = n_phases
         self.residue_drop = residue_drop
         self.power = power
-        layers = [nn.Linear(4, hidden[0]), nn.LayerNorm(hidden[0]), nn.SiLU(), nn.Dropout(0.1)]
+        layers = [nn.Linear(n_in, hidden[0]), nn.LayerNorm(hidden[0]), nn.SiLU(), nn.Dropout(0.1)]
         prev = hidden[0]
         for h in hidden[1:]:
             layers += [nn.Linear(prev, h), nn.LayerNorm(h), nn.SiLU(), nn.Dropout(0.1)]
@@ -203,7 +203,7 @@ def main():
         te_idx = te[rng.choice(len(te), min(4000, len(te)), replace=False)]
         for drop in range(n_phases):
             model = MLP4(n_phases=n_phases, head="residue", residue_drop=drop,
-                         hidden=tuple(args.hidden)).to(DEVICE)
+                         hidden=tuple(args.hidden), n_in=X.shape[1]).to(DEVICE)
             model, _, scaler = train_mlp(model, X, Y, tr, va, 42, args.epochs,
                                          loss=args.loss)
             model.eval()
@@ -232,7 +232,8 @@ def main():
         for tag, model_head, lam in runs:
             t0 = time.time()
             model = MLP4(n_phases=n_phases, head=model_head, residue_drop=args.residue_drop,
-                         power=args.power, hidden=tuple(args.hidden)).to(DEVICE)
+                         power=args.power, hidden=tuple(args.hidden),
+                         n_in=X.shape[1]).to(DEVICE)
             model, _, scaler = train_mlp(model, X, Y, tr, va, seed, args.epochs,
                                          penalty_lambda=lam, loss=args.loss)
             model.eval()

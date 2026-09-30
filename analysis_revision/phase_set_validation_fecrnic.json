@@ -1,0 +1,14 @@
+{
+  "fecrnic": {
+    "system": "fecrnic",
+    "n_points": 1500,
+    "n_ok": 1500,
+    "n_eligible": 35,
+    "n_active": 9,
+    "max_abs_dNP": 8.667260770200969e-09,
+    "max_abs_dNP_phase": "M23C6",
+    "max_abs_dGM_J_per_mol": 0.00014129219925962389,
+    "points_with_dNP_gt_1e-3": 0,
+    "missing_phases": []
+  }
+}

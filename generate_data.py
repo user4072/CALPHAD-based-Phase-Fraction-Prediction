@@ -90,60 +90,64 @@ def generate_tasks(cfg):
     t_min, t_max = cfg["t_min"], cfg["t_max"]
     n_free = len(cfg["comps_species"])
 
-    if n_free > 2:
-        # ---- Quaternary steel design box (Fe balance, Cr+Ni+C ranges) ----
+    if cfg.get("box_ranges"):
+        # ---- Design-box sampling, dimension-generic (ternary or quaternary) ----
         br = cfg["box_ranges"]
-        r_cr, r_ni, r_c = (br["Cr"], br["Ni"], br["C"])
+        names = cfg["comps"][1:]
+        lo = [br[c][0] for c in names]
+        hi = [br[c][1] for c in names]
+        span = [h - l for l, h in zip(lo, hi)]
 
-        def _ok(c1, c2, c3):
-            return c1 + c2 + c3 <= 0.95
+        def _draw(lo_v, hi_v, t_lo, t_hi, guard=None):
+            vals = [rng.uniform(a, b) for a, b in zip(lo_v, hi_v)]
+            if sum(vals) > 0.95:
+                return None
+            if guard is not None and not guard(vals):
+                return None
+            return tuple(vals) + (float(rng.uniform(t_lo, t_hi)),)
 
-        logger.info("Strategy 1: steel box, uniform T")
+        logger.info(f"Strategy 1: design box {dict(zip(names, zip(lo, hi)))}, uniform T")
         while len(tasks) < 5000:
-            c1 = rng.uniform(*r_cr)
-            c2 = rng.uniform(*r_ni)
-            c3 = rng.uniform(*r_c)
-            if _ok(c1, c2, c3):
-                tasks.append((c1, c2, c3, float(rng.uniform(t_min, t_max))))
+            s = _draw(lo, hi, t_min, t_max)
+            if s:
+                tasks.append(s)
 
         logger.info("Strategy 2: low-alloy / Fe-rich")
+        lo2 = [l + 0.35 * sp for l, sp in zip(lo, span)]
         while len(tasks) < 7500:
-            c1 = rng.uniform(0.0, 0.10)
-            c2 = rng.uniform(0.0, 0.10)
-            c3 = rng.uniform(0.001, 0.02)
-            if _ok(c1, c2, c3):
-                tasks.append((c1, c2, c3, float(rng.uniform(700.0, 1900.0))))
+            s = _draw(lo, lo2, 700.0, 1900.0)
+            if s:
+                tasks.append(s)
 
-        logger.info("Strategy 3: carbide zone (high Cr, high C, low T)")
+        logger.info("Strategy 3: carbide zone (high solute, low T)")
+        hi3 = list(lo)
+        hi3[0] = lo[0] + 0.5 * span[0]          # high first solute (Cr)
+        hi3[-1] = lo[-1] + 0.5 * span[-1]       # high last solute (C)
         while len(tasks) < 10500:
-            c1 = rng.uniform(0.10, r_cr[1])
-            c2 = rng.uniform(0.0, r_ni[1])
-            c3 = rng.uniform(0.01, r_c[1])
-            if _ok(c1, c2, c3):
-                tasks.append((c1, c2, c3, float(rng.uniform(700.0, 1150.0))))
+            s = _draw(hi3, hi, 700.0, 1150.0)
+            if s:
+                tasks.append(s)
 
         logger.info("Strategy 4: isothermal grids")
+        grids = [np.linspace(l, h, 7 if sp > 0.10 else 4)
+                 for l, h, sp in zip(lo, hi, span)]
         for T in [900, 1100, 1300, 1500, 1700]:
-            for c1 in np.linspace(0.01, 0.30, 7):
-                for c2 in np.linspace(0.01, 0.25, 6):
-                    for c3 in [0.002, 0.01, 0.03, 0.05]:
-                        if _ok(c1, c2, c3):
-                            tasks.append((float(c1), float(c2), float(c3), float(T)))
+            for combo in np.array(np.meshgrid(*grids)).T.reshape(-1, len(grids)):
+                if sum(combo) <= 0.95:
+                    tasks.append(tuple(float(x) for x in combo) + (float(T),))
 
-        logger.info("Strategy 5: liquidus zone")
+        logger.info("Strategy 5: liquidus zone (high T)")
         while len(tasks) < 12500:
-            c1 = rng.uniform(0.0, r_cr[1])
-            c2 = rng.uniform(0.0, r_ni[1])
-            c3 = rng.uniform(0.001, 0.03)
-            if 0.45 <= c1 + c2 <= 0.65 and _ok(c1, c2, c3):
-                tasks.append((c1, c2, c3, float(rng.uniform(1500.0, 2000.0))))
+            s = _draw(lo, hi, 1500.0, 2000.0)
+            if s:
+                tasks.append(s)
 
         logger.info("Strategy 6: near-pure Fe (A3-A4 region)")
+        hi6 = [l + min(0.04, 0.15 * sp) for l, sp in zip(lo, span)]
         while len(tasks) < 13200:
-            c1 = rng.uniform(0.0, 0.04)
-            c2 = rng.uniform(0.0, 0.04)
-            c3 = rng.uniform(0.0005, 0.005)
-            tasks.append((c1, c2, c3, float(rng.uniform(700.0, 1811.0))))
+            s = _draw(lo, hi6, 700.0, 1811.0)
+            if s:
+                tasks.append(s)
         return tasks
 
     # ---- Original ternary strategies (unchanged) ----

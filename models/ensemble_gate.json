@@ -1,0 +1,938 @@
+{
+  "meta": {
+    "script": "analysis_revision/ensemble_gate.py",
+    "systems": [
+      "fecrni",
+      "fecrmn",
+      "fecrmo",
+      "fecrv",
+      "femnni"
+    ],
+    "seeds": [
+      42,
+      123,
+      2024
+    ],
+    "ensemble_members": {
+      "mlp_sigmoid": "mlp_sigmoid_192x192x192_huber (projected)",
+      "mlp_renorm": "mlp_renorm_192x192x192_huber (stored)"
+    },
+    "alignment": "test splits differ across seeds; union rows use the mean over the seeds that cover the row, common rows are covered by all 3 seeds",
+    "U1": "per-row std across seeds, mean over phases (mlp_sigmoid after projection; _renorm variant from stored mlp_renorm)",
+    "U2": "cKDTree NN distance to the same seed's training rows; features = comps + T divided by the dataset column std",
+    "error_threshold": 0.05,
+    "coverages": [
+      1.0,
+      0.9,
+      0.8,
+      0.7,
+      0.6,
+      0.5
+    ],
+    "bands": {
+      "T_band": [
+        1200.0,
+        1400.0
+      ],
+      "X2_band": [
+        0.25,
+        0.35
+      ],
+      "X2": "second composition column (comps[1])"
+    }
+  },
+  "per_system": {
+    "fecrni": {
+      "n_dataset_rows": 8880,
+      "n_union_test_rows": 4353,
+      "seed_test_sizes": {
+        "42": 1780,
+        "123": 1778,
+        "2024": 1778
+      },
+      "coverage_hist": {
+        "1": 3448,
+        "2": 827,
+        "3": 78
+      },
+      "y_true_consistency_max_abs_diff": 0.0,
+      "ensemble": {
+        "mlp_sigmoid_projected": {
+          "single_seed_mae": [
+            0.0097857507414762,
+            0.011706301015836881,
+            0.010481270903401138
+          ],
+          "mean_single_seed_mae": 0.010657774220238073,
+          "pooled_single_mae_union_rows": 0.010657447374856228,
+          "ensemble_mae_union_rows": 0.010289347119232154,
+          "gain_pct_vs_mean_single": 3.4568859631714766,
+          "gain_pct_vs_pooled": 3.4539251537147697,
+          "n_union_rows": 4353,
+          "n_common_rows": 78,
+          "single_seed_mae_common_rows": [
+            0.010267465097577085,
+            0.010888447041893883,
+            0.009405527047467256
+          ],
+          "mean_single_seed_mae_common_rows": 0.010187146395646074,
+          "ensemble_mae_common_rows": 0.010149114439053605,
+          "gain_pct_vs_mean_single_common_rows": 0.37333277755509564
+        },
+        "mlp_renorm_stored": {
+          "single_seed_mae": [
+            0.009978167961712667,
+            0.011365492422499778,
+            0.010465555755252279
+          ],
+          "mean_single_seed_mae": 0.010603072046488242,
+          "pooled_single_mae_union_rows": 0.010602837824567411,
+          "ensemble_mae_union_rows": 0.010245733978921093,
+          "gain_pct_vs_mean_single": 3.3701371263010476,
+          "gain_pct_vs_pooled": 3.3680025249361716,
+          "n_union_rows": 4353,
+          "n_common_rows": 78,
+          "single_seed_mae_common_rows": [
+            0.010847137468288377,
+            0.010185670753546028,
+            0.009591794572448159
+          ],
+          "mean_single_seed_mae_common_rows": 0.01020820093142752,
+          "ensemble_mae_common_rows": 0.01016875685726547,
+          "gain_pct_vs_mean_single_common_rows": 0.386395942115681
+        }
+      },
+      "uncertainty_u1": {
+        "n_rows": 905,
+        "min_seeds_per_row": 2,
+        "U1": {
+          "n": 905,
+          "spearman": 0.9401148587150059,
+          "spearman_p": 0.0,
+          "auroc": 0.8858056836780241,
+          "n_pos": 47,
+          "n_neg": 858,
+          "pos_rate": 0.051933701657458566,
+          "coverage_risk": {
+            "1.0": 0.012317038481942892,
+            "0.9": 0.007131664807585077,
+            "0.8": 0.004686376603619885,
+            "0.7": 0.003595813571925584,
+            "0.6": 0.0029455551430491154,
+            "0.5": 0.0028568933258583517
+          },
+          "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage"
+        },
+        "U1_renorm": {
+          "n": 905,
+          "spearman": 0.932996390043657,
+          "spearman_p": 0.0,
+          "auroc": 0.8873563800172091,
+          "n_pos": 46,
+          "n_neg": 859,
+          "pos_rate": 0.05082872928176796,
+          "coverage_risk": {
+            "1.0": 0.012216445231378265,
+            "0.9": 0.006394979551935674,
+            "0.8": 0.0049445286133460095,
+            "0.7": 0.004385344459748306,
+            "0.6": 0.0030514513280072595,
+            "0.5": 0.0009407364169490098
+          },
+          "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage"
+        }
+      },
+      "uncertainty_u2": {
+        "n": 5336,
+        "spearman": -0.12011561107574352,
+        "spearman_p": 1.3198693668707908e-18,
+        "auroc": 0.4690165048989142,
+        "n_pos": 235,
+        "n_neg": 5101,
+        "pos_rate": 0.04404047976011994,
+        "coverage_risk": {
+          "1.0": 0.010657447374856228,
+          "0.9": 0.010761781550500003,
+          "0.8": 0.011175471970729491,
+          "0.7": 0.011304566518096743,
+          "0.6": 0.011447253159864473,
+          "0.5": 0.01174833633447963
+        },
+        "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage",
+        "n_pairs": 5336,
+        "mean_distance": 0.10644157750600369,
+        "max_distance": 0.4978527469103588,
+        "feature_reconstruction_max_abs_diff": 0.0,
+        "train_fraction_per_seed": [
+          0.7995495495495496,
+          0.7997747747747748,
+          0.7997747747747748
+        ]
+      },
+      "bands": {
+        "T_band": {
+          "n_all_rows_in": 1275,
+          "n_all_rows_out": 7605,
+          "n_test_rows_u1": {
+            "in": 117,
+            "out": 788
+          },
+          "n_test_pairs": {
+            "in": 769,
+            "out": 4567
+          },
+          "U1_mean_in": 0.0011718766404285818,
+          "U1_mean_out": 0.0021740144615328607,
+          "U2_mean_in": 0.1084800398919366,
+          "U2_mean_out": 0.1060983373976651,
+          "test_mae_mean_in": 0.004853710216822155,
+          "test_mae_mean_out": 0.011634691490145958,
+          "U2_ratio_in_over_out": 1.0224480661308073,
+          "mae_ratio_in_over_out": 0.41717566992928184
+        },
+        "X2_band": {
+          "n_all_rows_in": 1676,
+          "n_all_rows_out": 7204,
+          "n_test_rows_u1": {
+            "in": 161,
+            "out": 744
+          },
+          "n_test_pairs": {
+            "in": 980,
+            "out": 4356
+          },
+          "U1_mean_in": 0.0015011910566100197,
+          "U1_mean_out": 0.00216201774530084,
+          "U2_mean_in": 0.10204301691401162,
+          "U2_mean_out": 0.10743115266214516,
+          "test_mae_mean_in": 0.008497176540413067,
+          "test_mae_mean_out": 0.011143458719611575,
+          "U2_ratio_in_over_out": 0.9498456861476817,
+          "mae_ratio_in_over_out": 0.7625259584314457
+        },
+        "_u1_rows_basis": "rows covered by >=2 seeds",
+        "_pair_basis": "(row, seed) test pairs",
+        "_test_mae_model": "mlp_sigmoid after projection"
+      }
+    },
+    "fecrmn": {
+      "n_dataset_rows": 8880,
+      "n_union_test_rows": 4353,
+      "seed_test_sizes": {
+        "42": 1780,
+        "123": 1778,
+        "2024": 1778
+      },
+      "coverage_hist": {
+        "1": 3448,
+        "2": 827,
+        "3": 78
+      },
+      "y_true_consistency_max_abs_diff": 0.0,
+      "ensemble": {
+        "mlp_sigmoid_projected": {
+          "single_seed_mae": [
+            0.007735551382544294,
+            0.008258583716642932,
+            0.008441328342486258
+          ],
+          "mean_single_seed_mae": 0.00814515448055783,
+          "pooled_single_mae_union_rows": 0.008145000956158272,
+          "ensemble_mae_union_rows": 0.008027123463732487,
+          "gain_pct_vs_mean_single": 1.4490948834313462,
+          "gain_pct_vs_pooled": 1.4472373061744084,
+          "n_union_rows": 4353,
+          "n_common_rows": 78,
+          "single_seed_mae_common_rows": [
+            0.005060327309166111,
+            0.004510202008037371,
+            0.0041229088159515075
+          ],
+          "mean_single_seed_mae_common_rows": 0.0045644793777183295,
+          "ensemble_mae_common_rows": 0.004550888270020467,
+          "gain_pct_vs_mean_single_common_rows": 0.2977581137557044
+        },
+        "mlp_renorm_stored": {
+          "single_seed_mae": [
+            0.008053609122844928,
+            0.007572172200804863,
+            0.008632194430811873
+          ],
+          "mean_single_seed_mae": 0.008085991918153889,
+          "pooled_single_mae_union_rows": 0.008085979780674388,
+          "ensemble_mae_union_rows": 0.0079515601389092,
+          "gain_pct_vs_mean_single": 1.6625267574516793,
+          "gain_pct_vs_pooled": 1.6623791477497014,
+          "n_union_rows": 4353,
+          "n_common_rows": 78,
+          "single_seed_mae_common_rows": [
+            0.005478786742980249,
+            0.004090962432653557,
+            0.003817704951340114
+          ],
+          "mean_single_seed_mae_common_rows": 0.004462484708991307,
+          "ensemble_mae_common_rows": 0.0044444928668419285,
+          "gain_pct_vs_mean_single_common_rows": 0.4031799170790895
+        }
+      },
+      "uncertainty_u1": {
+        "n_rows": 905,
+        "min_seeds_per_row": 2,
+        "U1": {
+          "n": 905,
+          "spearman": 0.9251115382286574,
+          "spearman_p": 0.0,
+          "auroc": 0.8590741047287976,
+          "n_pos": 42,
+          "n_neg": 863,
+          "pos_rate": 0.04640883977900553,
+          "coverage_risk": {
+            "1.0": 0.008971034431792401,
+            "0.9": 0.005401612821145248,
+            "0.8": 0.003850955915421329,
+            "0.7": 0.002931831440802104,
+            "0.6": 0.002276959281245949,
+            "0.5": 0.0022705270121810978
+          },
+          "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage"
+        },
+        "U1_renorm": {
+          "n": 905,
+          "spearman": 0.9269373362219893,
+          "spearman_p": 0.0,
+          "auroc": 0.8648373983739838,
+          "n_pos": 41,
+          "n_neg": 864,
+          "pos_rate": 0.045303867403314914,
+          "coverage_risk": {
+            "1.0": 0.008924149430131808,
+            "0.9": 0.004757164459194158,
+            "0.8": 0.003712388547659306,
+            "0.7": 0.0028202243754311875,
+            "0.6": 0.0021958992145504445,
+            "0.5": 0.002050910747153311
+          },
+          "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage"
+        }
+      },
+      "uncertainty_u2": {
+        "n": 5336,
+        "spearman": -0.02566146367861607,
+        "spearman_p": 0.06087720573138656,
+        "auroc": 0.5094429073348439,
+        "n_pos": 203,
+        "n_neg": 5133,
+        "pos_rate": 0.03804347826086957,
+        "coverage_risk": {
+          "1.0": 0.008145000956158272,
+          "0.9": 0.007338610740826419,
+          "0.8": 0.007083558177864804,
+          "0.7": 0.00733035847614786,
+          "0.6": 0.007639193012474052,
+          "0.5": 0.007713906730553944
+        },
+        "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage",
+        "n_pairs": 5336,
+        "mean_distance": 0.10644157750600369,
+        "max_distance": 0.4978527469103588,
+        "feature_reconstruction_max_abs_diff": 0.0,
+        "train_fraction_per_seed": [
+          0.7995495495495496,
+          0.7997747747747748,
+          0.7997747747747748
+        ]
+      },
+      "bands": {
+        "T_band": {
+          "n_all_rows_in": 1275,
+          "n_all_rows_out": 7605,
+          "n_test_rows_u1": {
+            "in": 117,
+            "out": 788
+          },
+          "n_test_pairs": {
+            "in": 769,
+            "out": 4567
+          },
+          "U1_mean_in": 0.0012195096990665893,
+          "U1_mean_out": 0.001098192457771365,
+          "U2_mean_in": 0.1084800398919366,
+          "U2_mean_out": 0.1060983373976651,
+          "test_mae_mean_in": 0.006882340089966987,
+          "test_mae_mean_out": 0.008357610153903204,
+          "U2_ratio_in_over_out": 1.0224480661308073,
+          "mae_ratio_in_over_out": 0.8234818283253819
+        },
+        "X2_band": {
+          "n_all_rows_in": 1676,
+          "n_all_rows_out": 7204,
+          "n_test_rows_u1": {
+            "in": 161,
+            "out": 744
+          },
+          "n_test_pairs": {
+            "in": 980,
+            "out": 4356
+          },
+          "U1_mean_in": 0.0007346147713805022,
+          "U1_mean_out": 0.0011959480017773735,
+          "U2_mean_in": 0.10204301691401162,
+          "U2_mean_out": 0.10743115266214516,
+          "test_mae_mean_in": 0.004545222454355912,
+          "test_mae_mean_out": 0.008954868479520605,
+          "U2_ratio_in_over_out": 0.9498456861476817,
+          "mae_ratio_in_over_out": 0.5075699843890101
+        },
+        "_u1_rows_basis": "rows covered by >=2 seeds",
+        "_pair_basis": "(row, seed) test pairs",
+        "_test_mae_model": "mlp_sigmoid after projection"
+      }
+    },
+    "fecrmo": {
+      "n_dataset_rows": 8877,
+      "n_union_test_rows": 4344,
+      "seed_test_sizes": {
+        "42": 1777,
+        "123": 1778,
+        "2024": 1778
+      },
+      "coverage_hist": {
+        "1": 3430,
+        "2": 839,
+        "3": 75
+      },
+      "y_true_consistency_max_abs_diff": 0.0,
+      "ensemble": {
+        "mlp_sigmoid_projected": {
+          "single_seed_mae": [
+            0.015474825865592456,
+            0.016348788034241113,
+            0.01536324059776179
+          ],
+          "mean_single_seed_mae": 0.015728951499198455,
+          "pooled_single_mae_union_rows": 0.01572899915073298,
+          "ensemble_mae_union_rows": 0.015847658537268026,
+          "gain_pct_vs_mean_single": -0.7547040759558591,
+          "gain_pct_vs_pooled": -0.7543988361746308,
+          "n_union_rows": 4344,
+          "n_common_rows": 75,
+          "single_seed_mae_common_rows": [
+            0.020836132518691004,
+            0.020415548573580425,
+            0.021393296288463263
+          ],
+          "mean_single_seed_mae_common_rows": 0.02088165912691156,
+          "ensemble_mae_common_rows": 0.02072668679323956,
+          "gain_pct_vs_mean_single_common_rows": 0.7421456922083359
+        },
+        "mlp_renorm_stored": {
+          "single_seed_mae": [
+            0.015622014864050767,
+            0.016351721407335113,
+            0.01560657700378528
+          ],
+          "mean_single_seed_mae": 0.015860104425057055,
+          "pooled_single_mae_union_rows": 0.01586014906964003,
+          "ensemble_mae_union_rows": 0.01595813622345136,
+          "gain_pct_vs_mean_single": -0.6181031080692351,
+          "gain_pct_vs_pooled": -0.6178198791264765,
+          "n_union_rows": 4344,
+          "n_common_rows": 75,
+          "single_seed_mae_common_rows": [
+            0.02110883852010387,
+            0.021519207245285797,
+            0.021164580869870806
+          ],
+          "mean_single_seed_mae_common_rows": 0.02126420887842016,
+          "ensemble_mae_common_rows": 0.02107550771458075,
+          "gain_pct_vs_mean_single_common_rows": 0.8874121060337794
+        }
+      },
+      "uncertainty_u1": {
+        "n_rows": 914,
+        "min_seeds_per_row": 2,
+        "U1": {
+          "n": 914,
+          "spearman": 0.6880618705995327,
+          "spearman_p": 3.6981186450958234e-129,
+          "auroc": 0.7344388914129941,
+          "n_pos": 62,
+          "n_neg": 852,
+          "pos_rate": 0.06783369803063458,
+          "coverage_risk": {
+            "1.0": 0.014653906759435786,
+            "0.9": 0.009508471233611288,
+            "0.8": 0.008628115632234923,
+            "0.7": 0.008297394346297131,
+            "0.6": 0.007625096494113404,
+            "0.5": 0.007274215497775069
+          },
+          "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage"
+        },
+        "U1_renorm": {
+          "n": 914,
+          "spearman": 0.6693010812911875,
+          "spearman_p": 8.565949068649047e-120,
+          "auroc": 0.7400070878331748,
+          "n_pos": 63,
+          "n_neg": 851,
+          "pos_rate": 0.06892778993435449,
+          "coverage_risk": {
+            "1.0": 0.014868380742560267,
+            "0.9": 0.010570356190335353,
+            "0.8": 0.009813838165167326,
+            "0.7": 0.007990516871061408,
+            "0.6": 0.007370571472805503,
+            "0.5": 0.006858572637129193
+          },
+          "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage"
+        }
+      },
+      "uncertainty_u2": {
+        "n": 5333,
+        "spearman": -0.052480538953200304,
+        "spearman_p": 0.0001259424877853955,
+        "auroc": 0.470861898812586,
+        "n_pos": 385,
+        "n_neg": 4948,
+        "pos_rate": 0.07219201200075005,
+        "coverage_risk": {
+          "1.0": 0.015728999150732975,
+          "0.9": 0.01630934720740227,
+          "0.8": 0.016474660869531935,
+          "0.7": 0.016557254568523656,
+          "0.6": 0.017163411165982093,
+          "0.5": 0.01762777755263582
+        },
+        "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage",
+        "n_pairs": 5333,
+        "mean_distance": 0.10687409413601391,
+        "max_distance": 0.5197788457179696,
+        "feature_reconstruction_max_abs_diff": 0.0,
+        "train_fraction_per_seed": [
+          0.7998197589275656,
+          0.7997071082572942,
+          0.7997071082572942
+        ]
+      },
+      "bands": {
+        "T_band": {
+          "n_all_rows_in": 1275,
+          "n_all_rows_out": 7602,
+          "n_test_rows_u1": {
+            "in": 126,
+            "out": 788
+          },
+          "n_test_pairs": {
+            "in": 757,
+            "out": 4576
+          },
+          "U1_mean_in": 0.0022914900495855173,
+          "U1_mean_out": 0.0015641470541807793,
+          "U2_mean_in": 0.10572893559813593,
+          "U2_mean_out": 0.10706353579099066,
+          "test_mae_mean_in": 0.024420310750666335,
+          "test_mae_mean_out": 0.014291210059572674,
+          "U2_ratio_in_over_out": 0.9875345029192746,
+          "mae_ratio_in_over_out": 1.7087643837625137
+        },
+        "X2_band": {
+          "n_all_rows_in": 1674,
+          "n_all_rows_out": 7203,
+          "n_test_rows_u1": {
+            "in": 178,
+            "out": 736
+          },
+          "n_test_pairs": {
+            "in": 994,
+            "out": 4339
+          },
+          "U1_mean_in": 0.0015454432022416668,
+          "U1_mean_out": 0.0016931884985641479,
+          "U2_mean_in": 0.1018106697120295,
+          "U2_mean_out": 0.10803404893606933,
+          "test_mae_mean_in": 0.008896430122540839,
+          "test_mae_mean_out": 0.017294238517873557,
+          "U2_ratio_in_over_out": 0.9423942795319779,
+          "mae_ratio_in_over_out": 0.5144158335359142
+        },
+        "_u1_rows_basis": "rows covered by >=2 seeds",
+        "_pair_basis": "(row, seed) test pairs",
+        "_test_mae_model": "mlp_sigmoid after projection"
+      }
+    },
+    "fecrv": {
+      "n_dataset_rows": 8880,
+      "n_union_test_rows": 4353,
+      "seed_test_sizes": {
+        "42": 1780,
+        "123": 1778,
+        "2024": 1778
+      },
+      "coverage_hist": {
+        "1": 3448,
+        "2": 827,
+        "3": 78
+      },
+      "y_true_consistency_max_abs_diff": 0.0,
+      "ensemble": {
+        "mlp_sigmoid_projected": {
+          "single_seed_mae": [
+            0.014453007926065603,
+            0.01570888350330147,
+            0.014685075444583175
+          ],
+          "mean_single_seed_mae": 0.014948988957983416,
+          "pooled_single_mae_union_rows": 0.014948803058046413,
+          "ensemble_mae_union_rows": 0.014090150261565475,
+          "gain_pct_vs_mean_single": 5.745128977162591,
+          "gain_pct_vs_pooled": 5.743956844884352,
+          "n_union_rows": 4353,
+          "n_common_rows": 78,
+          "single_seed_mae_common_rows": [
+            0.05003779005812741,
+            0.048245026557408956,
+            0.04935266848447332
+          ],
+          "mean_single_seed_mae_common_rows": 0.049211828366669895,
+          "ensemble_mae_common_rows": 0.04909198246836007,
+          "gain_pct_vs_mean_single_common_rows": 0.24353067603355244
+        },
+        "mlp_renorm_stored": {
+          "single_seed_mae": [
+            0.014645665033456401,
+            0.015368176719579347,
+            0.014537462856512286
+          ],
+          "mean_single_seed_mae": 0.014850434869849346,
+          "pooled_single_mae_union_rows": 0.014850358119535856,
+          "ensemble_mae_union_rows": 0.01402851647344373,
+          "gain_pct_vs_mean_single": 5.53464193883202,
+          "gain_pct_vs_pooled": 5.534153718562396,
+          "n_union_rows": 4353,
+          "n_common_rows": 78,
+          "single_seed_mae_common_rows": [
+            0.04979089973641352,
+            0.047049793311668975,
+            0.04930343778752476
+          ],
+          "mean_single_seed_mae_common_rows": 0.048714710278535744,
+          "ensemble_mae_common_rows": 0.04868472942877452,
+          "gain_pct_vs_mean_single_common_rows": 0.06154372999409064
+        }
+      },
+      "uncertainty_u1": {
+        "n_rows": 905,
+        "min_seeds_per_row": 2,
+        "U1": {
+          "n": 905,
+          "spearman": 0.8718922692407696,
+          "spearman_p": 3.0791527732862904e-282,
+          "auroc": 0.6089661870940326,
+          "n_pos": 38,
+          "n_neg": 867,
+          "pos_rate": 0.041988950276243095,
+          "coverage_risk": {
+            "1.0": 0.01600281703411163,
+            "0.9": 0.014211990398069165,
+            "0.8": 0.014836939854601062,
+            "0.7": 0.014287323712988619,
+            "0.6": 0.01603820792133791,
+            "0.5": 0.019193098918941134
+          },
+          "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage"
+        },
+        "U1_renorm": {
+          "n": 905,
+          "spearman": 0.838305800764991,
+          "spearman_p": 4.078757841260114e-240,
+          "auroc": 0.5291992958173981,
+          "n_pos": 38,
+          "n_neg": 867,
+          "pos_rate": 0.041988950276243095,
+          "coverage_risk": {
+            "1.0": 0.0157659782508919,
+            "0.9": 0.013862227941946427,
+            "0.8": 0.013875176077928065,
+            "0.7": 0.014429571712369164,
+            "0.6": 0.01605873480564384,
+            "0.5": 0.01914250820544414
+          },
+          "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage"
+        }
+      },
+      "uncertainty_u2": {
+        "n": 5336,
+        "spearman": -0.14718916411321814,
+        "spearman_p": 3.1458311148295828e-27,
+        "auroc": 0.309955687965841,
+        "n_pos": 218,
+        "n_neg": 5118,
+        "pos_rate": 0.04085457271364318,
+        "coverage_risk": {
+          "1.0": 0.014948803058046413,
+          "0.9": 0.016059944543401393,
+          "0.8": 0.017321288258946767,
+          "0.7": 0.018983323903258544,
+          "0.6": 0.020789872207055606,
+          "0.5": 0.02408781617246231
+        },
+        "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage",
+        "n_pairs": 5336,
+        "mean_distance": 0.10644157750600369,
+        "max_distance": 0.4978527469103588,
+        "feature_reconstruction_max_abs_diff": 0.0,
+        "train_fraction_per_seed": [
+          0.7995495495495496,
+          0.7997747747747748,
+          0.7997747747747748
+        ]
+      },
+      "bands": {
+        "T_band": {
+          "n_all_rows_in": 1275,
+          "n_all_rows_out": 7605,
+          "n_test_rows_u1": {
+            "in": 117,
+            "out": 788
+          },
+          "n_test_pairs": {
+            "in": 769,
+            "out": 4567
+          },
+          "U1_mean_in": 0.000619873883240341,
+          "U1_mean_out": 0.0010926074552562953,
+          "U2_mean_in": 0.1084800398919366,
+          "U2_mean_out": 0.1060983373976651,
+          "test_mae_mean_in": 0.03916415452737239,
+          "test_mae_mean_out": 0.010871376896471713,
+          "U2_ratio_in_over_out": 1.0224480661308073,
+          "mae_ratio_in_over_out": 3.6025017714253886
+        },
+        "X2_band": {
+          "n_all_rows_in": 1676,
+          "n_all_rows_out": 7204,
+          "n_test_rows_u1": {
+            "in": 161,
+            "out": 744
+          },
+          "n_test_pairs": {
+            "in": 980,
+            "out": 4356
+          },
+          "U1_mean_in": 0.0009211983213703188,
+          "U1_mean_out": 0.0010553588566404022,
+          "U2_mean_in": 0.10204301691401162,
+          "U2_mean_out": 0.10743115266214516,
+          "test_mae_mean_in": 0.0053034775817849536,
+          "test_mae_mean_out": 0.017118779864000556,
+          "U2_ratio_in_over_out": 0.9498456861476817,
+          "mae_ratio_in_over_out": 0.3098046486909823
+        },
+        "_u1_rows_basis": "rows covered by >=2 seeds",
+        "_pair_basis": "(row, seed) test pairs",
+        "_test_mae_model": "mlp_sigmoid after projection"
+      }
+    },
+    "femnni": {
+      "n_dataset_rows": 8880,
+      "n_union_test_rows": 4353,
+      "seed_test_sizes": {
+        "42": 1780,
+        "123": 1778,
+        "2024": 1778
+      },
+      "coverage_hist": {
+        "1": 3448,
+        "2": 827,
+        "3": 78
+      },
+      "y_true_consistency_max_abs_diff": 0.0,
+      "ensemble": {
+        "mlp_sigmoid_projected": {
+          "single_seed_mae": [
+            0.015221905733139703,
+            0.011911803615126478,
+            0.014690782906568115
+          ],
+          "mean_single_seed_mae": 0.013941497418278099,
+          "pooled_single_mae_union_rows": 0.01394197733143959,
+          "ensemble_mae_union_rows": 0.013740052064800362,
+          "gain_pct_vs_mean_single": 1.4449334058881658,
+          "gain_pct_vs_pooled": 1.4483258854816863,
+          "n_union_rows": 4353,
+          "n_common_rows": 78,
+          "single_seed_mae_common_rows": [
+            0.018025948866922832,
+            0.018141107469671007,
+            0.019732671302246912
+          ],
+          "mean_single_seed_mae_common_rows": 0.01863324254628025,
+          "ensemble_mae_common_rows": 0.018633242546280248,
+          "gain_pct_vs_mean_single_common_rows": 1.8619662913400003e-14
+        },
+        "mlp_renorm_stored": {
+          "single_seed_mae": [
+            0.015123935014287451,
+            0.012177295160018847,
+            0.014632013914448152
+          ],
+          "mean_single_seed_mae": 0.013977748029584817,
+          "pooled_single_mae_union_rows": 0.013978177634901421,
+          "ensemble_mae_union_rows": 0.013786599898066276,
+          "gain_pct_vs_mean_single": 1.367517364842775,
+          "gain_pct_vs_pooled": 1.370548735600584,
+          "n_union_rows": 4353,
+          "n_common_rows": 78,
+          "single_seed_mae_common_rows": [
+            0.01847920743861626,
+            0.018184219715393024,
+            0.018763388102873157
+          ],
+          "mean_single_seed_mae_common_rows": 0.01847560508562748,
+          "ensemble_mae_common_rows": 0.01847560508562748,
+          "gain_pct_vs_mean_single_common_rows": 0.0
+        }
+      },
+      "uncertainty_u1": {
+        "n_rows": 905,
+        "min_seeds_per_row": 2,
+        "U1": {
+          "n": 905,
+          "spearman": 0.11167221376225837,
+          "spearman_p": 0.0007644720470693642,
+          "auroc": 0.3864653885891402,
+          "n_pos": 62,
+          "n_neg": 843,
+          "pos_rate": 0.06850828729281767,
+          "coverage_risk": {
+            "1.0": 0.014458651543478139,
+            "0.9": 0.014525248190764034,
+            "0.8": 0.01562383229289585,
+            "0.7": 0.017841033516478463,
+            "0.6": 0.02067190239491055,
+            "0.5": 0.019607160660677334
+          },
+          "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage"
+        },
+        "U1_renorm": {
+          "n": 905,
+          "spearman": 0.5344541337383756,
+          "spearman_p": 5.471695519792989e-68,
+          "auroc": 0.19479838396394994,
+          "n_pos": 61,
+          "n_neg": 844,
+          "pos_rate": 0.06740331491712707,
+          "coverage_risk": {
+            "1.0": 0.014437306902209485,
+            "0.9": 0.01452545569580615,
+            "0.8": 0.016329571272732837,
+            "0.7": 0.018196042506460845,
+            "0.6": 0.02054737478253282,
+            "0.5": 0.024253667311057815
+          },
+          "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage"
+        }
+      },
+      "uncertainty_u2": {
+        "n": 5336,
+        "spearman": 0.1853405568059138,
+        "spearman_p": 1.910195488046981e-42,
+        "auroc": 0.28230005850117745,
+        "n_pos": 339,
+        "n_neg": 4997,
+        "pos_rate": 0.06353073463268366,
+        "coverage_risk": {
+          "1.0": 0.01394197733143959,
+          "0.9": 0.014384780502760668,
+          "0.8": 0.015726933867277144,
+          "0.7": 0.016909852070320894,
+          "0.6": 0.019071000473490585,
+          "0.5": 0.02213494137035066
+        },
+        "coverage_risk_note": "retain the lowest-uncertainty rows (ascending score) at each coverage",
+        "n_pairs": 5336,
+        "mean_distance": 0.10644157750600369,
+        "max_distance": 0.4978527469103588,
+        "feature_reconstruction_max_abs_diff": 0.0,
+        "train_fraction_per_seed": [
+          0.7995495495495496,
+          0.7997747747747748,
+          0.7997747747747748
+        ]
+      },
+      "bands": {
+        "T_band": {
+          "n_all_rows_in": 1275,
+          "n_all_rows_out": 7605,
+          "n_test_rows_u1": {
+            "in": 117,
+            "out": 788
+          },
+          "n_test_pairs": {
+            "in": 769,
+            "out": 4567
+          },
+          "U1_mean_in": 0.00010654717819638771,
+          "U1_mean_out": 0.0004915181608373978,
+          "U2_mean_in": 0.1084800398919366,
+          "U2_mean_out": 0.1060983373976651,
+          "test_mae_mean_in": 0.0021330345974300623,
+          "test_mae_mean_out": 0.01593038919096517,
+          "U2_ratio_in_over_out": 1.0224480661308073,
+          "mae_ratio_in_over_out": 0.13389720564013594
+        },
+        "X2_band": {
+          "n_all_rows_in": 1676,
+          "n_all_rows_out": 7204,
+          "n_test_rows_u1": {
+            "in": 161,
+            "out": 744
+          },
+          "n_test_pairs": {
+            "in": 980,
+            "out": 4356
+          },
+          "U1_mean_in": 0.00012545504910566334,
+          "U1_mean_out": 0.0005101936393586492,
+          "U2_mean_in": 0.10204301691401162,
+          "U2_mean_out": 0.10743115266214516,
+          "test_mae_mean_in": 0.0005122992248781714,
+          "test_mae_mean_out": 0.016963346602429076,
+          "U2_ratio_in_over_out": 0.9498456861476817,
+          "mae_ratio_in_over_out": 0.03020036298762017
+        },
+        "_u1_rows_basis": "rows covered by >=2 seeds",
+        "_pair_basis": "(row, seed) test pairs",
+        "_test_mae_model": "mlp_sigmoid after projection"
+      }
+    }
+  },
+  "cross_system_mean": {
+    "U1_spearman_mean": 0.7073705501092448,
+    "U1_auroc_mean": 0.6949500511005977,
+    "U1_renorm_spearman_mean": 0.78039894841204,
+    "U1_renorm_auroc_mean": 0.6432397092011432,
+    "U2_spearman_mean": -0.03202124420297285,
+    "U2_auroc_mean": 0.4083154115026725,
+    "ensemble_gain_pct_sigmoid_mean": 2.2682678307395445,
+    "ensemble_gain_pct_renorm_mean": 2.2633440158716573,
+    "ensemble_gain_pct_sigmoid_common_mean": 0.33135345191054144,
+    "T_band_U1_mean_in": 0.0010818594901034835,
+    "T_band_U1_mean_out": 0.0012840959179157396,
+    "T_band_U2_mean_in": 0.10792981903317647,
+    "T_band_U2_mean_out": 0.10629137707633021,
+    "T_band_test_mae_mean_in": 0.015490710036451583,
+    "T_band_test_mae_mean_out": 0.012217055558211743,
+    "T_band_U2_ratio_in_over_out": 1.0154653534885008,
+    "T_band_mae_ratio_in_over_out": 1.3371641718165406,
+    "X2_band_U1_mean_in": 0.0009655804801416342,
+    "X2_band_U1_mean_out": 0.0013233413483282825,
+    "X2_band_U2_mean_in": 0.1019965474736152,
+    "X2_band_U2_mean_out": 0.10755173191692999,
+    "X2_band_test_mae_mean_in": 0.005550921184794589,
+    "X2_band_test_mae_mean_out": 0.014294938436687072,
+    "X2_band_U2_ratio_in_over_out": 0.948355404824541,
+    "X2_band_mae_ratio_in_over_out": 0.42490335760699455
+  }
+}

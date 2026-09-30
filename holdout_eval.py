@@ -89,7 +89,7 @@ def blocks_for(df, cfg, seed):
             "random_ctrl": r_mask}
 
 
-def extrap_blocks_for(df, cfg, seed):
+def extrap_blocks_for(df, cfg, seed, x_test_lo=None, x_train_hi=None):
     """Strict out-of-range extrapolation blocks.
 
     Returns {name: (held_mask, exclude_mask)} where exclude_mask is every
@@ -97,11 +97,17 @@ def extrap_blocks_for(df, cfg, seed):
     blocks, the interior gap). Each block is paired with a size-matched
     random control: the same number of rows excluded from training and an
     equal-size random test set drawn from within the excluded set.
+
+    x_train_hi / x_test_lo override the defaults for systems whose data do
+    not reach X2_TEST_LO (the fecrnic box caps Cr at 0.35); the gap
+    structure train <= x_train_hi < x_test_lo is preserved either way.
     """
     x2 = cfg["comps"][1]
+    x_train_hi = X2_TRAIN_HI if x_train_hi is None else x_train_hi
+    x_test_lo = X2_TEST_LO if x_test_lo is None else x_test_lo
     n = len(df)
-    x_held = (df[x2] > X2_TEST_LO).values
-    x_excl = (df[x2] > X2_TRAIN_HI).values  # held + gap (0.25, 0.35]
+    x_held = (df[x2] > x_test_lo).values
+    x_excl = (df[x2] > x_train_hi).values  # held + gap (x_train_hi, x_test_lo]
     t_held = (df["T"] > T_TEST_LO).values
     t_excl = (df["T"] > T_TRAIN_HI).values  # held + gap (1200, 1400]
     rng = np.random.default_rng(2000 + seed)
@@ -164,7 +170,8 @@ def fit_and_eval(system, blocks_fn, out_name, header):
                 t0 = time.time()
                 if model.startswith("mlp"):
                     head = model[len("mlp_"):]
-                    net = MLP4(n_phases=len(names), head=head).to(DEVICE)
+                    net = MLP4(n_phases=len(names), head=head,
+                               n_in=X.shape[1]).to(DEVICE)
                     net, _, scaler = train_mlp(net, X, Y, tr, va, seed_)
                     net.eval()
                     with torch.no_grad():
@@ -206,20 +213,31 @@ def run_system_extrap(system):
     cfg = SYSTEMS[system]
     x2 = cfg["comps"][1]
     df = load_data(system)[2]
+    # Adaptive X2 threshold: the strict protocol needs rows beyond
+    # X2_TEST_LO. Systems whose design box stops short of it (fecrnic:
+    # Cr <= 0.35) fall back to the midpoint of the (train, box-max] gap so
+    # the test rows still lie strictly outside the training range.
+    x_test_lo = X2_TEST_LO
+    if not (df[x2] > X2_TEST_LO).any():
+        x_max = float(df[x2].max())
+        x_test_lo = 0.5 * (X2_TRAIN_HI + x_max)
+        print(f"  note: no rows with {x2} > {X2_TEST_LO} (max {x_max:.4f}); "
+              f"using x_test_lo = {x_test_lo:.4f} for {system}", flush=True)
     # Sanity: the far-side test rows must exceed the near-side training
     # range on the extrapolated coordinate, making the split strictly
     # out-of-range by construction.
     near_x = df.loc[df[x2] <= X2_TRAIN_HI, x2]
-    far_x = df.loc[df[x2] > X2_TEST_LO, x2]
+    far_x = df.loc[df[x2] > x_test_lo, x2]
     near_t = df.loc[df["T"] <= T_TRAIN_HI, "T"]
     far_t = df.loc[df["T"] > T_TEST_LO, "T"]
-    assert near_x.max() <= X2_TRAIN_HI and far_x.min() > X2_TEST_LO
+    assert near_x.max() <= X2_TRAIN_HI and far_x.min() > x_test_lo
     assert near_t.max() <= T_TRAIN_HI and far_t.min() > T_TEST_LO
     header = (f"strict extrapolation: train {x2} <= {X2_TRAIN_HI} -> "
-              f"test {x2} > {X2_TEST_LO} | train T <= {T_TRAIN_HI:.0f} -> "
+              f"test {x2} > {x_test_lo:g} | train T <= {T_TRAIN_HI:.0f} -> "
               f"test T > {T_TEST_LO:.0f}")
     fit_and_eval(system,
-                 lambda seed: extrap_blocks_for(df, cfg, seed),
+                 lambda seed: extrap_blocks_for(df, cfg, seed,
+                                                x_test_lo=x_test_lo),
                  f"holdout_extrap_{system}.json", header)
 
 

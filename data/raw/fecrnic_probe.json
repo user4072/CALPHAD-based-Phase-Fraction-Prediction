@@ -1,7 +1,7 @@
 {
   "system": "fecrnic",
-  "n_points": 40,
-  "n_ok": 40,
+  "n_points": 2000,
+  "n_ok": 1999,
   "eligible": [
     "ALPHA_MN",
     "BCC_A2",
@@ -40,21 +40,25 @@
     "ZET"
   ],
   "active_counts": {
-    "FCC_A1": 27,
-    "M23C6": 13,
-    "LIQUID": 13,
-    "SIGMA": 2,
-    "BCC_A2": 9,
-    "M7C3": 8,
-    "GRAPHITE": 1
+    "FCC_A1": 1462,
+    "M23C6": 702,
+    "LIQUID": 567,
+    "SIGMA": 158,
+    "BCC_A2": 366,
+    "M7C3": 516,
+    "GRAPHITE": 45,
+    "BCC_DISL": 25,
+    "CEMENTITE": 1
   },
   "rate": {
-    "FCC_A1": 0.675,
-    "M23C6": 0.325,
-    "LIQUID": 0.325,
-    "SIGMA": 0.05,
-    "BCC_A2": 0.225,
-    "M7C3": 0.2,
-    "GRAPHITE": 0.025
+    "FCC_A1": 0.7314,
+    "M23C6": 0.3512,
+    "LIQUID": 0.2836,
+    "SIGMA": 0.079,
+    "BCC_A2": 0.1831,
+    "M7C3": 0.2581,
+    "GRAPHITE": 0.0225,
+    "BCC_DISL": 0.0125,
+    "CEMENTITE": 0.0005
   }
 }
