@@ -53,7 +53,9 @@ sum-to-one penalty degrades MAE; the residue head is 1.4--2.5 times worse)
 complete the benchmark. Against four published DTA
 transition temperatures the surrogate matches full CALPHAD within 21~K
 (mean 17.75~K), the same order as the database's own 19~K mean deviation
-from experiment.
+from experiment. A 501{,}501-composition lean-nickel screen at 1000~K
+shortlists 10{,}936 candidates in 0.4~s; all 411 validated shortlist
+points confirm under full-set CALPHAD.
 \end{abstract}
 
 \begin{keyword}
@@ -1649,6 +1651,84 @@ sub-$10^{-3}$ tail differences, not from shifted curves.}
 \end{figure}
 
 % ======================================================================
+\section{Application: high-throughput stainless screening}
+\label{sec:screen}
+
+The preceding sections validate the surrogate as an emulator; this one
+uses it as a tool. We screen Fe--Cr--Ni at $T = 1000$~K --- below the
+$\sim$1300~K liquid appearance, at a service-relevant temperature --- for
+a lean-nickel austenitic window: fully austenitic
+(NP$_{\mathrm{FCC}} \ge 0.99$), sigma-free
+(NP$_{\mathrm{SIGMA}} \le 10^{-3}$) and melt-free
+(NP$_{\mathrm{LIQUID}} \le 10^{-3}$), with nickel capped at 12~mol\%
+(Ni is the cost driver; the design task is the least Ni that still holds
+austenite). The screen evaluates 501{,}501 compositions on a
+$10^{-3}$ simplex grid with the three-seed renorm ensemble of
+Section~\ref{sec:anchor} (0.4~s on CUDA, 0.27~$\mu$s per point per seed),
+shortlisting 10{,}936 hits (2.18\%).
+
+\paragraph{Every shortlisted alloy checked validates; the frontier is a
+Ni--Cr trade-off curve.}
+Figure~\ref{fig:screen} maps the screen. The shortlist hugs the lean edge
+of the austenite field; per-Cr-bin minimal-Ni points trace a Pareto
+frontier falling from 7.5\% Ni at 1.5\% Cr to 4.8\% Ni near 12--13\% Cr
+before rising again as sigma encroaches --- Cr substitutes for Ni as the
+austenite stabiliser up to $\sim$12\%. All 11 frontier points validate
+under the full 28-phase set at CALPHAD FCC $= 1.0000$, as do all 400
+points of a uniform random hit subset: 411 of 411 shortlisted alloys
+confirm, so the filter wastes no validation run. A 400-point uniform
+background sample bounds the other side: 76 fall in the design scope
+(Ni $\le$ 0.12), of which 4 CALPHAD-qualify while the screen rejected
+them. Three sit within 0.01 of a decision cutoff (two rejected on
+predicted sigma just over $10^{-3}$, one on FCC $0.9838$ with sigma also
+over) ---
+expected boundary flips for a model with $\sim$0.01 MAE --- and one is a
+clear model miss (Fe 0.927/Cr 0.010/Ni 0.063: predicted FCC 0.9006,
+CALPHAD 1.0). The screen is conservative by construction: it errs toward
+exclusion, and its misses cluster at the decision boundary. Treating the
+in-scope background miss rate (4 of 76) as representative, recall in scope
+is $\sim$0.8: the filter finds most qualifying alloys and certifies the
+ones it returns.
+
+\paragraph{One screen amortises the pipeline several times over.}
+Measured on this workload, a full-set single-point solve costs 0.41~s
+wall (3.30~s CPU over 8 workers) and a probe-set solve 0.33~s wall;
+training the three screened seeds cost 268~s total. The one-time cost is
+dominated by data generation (8{,}880 accepted equilibria): at the
+measured 0.33~s per probe-set point the break-even screen size is
+$\sim$10$^4$ points, against the 2.5~s prose full-set figure
+$\sim$7$\times$10$^4$ points. The demonstration screen ran 501{,}501
+points --- a payback of roughly 7 to 50 times in a single query, before
+counting reuse. The honest boundary of this claim: one temperature, one
+system, and validation itself spent 811 full-set solves ($\sim$6~min
+wall). Screening is cheap; trusting the screen still requires spot
+CALPHAD, and the numbers above say how much spot-checking suffices.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/fig10_screen}
+\caption{Lean-Ni austenitic screen at 1000~K. (a) Gibbs triangle coloured
+by surrogate FCC (Ni apex at top, Cr bottom-right, Fe bottom-left):
+shortlist (dark dots), Pareto frontier of minimal Ni per Cr bin (gold,
+all 11 full-CALPHAD-confirmed) and the four in-scope misses (red
+crosses, rejected on predicted sigma or FCC just below cutoff). (b) The
+frontier as minimal qualifying Ni versus Cr: Cr substitutes for Ni to
+$\sim$12\% before sigma encroaches; misses sit above the line.}
+\label{fig:screen}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Application case: lean-Ni austenitic screen at 1000~K on
+Fe--Cr--Ni. Break-even is the one-time cost (data generation at measured
+versus prose per-point cost, plus probe and 268~s training) divided by
+the measured 0.41~s per-point full-set saving.}
+\label{tab:screen}
+\small
+\input{tab/screen.tex}
+\end{table}
+
+% ======================================================================
 \section{Discussion}
 \label{sec:discussion}
 
@@ -1900,7 +1980,11 @@ published DTA transition points the
 surrogate matches the full-CALPHAD answer within 21~K (mean 17.75~K at the
 $10^{-4}$ threshold) --- the same order as the database's own 19~K mean
 deviation from experiment, with the surrogate term larger on three of the
-four points.
+four points. Finally, the surrogate screens: a 501{,}501-composition
+lean-nickel query at 1000~K shortlists 10{,}936 candidates in 0.4~s with
+411 of 411 validated shortlist points confirming under full-set CALPHAD
+(Section~\ref{sec:screen}) --- the screening-filter claim, demonstrated
+rather than asserted.
 
 Three negative results are informative. Under the evaluated configuration
 sparsemax exhibited severe seed sensitivity, consistent with a

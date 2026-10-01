@@ -278,7 +278,10 @@ def build() -> None:
          f"times worse) complete the benchmark. Against four published "
          f"DTA transition temperatures the surrogate matches full CALPHAD "
          f"within 21 K (mean 17.75 K), the same order as the database's own "
-         f"19 K mean deviation from experiment.")
+         f"19 K mean deviation from experiment. A 501,501-composition "
+         f"lean-nickel screen at 1000 K shortlists 10,936 candidates in "
+         f"0.4 s; all 411 validated shortlist points confirm under "
+         f"full-set CALPHAD.")
     para(doc, "Keywords: CALPHAD; surrogate model; phase fraction; simplex "
               "constraint; spatial generalisation; iron alloys",
          size=10, italic=True, space_after=12)
@@ -562,7 +565,7 @@ def build() -> None:
          "mean that a phase active only in an unprobed region would be "
          "missed, and that the reported accuracies are conditional on this "
           "globally predefined phase basis being complete; the experiments do "
-          "not assess discovery of previously unseen phases (Section 14).")
+          "not assess discovery of previously unseen phases (Section 2).")
 
     rows = []
     for s in SYS:
@@ -608,7 +611,7 @@ def build() -> None:
          "undersample them. The consequence, which we keep in mind when "
          "interpreting results, is that all reported accuracies are "
          "expectations under this distribution; rankings can shift under a "
-         "different prior (Section 14).")
+         "different prior (Section 2).")
 
     rows = []
     for s in SYS:
@@ -1715,7 +1718,7 @@ def build() -> None:
             f"ensemble gain is small and uncertain under redrawn splits: "
             f"ensembling is not a fix for any failure "
             f"mode, but it is free accuracy, and a fixed-split rerun is "
-            f"needed to pin the number down (Section 14.4). As a per-row score, however, "
+            f"needed to pin the number down (Section 15.4). As a per-row score, however, "
             f"U1 carries real signal. Its Spearman correlation with "
              f"per-row error averages 0.707 across the five ternary systems "
              f"(0.94 "
@@ -2223,9 +2226,116 @@ def build() -> None:
           "downweighted in the headline ratio.",
           left_cols=(0, 1))
 
-    # 14. Discussion
-    doc.add_heading("14. Discussion", level=1)
-    doc.add_heading("14.1 When do constrained MLPs beat trees?", level=2)
+    # 14. Application: high-throughput stainless screening
+    doc.add_heading("14. Application: high-throughput stainless screening",
+                    level=1)
+    body(doc,
+         f"The preceding sections validate the surrogate as an emulator; "
+         f"this one uses it as a tool. We screen {LBL['fecrni']} at T = "
+         f"1000 K \u2014 below the ~1300 K liquid appearance, at a "
+         f"service-relevant temperature \u2014 for a lean-nickel austenitic "
+         f"window: fully austenitic (FCC \u2265 0.99), sigma-free "
+         f"(SIGMA \u2264 10{sup('-3')}) and melt-free (LIQUID \u2264 "
+         f"10{sup('-3')}), with nickel capped at 12 mol% (Ni is the cost "
+         f"driver; the design task is the least Ni that still holds "
+         f"austenite). The screen evaluates 501,501 compositions on a "
+         f"10{sup('-3')} simplex grid with the three-seed renorm ensemble "
+         f"of Section 13 (0.4 s on CUDA, 0.27 \u00b5s per point per seed), "
+         f"shortlisting 10,936 hits (2.18%).")
+    finding(doc, "Every shortlisted alloy checked validates; the frontier "
+            "is a Ni\u2013Cr trade-off curve",
+            f"Figure 11 maps the screen. The shortlist hugs the lean edge "
+            f"of the austenite field; per-Cr-bin minimal-Ni points trace a "
+            f"Pareto frontier falling from 7.5% Ni at 1.5% Cr to 4.8% Ni "
+            f"near 12\u201313% Cr before rising again as sigma encroaches "
+            f"\u2014 Cr substitutes for Ni as the austenite stabiliser up "
+            f"to ~12%. All 11 frontier points validate under the full "
+            f"28-phase set at CALPHAD FCC = 1.0000, as do all 400 points of "
+            f"a uniform random hit subset: 411 of 411 shortlisted alloys "
+            f"confirm, so the filter wastes no validation run. A 400-point "
+            f"uniform background sample bounds the other side: 76 fall in "
+            f"the design scope (Ni \u2264 0.12), of which 4 CALPHAD-qualify "
+            f"while the screen rejected them. Three sit within 0.01 of a "
+            f"decision cutoff (two rejected on predicted sigma just over "
+            f"10{sup('-3')}, one on FCC 0.9838 with sigma also over) \u2014 "
+            f"expected boundary flips for a model with ~0.01 MAE \u2014 and "
+            f"one is a clear model miss (Fe 0.927/Cr 0.010/Ni 0.063: "
+            f"predicted FCC 0.9006, CALPHAD 1.0). The screen is conservative "
+            f"by construction: it errs toward exclusion, and its misses "
+            f"cluster at the decision boundary. Treating the in-scope "
+            f"background miss rate (4 of 76) as representative, recall in "
+            f"scope is ~0.8: the filter finds most qualifying alloys and "
+            f"certifies the ones it returns.")
+    finding(doc, "One screen amortises the pipeline several times over",
+            f"Measured on this workload, a full-set single-point solve "
+            f"costs 0.41 s wall (3.30 s CPU over 8 workers) and a "
+            f"probe-set solve 0.33 s wall; training the three screened "
+            f"seeds cost 268 s total. The one-time cost is dominated by "
+            f"data generation (8,880 accepted equilibria): at the measured "
+            f"0.33 s per probe-set point the break-even screen size is "
+            f"~10{sup('4')} points, against the 2.5 s prose full-set "
+            f"figure ~7{TIMES}10{sup('4')} points. The demonstration "
+            f"screen ran 501,501 points \u2014 a payback of roughly 7 to 50 "
+            f"times in a single query, before counting reuse. The honest "
+            f"boundary of this claim: one temperature, one system, and "
+            f"validation itself spent 811 full-set solves (~6 min wall). "
+            f"Screening is cheap; trusting the screen still requires spot "
+            f"CALPHAD, and the numbers above say how much spot-checking "
+            f"suffices.")
+    SC = json.load(open(os.path.join(ROOT, "paper", "screen_data",
+                                     "screen_fecrni_T1000K_step0.001.json")))
+    SV = json.load(open(os.path.join(ROOT, "paper", "screen_data",
+                                     "validate_fecrni_T1000K_step0.001.json")))
+    _v = np.load(os.path.join(ROOT, "paper", "screen_data",
+                              "validate_fecrni_T1000K_step0.001.npz"))
+    _s = np.load(os.path.join(ROOT, "paper", "screen_data",
+                              "screen_fecrni_T1000K_step0.001.npz"))
+    _kinds = np.array([k for k in _v["kinds"]])
+    _ni = _s["X"][_v["order"], 2]
+    _bgm = (_kinds == "bg") & (_ni <= 0.12)
+    _bgc, _bgn = int(_v["confirmed"][_bgm].sum()), int(_bgm.sum())
+    _nshort = SV["frontier"]["n"] + SV["hit"]["n"]
+    srows = [
+        ["Compositions screened", f"{SC['n_points']:,}"],
+        ["Screen wall time, 3-seed ensemble (cuda)", "0.4 s"],
+        ["Query hits (FCC\u22650.99, SIGMA\u226410\u207b\u00b3, "
+         "LIQUID\u226410\u207b\u00b3, Ni\u22640.12)",
+         f"{SC['n_hits']:,} ({100 * SC['n_hits'] / SC['n_points']:.2f}%)"],
+        ["Pareto-frontier points (minimal Ni per Cr bin)",
+         f"{SV['frontier']['n']}"],
+        ["Full-CALPHAD validated: frontier / hit subset / bg in scope",
+         f"{SV['frontier']['n_confirmed']}/{SV['frontier']['n']} / "
+         f"{SV['hit']['n_confirmed']}/{SV['hit']['n']} / {_bgc}/{_bgn}"],
+        [f"Shortlist precision ({_nshort} validated shortlist points)",
+         "1.00"],
+        ["In-scope recall estimate (Ni\u22640.12, see text)", "~0.8"],
+        ["Full-set CALPHAD cost per point, this workload (wall)", "0.41 s"],
+        ["Probe-set cost per point, this workload (wall)", "0.33 s"],
+        ["Break-even screen size (one-time \u00f7 per-point saving)",
+         "~10\u2074 (optimistic) \u2013 ~7\u00d710\u2074 (conservative; "
+         "see text)"],
+    ]
+    table(doc, ["Quantity", "Value"], srows,
+          "Table 16. Application case: lean-Ni austenitic screen at 1000 K "
+          f"on {LBL['fecrni']}. Break-even is the one-time cost (data "
+          "generation at measured versus prose per-point cost, plus probe "
+          "and 268 s training) divided by the measured 0.41 s per-point "
+          "full-set saving.",
+          left_cols=(0,))
+    figure(doc, "fig10_screen",
+           "Figure 11. Lean-Ni austenitic screen at 1000 K. (a) Gibbs "
+           "triangle coloured by surrogate FCC (Ni apex at top, Cr "
+           "bottom-right, Fe bottom-left): shortlist (dark dots), Pareto "
+           "frontier of minimal Ni per Cr bin (gold, all 11 "
+           "full-CALPHAD-confirmed) and the four in-scope misses (red "
+           "crosses, rejected on predicted sigma or FCC just below "
+           "cutoff). (b) The frontier as minimal qualifying Ni versus Cr: "
+           "Cr substitutes for Ni to ~12% before sigma encroaches; misses "
+           "sit above the line.")
+
+    # 15. Discussion
+    doc.add_heading("15. Discussion", level=1)
+    doc.add_heading("15.1 When do constrained MLPs beat trees?", level=2)
     body(doc,
          f"In the five ternary systems studied here, the answer tracked "
          f"geometry. "
@@ -2252,7 +2362,7 @@ def build() -> None:
          f"evaluate both families and the presence-supervised variant "
          f"and select per system; no single fraction-only architecture "
          f"consistently dominated across the five ternary systems.")
-    doc.add_heading("14.2 The spatial-generalisation result reframes the "
+    doc.add_heading("15.2 The spatial-generalisation result reframes the "
                     "interpolation comparison", level=2)
     body(doc,
          f"The holdout results of Section 7 reframe the main comparison. On "
@@ -2281,7 +2391,7 @@ def build() -> None:
          f"generalisation. For alloy-design workflows that query "
          f"unseen compositions, this relative comparison is the more "
          f"relevant one.")
-    doc.add_heading("14.3 What the surrogate is and is not", level=2)
+    doc.add_heading("15.3 What the surrogate is and is not", level=2)
     body(doc,
          "These results frame the surrogate as a high-speed screening "
          "filter rather than a thermodynamic arbiter: while the MLP "
@@ -2322,7 +2432,7 @@ def build() -> None:
          f"1\u20133 K describes tail shape, not the headline comparison, "
          f"and "
          f"both terms are reported separately rather than conflated.")
-    doc.add_heading("14.4 Limitations", level=2)
+    doc.add_heading("15.4 Limitations", level=2)
     body(doc,
          "Phase-set sufficiency is validated on 1,500 re-solved points per "
          "system, not "
@@ -2406,7 +2516,7 @@ def build() -> None:
          "advantage, remains untested.")
 
     # 15. Conclusions
-    doc.add_heading("15. Conclusions", level=1)
+    doc.add_heading("16. Conclusions", level=1)
     body(doc,
          "We compared simplex-constraint mechanisms for neural-network "
          "phase-fraction prediction \u2014 six fraction-only output heads plus a "
@@ -2467,7 +2577,7 @@ def build() -> None:
          f"control: the "
          f"temperature-band penalty is mostly a data effect against the "
          f"random control, with a region-matched residual on "
-         f"{LBL['fecrni']} (Table 16). Under strict "
+         f"{LBL['fecrni']} (Table 15). Under strict "
          f"one-sided out-of-range extrapolation all evaluated model "
          f"families degraded sharply, and the constrained MLP achieved the "
          f"lowest absolute far-side error in all five ternary systems, "
@@ -2521,7 +2631,12 @@ def build() -> None:
          "21 K (mean 17.75 K at the 10"
          f"{sup('-4')} threshold) \u2014 the same order as the "
          f"database's own 19 K mean deviation from experiment, with the "
-         f"surrogate term larger on three of the four points.")
+         f"surrogate term larger on three of the four points. Finally, the "
+         f"surrogate screens: a 501,501-composition lean-nickel query at "
+         f"1000 K shortlists 10,936 candidates in 0.4 s with 411 of 411 "
+         f"validated shortlist points confirming under full-set CALPHAD "
+         f"(Section 14) \u2014 the screening-filter claim, demonstrated "
+         f"rather than asserted.")
     body(doc,
          f"Three negative results are informative. Under the evaluated "
          f"configuration sparsemax exhibited severe seed sensitivity, "

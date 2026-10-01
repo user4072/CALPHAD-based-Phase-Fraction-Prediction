@@ -758,6 +758,75 @@ def fig9_anchor():
     save(fig, "fig9_anchor")
 
 
+# --------------------------------------------------------------------------
+def fig10_screen():
+    """Application case: lean-Ni austenitic screen at 1000 K (Fe-Cr-Ni)."""
+    SD = os.path.join(ROOT, "paper", "screen_data")
+    tag = "fecrni_T1000K_step0.001"
+    scr = np.load(os.path.join(SD, f"screen_{tag}.npz"))
+    val = np.load(os.path.join(SD, f"validate_{tag}.npz"))
+    X, ens = scr["X"], scr["ensemble"]
+    hit_idx = scr["hit_idx"]
+    names = list(scr["phases"])
+    i_fcc = names.index("FCC_A1")
+    order = val["order"]
+    kinds = np.array([k for k in val["kinds"]])
+    conf = val["confirmed"]
+
+    def tri(fe, cr, ni):
+        return cr + 0.5 * ni, 0.8660254 * ni
+
+    fig = plt.figure(figsize=(FULLW, 0.46 * FULLW))
+    gs = fig.add_gridspec(1, 2, width_ratios=(1.15, 1.0))
+
+    ax = fig.add_subplot(gs[0, 0])
+    sub = np.arange(0, len(X), 4)
+    px, py = tri(X[sub, 0], X[sub, 1], X[sub, 2])
+    sc = ax.scatter(px, py, c=ens[sub, i_fcc], s=1.5, cmap="Greens",
+                    vmin=0.9, vmax=1.0, rasterized=True)
+    colorbar(fig, sc, ax, "surrogate FCC")
+    hx, hy = tri(X[hit_idx, 0], X[hit_idx, 1], X[hit_idx, 2])
+    ax.scatter(hx, hy, s=2.0, c="#1b4d2e", alpha=0.5, rasterized=True,
+               label="shortlist")
+    fx, fy = tri(X[order[kinds == "frontier"], 0],
+                 X[order[kinds == "frontier"], 1],
+                 X[order[kinds == "frontier"], 2])
+    ax.plot(fx, fy, c="k", lw=1.2, marker="o", ms=3.5, mfc="gold",
+            mec="k", mew=0.6, label="Pareto frontier (CALPHAD-confirmed)")
+    miss = (kinds == "bg") & (X[order, 2] <= 0.12) & conf
+    if miss.any():
+        mx, my = tri(X[order[miss], 0], X[order[miss], 1],
+                     X[order[miss], 2])
+        ax.scatter(mx, my, s=28, c="#c44e52", lw=1.4,
+                   marker="x", label="missed in scope")
+    for tri_xy in (((0, 0), (1, 0)), ((1, 0), (0.5, 0.8660254)),
+                   ((0.5, 0.8660254), (0, 0))):
+        guide(ax.plot([tri_xy[0][0], tri_xy[1][0]],
+                      [tri_xy[0][1], tri_xy[1][1]], c="k", lw=0.8)[0])
+    ax.set_aspect("equal")
+    ax.set_xticks([])
+    ax.set_yticks([])
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+    legend_below(ax, 3, y=-0.16)
+    panel(ax, "a", "lean-Ni austenitic screen at 1000 K (surrogate FCC)")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fr = order[kinds == "frontier"]
+    o = np.argsort(X[fr, 1])
+    ax.plot(X[fr[o], 1], X[fr[o], 2], c="k", lw=1.2, marker="o", ms=4,
+            mfc="gold", mec="k", mew=0.6, label="frontier (all confirmed)")
+    if miss.any():
+        ax.scatter(X[order[miss], 1], X[order[miss], 2], s=36, c="#c44e52",
+                   lw=1.4, marker="x",
+                   label="missed in scope (4)")
+    ax.set_xlabel("Cr mole fraction")
+    ax.set_ylabel("minimal qualifying Ni mole fraction")
+    legend_below(ax, 2, y=-0.24)
+    panel(ax, "b", "Pareto frontier: Ni minimum vs Cr")
+    save(fig, "fig10_screen")
+
+
 if __name__ == "__main__":
     print("figures ->", FIG)
     fig1_dataset()
@@ -769,3 +838,4 @@ if __name__ == "__main__":
     fig7_extrap()
     fig8_remedy()
     fig9_anchor()
+    fig10_screen()

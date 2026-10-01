@@ -1504,13 +1504,50 @@ def g_nv():
        "seed not recorded in probe artifacts (and out of scope)")
 
 
+# ================================================ GROUP 20 screen demo
+def g_screen():
+    SD = os.path.join(PAPER, "screen_data")
+    sc = J(os.path.join(SD, "screen_fecrni_T1000K_step0.001.json"))
+    sv = J(os.path.join(SD, "validate_fecrni_T1000K_step0.001.json"))
+    check_exact("tex:screen 501,501 compositions screened",
+                sc["n_points"], 501501)
+    check_exact("tex:screen 10,936 shortlist hits", sc["n_hits"], 10936)
+    check_exact("tex:screen 11 frontier points",
+                sv["frontier"]["n"], 11)
+    check_exact("tex:screen frontier 11/11 confirmed",
+                sv["frontier"]["n_confirmed"], 11)
+    check_exact("tex:screen hit subset 400/400 confirmed",
+                sv["hit"]["n_confirmed"], 400)
+    v = np.load(os.path.join(
+        SD, "validate_fecrni_T1000K_step0.001.npz"))
+    s = np.load(os.path.join(
+        SD, "screen_fecrni_T1000K_step0.001.npz"))
+    kinds = np.array([k for k in v["kinds"]])
+    ni = s["X"][v["order"], 2]
+    bg_scope = (kinds == "bg") & (ni <= 0.12)
+    check_exact("tex:screen bg in scope 76, 4 confirmed",
+                (int(bg_scope.sum()), int(v["confirmed"][bg_scope].sum())),
+                (76, 4))
+    check_exact("tex:screen shortlist precision 1.00",
+                round((sv["frontier"]["n_confirmed"]
+                       + sv["hit"]["n_confirmed"])
+                      / (sv["frontier"]["n"] + sv["hit"]["n"]), 4), 1.0)
+    check("tex:screen full-set 0.41 s/point wall",
+          sv["calphad_s_per_point_wall"], "0.41")
+    check("tex:screen probe-set 0.33 s/point wall",
+          sv["probe_set"]["s_per_point_wall"], "0.33")
+    fr = s["X"][v["order"][kinds == "frontier"]]
+    check("tex:screen min Ni 0.048",
+          round(float(fr[:, 2].min()), 3), "0.048")
+
+
 # ================================================================== main
 def main():
     for fn in (g_counts, g_probe, g_csv, g_heads, g_penalty, g_sparsemax,
                g_delaunay, g_bands, g_region_matched, g_f1_shift, g_extrap,
                g_penalties_holdout, g_remedy, g_uncertainty, g_phase_set,
                g_anchor, g_ext_heads, g_winners, g_threshold, g_recompute,
-               g_structural, g_nv):
+               g_structural, g_nv, g_screen):
         guarded(fn)
     n_pass = sum(1 for st, _, _ in results if st == "PASS")
     n_fail = sum(1 for st, _, _ in results if st == "FAIL")

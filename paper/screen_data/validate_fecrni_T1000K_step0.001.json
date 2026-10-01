@@ -1,0 +1,42 @@
+{
+  "tag": "fecrni_T1000K_step0.001",
+  "T_K": 1000.0,
+  "query": {
+    "FCC_min": 0.99,
+    "SIGMA_max": 0.001,
+    "LIQUID_max": 0.001
+  },
+  "frontier": {
+    "n": 11,
+    "n_ok": 11,
+    "n_confirmed": 11,
+    "precision": 1.0
+  },
+  "hit": {
+    "n": 400,
+    "n_ok": 400,
+    "n_confirmed": 400,
+    "precision": 1.0
+  },
+  "bg": {
+    "n": 400,
+    "n_ok": 399,
+    "n_confirmed": 167,
+    "precision": 0.4185
+  },
+  "calphad_wall_s": 334.2,
+  "calphad_s_per_point_wall": 0.412,
+  "calphad_s_per_point_cpu": 3.297,
+  "probe_set": {
+    "phases": [
+      "BCC_A2",
+      "FCC_A1",
+      "LIQUID",
+      "SIGMA"
+    ],
+    "n": 30,
+    "s_per_point_wall": 0.326,
+    "s_per_point_cpu": 2.606,
+    "n_ok": 30
+  }
+}

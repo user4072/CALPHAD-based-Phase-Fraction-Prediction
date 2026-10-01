@@ -237,3 +237,20 @@ re-derived from stored artefacts (see audit run 2026-10-01: 377/0/7).
 | sec:models | width 64->256 moves renorm 0.0137->0.0099 (28 %) vs 5 % head gap | tab:ablation | P |
 | sec:models | softmax/sparsemax = single linear map, others per-phase block + scale | train_mlp.py MLP4 | P |
 | train | RF/XGB/ridge/kNN fit one single-output regressor per channel | train_baselines.py run_sklearn / per-channel loop | P |
+
+## ADDENDUM -- application case A (2026-10-01)
+
+Lean-Ni austenitic screen, Fe--Cr--Ni at 1000 K, 3-seed renorm ensemble
+(anchor checkpoints); query FCC >= 0.99, SIGMA <= 1e-3, LIQUID <= 1e-3,
+Ni <= 0.12. Full-set validation = all 28 eligible phases, single-point
+solves (audited `_cal_run` solver). Audit group `g_screen`: 10/10 PASS.
+
+| tex | claim | artifact | status |
+|---|---|---|---|
+| tab:screen | 501,501 screened / 10,936 hits (2.18 %) | screen_data/screen_*.json | P |
+| tab:screen | frontier 11 pts; validated 11/11 + 400/400 + bg-in-scope 4/76 | screen_data/validate_*.json/.npz | P |
+| tab:screen | shortlist precision 1.00 (411 pts); in-scope recall ~0.8 (4/76 miss rate over ~45.6k in-scope non-hits) | validate_*.npz + area arithmetic | P |
+| sec:screen | 4 misses: 3 within 0.01 of a cutoff, 1 clear model miss (Fe 0.927/Cr 0.010/Ni 0.063, surr FCC 0.9006 vs 1.0) | validate_*.npz | P |
+| sec:screen | min validated Ni 0.048 near 12--13 % Cr | validate_*.npz frontier | P |
+| sec:screen | full-set 0.41 s/pt wall, probe-set 0.33 s/pt wall, training 268 s | validate_*.json; ckpt time_s (79.1/81.8/106.8) | P |
+| tab:screen | break-even ~1e4 (optimistic) -- ~7e4 (conservative) points; 501k screen pays back ~7--50x | (8880x0.33 + 2000x0.41 + 268)/0.41 ; (8880x2.5 + 2000x2.5 + 268)/0.41 | P |

@@ -890,4 +890,58 @@ else:
     W("% revision_analyses.json region_matched_bands not present")
 emit("region")
 
+# ---------------------------------------------------------------- Table 17
+W("% Table 17: application case -- lean-Ni austenitic screen at 1000 K")
+SC = jload(os.path.join(ROOT, "paper", "screen_data",
+                        "screen_fecrni_T1000K_step0.001.json"))
+SV = jload(os.path.join(ROOT, "paper", "screen_data",
+                        "validate_fecrni_T1000K_step0.001.json"))
+if SC and SV:
+    _v = np.load(os.path.join(ROOT, "paper", "screen_data",
+                              "validate_fecrni_T1000K_step0.001.npz"))
+    _s = np.load(os.path.join(ROOT, "paper", "screen_data",
+                              "screen_fecrni_T1000K_step0.001.npz"))
+    _kinds = np.array([k for k in _v["kinds"]])
+    _ni = _s["X"][_v["order"], 2]
+    _bg_scope = (_kinds == "bg") & (_ni <= 0.12)
+    _bg_c = int(_v["confirmed"][_bg_scope].sum())
+    _bg_n = int(_bg_scope.sum())
+    W("\\scriptsize")
+    W("\\setlength{\\tabcolsep}{3pt}")
+    W("\\resizebox{\\textwidth}{!}{")
+    W("\\begin{tabular}{lr}")
+    W("\\toprule")
+    W("Quantity & Value \\\\")
+    W("\\midrule")
+    W(f"Compositions screened & {SC['n_points']:,} \\\\")
+    W(f"Screen wall time, 3-seed ensemble ({SC['device']}) & "
+      f"{SC['inference_s']:.1f}~s \\\\")
+    W(f"Query hits (FCC$\\ge$0.99, SIGMA$\\le$10$^{{-3}}$, "
+      f"LIQUID$\\le$10$^{{-3}}$, Ni$\\le$0.12) & "
+      f"{SC['n_hits']:,} ({100 * SC['n_hits'] / SC['n_points']:.2f}\\%) \\\\")
+    W(f"Pareto-frontier points (minimal Ni per Cr bin) & "
+      f"{SV['frontier']['n']} \\\\")
+    W(f"Full-CALPHAD validated: frontier / hit subset / bg in scope & "
+      f"{SV['frontier']['n_confirmed']}/{SV['frontier']['n']}~~/~~"
+      f"{SV['hit']['n_confirmed']}/{SV['hit']['n']}~~/~~"
+      f"{_bg_c}/{_bg_n} \\\\")
+    n_short = SV['frontier']['n_confirmed'] + SV['hit']['n_confirmed']
+    n_short_tot = SV['frontier']['n'] + SV['hit']['n']
+    W(f"Shortlist precision ({n_short_tot} validated shortlist points) & "
+      f"{n_short / n_short_tot:.2f} \\\\")
+    W("In-scope recall estimate (Ni$\\le$0.12, see text) & $\\sim$0.8 \\\\")
+    W(f"Full-set CALPHAD cost per point, this workload (wall) & "
+      f"{SV['calphad_s_per_point_wall']:.2f}~s \\\\")
+    W(f"Probe-set cost per point, this workload (wall) & "
+      f"{SV['probe_set']['s_per_point_wall']:.2f}~s \\\\")
+    W("Break-even screen size (one-time $\\div$ per-point saving) & "
+      "$\\sim$10$^4$ (optimistic) -- $\\sim$7$\\times$10$^4$ "
+      "(conservative; see text) \\\\")
+    W("\\bottomrule")
+    W("\\end{tabular}}")
+else:
+    W("% screen_data JSONs not present -- run screen_demo.py + "
+      "screen_validate.py")
+emit("screen")
+
 print(f"tables -> {TAB}")

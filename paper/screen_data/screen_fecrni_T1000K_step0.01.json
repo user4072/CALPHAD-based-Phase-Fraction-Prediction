@@ -1,0 +1,36 @@
+{
+  "system": "fecrni",
+  "head": "renorm",
+  "seeds": [
+    42,
+    123,
+    2024
+  ],
+  "T_K": 1000.0,
+  "step": 0.01,
+  "n_points": 5151,
+  "query": {
+    "FCC_min": 0.99,
+    "SIGMA_max": 0.001,
+    "LIQUID_max": 0.001,
+    "Ni_max": 0.12
+  },
+  "n_hits": 121,
+  "inference_s": 0.1,
+  "us_per_point_per_seed": 6.235,
+  "device": "cuda",
+  "hit_FeCrNi_ranges": {
+    "Fe": [
+      0.71,
+      0.91
+    ],
+    "Cr": [
+      0.0,
+      0.17
+    ],
+    "Ni": [
+      0.05,
+      0.12
+    ]
+  }
+}
