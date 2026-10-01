@@ -256,32 +256,24 @@ def build() -> None:
     body(doc,
          f"We benchmark simplex-constraint mechanisms for machine-learning "
          f"surrogates mapping composition and temperature to CALPHAD phase "
-         f"fractions: six neural output heads and four classical baselines on "
-         f"five Fe-based ternaries (44,397 equilibria), extended to a "
-         f"quaternary Fe\u2013Cr\u2013Ni\u2013C (13,192) and a carbide-rich "
-         f"Fe\u2013Cr\u2013C (13,199). Softmax, sigmoid/{SIG} and "
-         f"clip-then-renormalise satisfy closure to {LEQ}5{TIMES}10{sup('-8')} "
-         f"at no accuracy cost against the unconstrained sigmoid "
-         f"(6\u20138% violation); projection alone recovers renorm accuracy "
-         f"to {LEQ}1.3{TIMES}10{sup('-4')}, and at least 0.0155 of the raw "
-         f"0.0232 MAE on {LBL['fecrni']} is sum-bias arithmetic. Under "
+         f"fractions: six neural heads and four baselines on five Fe-based "
+         f"ternaries (44,397 equilibria) plus quaternary and carbide "
+         f"extensions. Softmax, sigmoid/{SIG} and clip-renormalise close to "
+         f"{LEQ}5{TIMES}10{sup('-8')} at no accuracy cost; projection alone "
+         f"recovers renorm accuracy to {LEQ}1.3{TIMES}10{sup('-4')}. Under "
          f"fraction-only supervision the ranking tracks phase geometry "
-         f"(multilayer perceptrons lead on smooth coexistence, forests where "
-         f"sharp boundaries dominate, ties elsewhere) \u2014 but a "
-         f"presence-gated two-stage head, which additionally sees presence "
-         f"labels, leads the forest on all seven systems while lifting "
-         f"macro-AUPRC from 0.36\u20130.99 to 0.91\u20130.99. "
-         f"Contiguous-band holdout with random and region-matched controls, "
-         f"strict one-sided extrapolation, uncertainty screening and three "
-         f"negative results (sparsemax exhibits severe seed sensitivity; a "
-         f"sum-to-one penalty degrades MAE; the residue head is 1.4\u20132.5 "
-         f"times worse) complete the benchmark. Against four published "
-         f"DTA transition temperatures the surrogate matches full CALPHAD "
-         f"within 21 K (mean 17.75 K), the same order as the database's own "
-         f"19 K mean deviation from experiment. A 501,501-composition "
-         f"lean-nickel screen at 1000 K shortlists 10,936 candidates in "
-         f"0.4 s; all 411 validated shortlist points confirm under "
-         f"full-set CALPHAD.")
+         f"\u2014 but a presence-gated head, which additionally sees "
+         f"presence labels, leads the forest on all seven systems while "
+         f"lifting macro-AUPRC from 0.36\u20130.99 to 0.91\u20130.99. "
+         f"Spatial protocols with random and region-matched controls, and "
+         f"three negative results (sparsemax exhibits severe seed "
+         f"sensitivity; a sum-to-one penalty degrades MAE; the residue "
+         f"head is 1.4\u20132.5 times worse), complete the benchmark. "
+         f"Against four DTA transitions the surrogate matches CALPHAD "
+         f"within 21 K (mean 17.75 K), the same order as the database's "
+         f"19 K deviation from experiment. A 501,501-composition screen "
+         f"shortlists 10,936 candidates in 0.4 s; all 411 validated points "
+         f"confirm.")
     para(doc, "Keywords: CALPHAD; surrogate model; phase fraction; simplex "
               "constraint; spatial generalisation; iron alloys",
          size=10, italic=True, space_after=12)
@@ -384,51 +376,36 @@ def build() -> None:
          "in the higher-dimensional design spaces where surrogate speed "
          "becomes a practical necessity.")
     for i, c in enumerate([
-        "A systematic comparison of simplex-constraint mechanisms for "
-        "neural-network phase-fraction prediction \u2014 six fraction-only heads plus "
-        "a presence-supervised gated head (Section 6.1) across the five "
-        "ternary systems plus two mechanism probes (Section 9) "
-        "\u2014 against four classical baselines (Section 4), together with "
-        "a projection analysis "
-        "separating closure from simplex membership and showing that the "
-        "renorm head's accuracy is fully accounted for by post-hoc "
-        "projection (Section 5).",
-        "Two spatial generalisation protocols with size-matched random "
-        "controls and a region-matched reanalysis (Section 7): a contiguous "
-        "interior-band holdout, which a "
-        "convex-hull check shows to be an in-hull distribution shift rather "
-        "than extrapolation, and a strict one-sided out-of-range "
-        "extrapolation protocol (one coordinate at a time); together these "
-        "separate spatial penalties from data-volume reductions. "
-        "Constrained MLPs "
-        "degrade more gracefully than trees under composition-band holdout "
-        "and under the tested strict extrapolation protocols; the "
-        "temperature-band penalty is mostly a data effect against the random "
-        "control, with a region-matched residual on Fe\u2013Cr\u2013Ni.",
-        "A regressor\u2013detector gap and its demonstrated remedy: the "
-        "model with the lowest MAE is not necessarily the best "
-        "phase-presence detector, detection degrades faster than regression "
-        "under distribution shift, and the gap is stable across presence "
-        "thresholds \u2014 but a presence-gated two-stage head closes most "
-        "of the gap on all seven systems, with an ablation isolating the "
-        "presence supervision as the operative ingredient (Section 6).",
-        "A cheap uncertainty gate: a three-seed ensemble-disagreement score "
-        "ranks per-row error (mean AUROC 0.70), gates MAE by up to fourfold "
-        "at 50% coverage where the ensemble helps, and is contrasted with an "
-        "input-density score that has no power (Section 8).",
-        "Two scope-extension systems and an experimental anchor: the full "
-        "protocol re-run on a quaternary Fe\u2013Cr\u2013Ni\u2013C and a "
-        "carbide-rich Fe\u2013Cr\u2013C (Section 12), and transition "
-        "temperatures compared against four published DTA points, "
-        "separating emulator error from database error against experiment "
-        "(Section 13).",
-        "Three failed mechanisms as scope delimiters \u2014 sparsemax, "
-        "sum-to-one penalty, and residue closure \u2014 each marking where "
-        "the constraint story stops working, with the full evidence in the "
-        "Supplement (Section 10, Supplement Section S1).",
+        "What to fit: a systematic comparison of simplex-constraint "
+        "mechanisms \u2014 six fraction-only heads plus a "
+        "presence-supervised gated head across five ternaries, against four "
+        "classical baselines (Sections 4 and 6.1) \u2014 with a projection "
+        "analysis showing the renorm head's accuracy is fully accounted for "
+        "by post-hoc projection (Section 5). Result: presence supervision, "
+        "not architecture, resolves the sharp-boundary cases, and the "
+        "regressor\u2013detector gap it closes is stable across presence "
+        "thresholds (Section 6).",
+        "Where it holds: two spatial generalisation protocols with "
+        "size-matched random controls and a region-matched reanalysis "
+        "(Section 7) \u2014 contiguous interior-band holdout (an in-hull "
+        "shift, not extrapolation) and strict one-sided out-of-range "
+        "extrapolation \u2014 separating spatial penalties from "
+        "data-volume reductions, complemented by a cheap "
+        "ensemble-disagreement triage where validated (Section 8).",
+        "Why it matters: a validated high-throughput application \u2014 a "
+        "501,501-composition lean-nickel screen with 411 of 411 shortlist "
+        "points confirming under full CALPHAD, plus learning curves "
+        "pricing adoption (Section 14) \u2014 on top of a protocol re-run "
+        "on two extension systems and a four-point experimental anchor as "
+        "supporting evidence (Sections 12 and 13).",
     ], start=1):
         p = doc.add_paragraph(style="List Number")
         p.add_run(c)
+
+    body(doc,
+         "Failed mechanisms (sparsemax, sum-to-one penalty, residue "
+         "closure) delimit the scope at each step; the full evidence is in "
+         "the Supplement (Section 10, Supplement Section S1).")
 
     body(doc,
          "Figure 1 summarises the pipeline end to end: the CALPHAD data "
@@ -1222,36 +1199,11 @@ def build() -> None:
             "not a general statement that neural models cannot detect phases.")
     finding(doc, "The gap is stable across presence thresholds",
             f"The presence threshold N{sup('k')} > 10{sup('-3')} is a "
-            f"modelling decision, so we recomputed F{SUB['1']} at "
-            f"10{sup('-4')} and 10{sup('-2')} from the stored predictions "
-            f"(Table 8). Absolute F{SUB['1']} values move \u2014 stricter "
-            f"thresholds make detection harder \u2014 but the ordering does "
-             f"not on four of the five ternary systems: the random forest remains the "
-            f"better detector on {LBL['fecrmn']}, {LBL['fecrv']}, and "
-            f"{LBL['femnni']} at all three thresholds, and the MLP on "
-            f"{LBL['fecrni']}. On {LBL['fecrmo']} the better detector flips "
-            f"with the threshold, consistent with that system's overall tie. "
-            f"The regressor\u2013detector gap is not an artefact of the "
-            f"threshold choice.")
-    TS = json.load(open(os.path.join(M, "threshold_sensitivity.json")))
-    rows = []
-    for s in SYS:
-        for i, model in enumerate(["mlp", "rf"]):
-            lab = ("best MLP (" + TS[s]["best_mlp"][len("mlp_"):].replace("_", "-") + ")") \
-                if model == "mlp" else "random forest"
-            cells = []
-            for thr in ["0.0001", "0.001", "0.01"]:
-                m, sd = TS[s][model][thr]["mean_f1"]
-                cells.append(f"{m:.3f} ({int(round(sd * 1e3))})")
-            rows.append([LBL[s] if i == 0 else "", lab] + cells)
-    table(doc, ["System", "Model", "F\u2081 at 10\u207b\u2074",
-                "F\u2081 at 10\u207b\u00b3", "F\u2081 at 10\u207b\u00b2"],
-          rows,
-          "Table 8. Sensitivity of phase-presence detection to the presence "
-          f"threshold. Mean F{SUB['1']} (three seeds; uncertainty in units of "
-          f"the last digit) for the best constrained MLP head and the random "
-          f"forest at thresholds 10{sup('-4')}, 10{sup('-3')} (main-study "
-          f"default), and 10{sup('-2')}.", left_cols=(0, 1))
+            f"modelling decision; recomputation at 10{sup('-4')} and "
+            f"10{sup('-2')} leaves the detector ordering unchanged on four "
+            f"of five systems ({LBL['fecrmo']} flips with the threshold), "
+            f"so the gap is not a threshold artefact (Supplement Section "
+            f"S2, Table S1).")
     finding(doc, "Detection degrades faster than regression under shift",
             f"This gap widens under distribution shift. On the held-out "
             f"temperature band of {LBL['fecrni']}, the MLP's mean F{SUB['1']} "
@@ -1301,7 +1253,7 @@ def build() -> None:
     ]
     table(doc, ["System", "MLP renorm", "RF", "XGB", "k-NN", "weighted",
                 "gated", "gated/MLP MAE ratio"], rows,
-          "Table 9. Presence-gated remedy. Macro-AUPRC (mean over three "
+          "Table 8. Presence-gated remedy. Macro-AUPRC (mean over three "
           "seeds; zero-positive phases excluded) for the renorm MLP, the "
           "three tree/k-NN baselines, the phase-weighted ablation, and the "
           "gated two-stage head; the final column is the gated-head test "
@@ -1426,8 +1378,8 @@ def build() -> None:
          "present in training. This ratio isolates the regional shift on "
          "identical rows; its residual confound is a training-set size "
          "difference of roughly 15%, since removing a band also removes "
-         "those rows from training. Table 10 "
-         "reports the band results and Table 11 the extrapolation results; "
+           "those rows from training. Table 9 "
+           "reports the band results and Table 10 the extrapolation results; "
          "Figure 6 panel (a) shows the band penalty ratios and Figure 7 the "
          "extrapolation ones.")
 
@@ -1454,7 +1406,7 @@ def build() -> None:
                          f"{t / c:.2f} / {x / c:.2f}")
         rows.append(cells)
     table(doc, ["Held-out region", "Model"] + [LBL[s] for s in SYS], rows,
-          "Table 10. Contiguous interior-band holdout. Top: test MAE on the "
+          "Table 9. Contiguous interior-band holdout. Top: test MAE on the "
           "random control, the held-out temperature band, and the held-out "
           "composition band (mean over three seeds; uncertainty in units of "
           "the last digit). Bottom: penalty ratios (band MAE / control MAE) "
@@ -1465,7 +1417,7 @@ def build() -> None:
           "band is costlier than removing random rows, but does not by "
           "itself separate region difficulty from distribution shift; a "
           "region-matched reanalysis on identical band rows is reported "
-          "in Table 15.",
+          "in Table 13.",
           left_cols=(0, 1))
 
     EX = {}
@@ -1504,7 +1456,7 @@ def build() -> None:
                              f"{x / cx:.2f} / {t / ct:.2f}")
             rows.append(cells)
         table(doc, ["Region", "Model"] + [LBL[s] for s in SYS], rows,
-              "Table 11. Strict one-sided out-of-range extrapolation: "
+              "Table 10. Strict one-sided out-of-range extrapolation: "
               "training keeps only the near side of one coordinate, the "
               "test set is the far side, and the interior gap is in neither "
               "split. Top: "
@@ -1544,11 +1496,11 @@ def build() -> None:
     doc.add_heading("7.2 Findings: contiguous interior-band holdout", level=2)
     finding(doc, "Two complementary references are needed for the band "
             "results",
-            "Results for the missing-region generalisation test (Table 10, "
+            "Results for the missing-region generalisation test (Table 9, "
             "Figure 6a) rest on two complementary references \u2014 the "
             "size-matched random controls and the region-matched reanalysis, "
             "both defined in Section 7.1. Under the region-matched measure "
-            "(Table 15) the "
+            "(Table 13) the "
             "in-distribution-to-holdout penalty is smaller for the "
             "constrained MLP than for the tree ensembles in nine of the "
             f"ten band\u2013system combinations. On the composition bands, "
@@ -1560,7 +1512,7 @@ def build() -> None:
             f"{LBL['fecrni']} the single exception, where the random-forest "
             f"ratio is lower (2.1 versus 2.8) although the forest's "
             f"absolute holdout error there remains twice the MLP's (0.0258 "
-            f"against 0.0132). The per-seed ratios in Table 15 show one "
+            f"against 0.0132). The per-seed ratios in Table 13 show one "
             f"instability behind the headline: on {LBL['femnni']} the MLP "
             f"temperature ratios spread 0.9, 20.3 and 0.6 across seeds "
             f"from a near-zero denominator on one seed, which the "
@@ -1799,7 +1751,7 @@ def build() -> None:
         rows.append(["closure penalty", lab,
                      f"{mae_cell(m, sd)[0]}, closure {sci(c)}", ""])
     table(doc, ["Ablation", "Setting", "renorm", f"sigmoid/{SIG}"], rows,
-          f"Table 12. Ablations on {LBL['fecrni']} (mean over three seeds; "
+          f"Table 11. Ablations on {LBL['fecrni']} (mean over three seeds; "
           f"uncertainty in units of the last digit). Loss function, "
           f"hidden-layer width, and closure penalty are varied for the renorm "
           f"and sigmoid/{SIG} heads.", left_cols=(0, 1))
@@ -1871,7 +1823,7 @@ def build() -> None:
     finding(doc, "Sum-to-one penalty: redundant and harmful",
             f"The targets already sum to one, so a soft sum-to-one penalty "
             f"competes with the data fit: MAE rises to 0.0804 at "
-            f"{LAMBDA} = 1 and 0.1693 at {LAMBDA} = 10 (Table 12) while "
+            f"{LAMBDA} = 1 and 0.1693 at {LAMBDA} = 10 (Table 11) while "
             f"closure improves only to 1.3{TIMES}10{sup('-3')}. Full curves "
             f"are in Supplement Figure S1.")
     finding(doc, "Residue closure: closure without non-negativity",
@@ -2028,7 +1980,7 @@ def build() -> None:
     ]
     table(doc, ["Quantity", "Fe\u2013Cr\u2013Ni\u2013C", "Fe\u2013Cr\u2013C"],
           rows,
-          "Table 13. Scope-extension systems. (A) System and dataset "
+          "Table 12. Scope-extension systems. (A) System and dataset "
           "statistics. (B) Test MAE (mean over three seeds; uncertainty in "
           "units of the last digit), best per system in bold. (C) "
           "Contiguous-band and strict-extrapolation holdouts against "
@@ -2039,114 +1991,20 @@ def build() -> None:
                                       (10, 1), (11, 2)})
 
     # 13. Comparison against published experiments
-    doc.add_heading("13. Comparison against published experiments",
+    doc.add_heading("13. Experimental anchor in brief",
                     level=1)
     body(doc,
-         "Every accuracy claim so far is emulation fidelity: the surrogate "
-         "reproduces the database. The complementary question is how large "
-         "the surrogate's contribution is relative to the database's own "
-         "disagreement with experiment. We anchor the pipeline on four "
-         "published differential-thermal-analysis (DTA) transition "
-         "temperatures.")
+         "Four published DTA transition temperatures bound the surrogate's "
+         "contribution against the database's own disagreement with "
+         "experiment; provenance, protocol, per-alloy deltas and melting "
+         "curves are in the Supplement (Section S3, Table S2, Figure S2).")
     body(doc,
-         "Three Fe\u2013C\u2013Cr alloys with tabulated DTA liquidus, "
-         "peritectic, and solidus temperatures come from Drozdov\u00e1 et "
-         "al. (2017); the fourth point is the liquidus of an "
-         "Fe\u201321.0Cr\u201316.6Ni (wt%) alloy from Yamada et al. "
-         "(1987), who also located the peritectic\u2013eutectic "
-         "transition point of the iron-rich Fe\u2013Cr\u2013Ni subsection "
-         "near 15 wt% Cr\u201310 wt% Ni (reported for completeness; not "
-         "used quantitatively here). A \u03b4-ferrite fraction dataset "
-         "with tabulated metallography was identified but excluded: its "
-         "alloy (UNS S31803 duplex stainless steel, "
-         "Fe\u201322.07Cr\u20135.68Ni\u20133.20Mo\u20130.17N\u20130.017C "
-         "in wt%) contains molybdenum, outside every modelled system, so "
-         "any comparison would conflate database error with an "
-         "unmodelled-element error. All extracted values, provenance, and "
-         "caveats are archived with the data release.")
-    finding(doc, "Protocol",
-            "Compositions are converted from wt% to mole fractions (all "
-            "four lie inside the corresponding design box), and each alloy "
-            f"is swept in temperature from 600 to 1900 \u00b0C \u2014 "
-            f"coarsely at 5 K, refined to 1 K around every detected "
-            f"transition \u2014 twice: once with the full eligible phase "
-            f"set on the pycalphad side, and once with the three-seed "
-            f"ensemble of that system's best head (sigmoid/{SIG} for "
-            f"Fe\u2013Cr\u2013C, renorm for Fe\u2013Cr\u2013Ni; trained "
-            f"without any knowledge of the anchor values). Transitions are "
-            f"located on heating as the first sustained appearance of "
-            f"liquid (threshold 10{sup('-4')} on the melting branch) and "
-             f"the last disappearance of solid; for each alloy the "
-             f"published quantity is matched to the corresponding "
-             f"transition (Table 14) \u2014 T\u2097 for alloy A and the "
-             f"Yamada "
-             f"alloy, first-liquid for alloy C (T\u209b), and "
-            f"first-liquid for alloy B, where the published peritectic "
-            f"arrest coincides in both calculations with the onset of "
-            f"melting (the liquid+\u03b4 field begins 24\u201326 K "
-            f"higher, and is therefore distinguishable).")
-    finding(doc, "Results",
-            f"Table 14 and Figure 9 give the three-way comparison. "
-            f"Against the full-CALPHAD reference the surrogate's "
-            f"transitions land within 21 K at the 10{sup('-4')} threshold "
-            f"(mean 14\u201317 K across the two transition types), and the "
-            f"residual is tail shape rather than curve shift: at a "
-            f"10{sup('-3')} threshold the mean deviation falls to "
-            f"6.8\u20137.3 K, and at 10{sup('-2')} to 1.0\u20133.0 K, "
-            f"while the sweep-wide mean absolute fraction deviation is "
-            f"6{TIMES}10{sup('-4')}\u20131.4{TIMES}10{sup('-3')}. "
-            f"Against the published DTA values, the full-CALPHAD "
-            f"reference deviates by {MINUS}3 K (Yamada liquidus), +13 K "
-            f"(alloy A), {MINUS}2 K (alloy B) \u2014 mean 19 K \u2014 "
-            f"with alloy C the outlier at +59 K; adding the surrogate's "
-            f"error moves the mean to 25 K, no worse than 38 K anywhere. "
-            f"At the primary 10{sup('-4')} threshold the two discrepancies "
-            f"are the same order of magnitude (surrogate\u2013CALPHAD mean "
-            f"17.75 K against CALPHAD\u2013experiment mean 19 K, median 8 "
-            f"K), and per alloy the surrogate term is the larger of the two "
-            f"on three of the four points (A: 14 against 13; B: 19 against "
-            f"2; Yamada: 17 against 3; only C reverses, 21 against 59). The "
-            f"database mean is driven by the single +59 K outlier on the "
-            f"most Cr-rich alloy. With n = 4 neither term can be declared "
-            f"the limiting one: the anchor bounds the surrogate's "
-            f"contribution at tens of kelvin at the detection threshold the "
-            f"protocol actually uses, not single digits. The four points are too few, and the "
-            f"DTA method too rate-dependent, for a stronger claim; they "
-            f"are reported to bound the surrogate's contribution to an "
-            f"experiment-facing pipeline, not to validate the database.")
-    rows = [
-        ["Drozdov\u00e1 A", "C 0.308, Cr 1.058", "T\u2097 1498",
-         "1511", "1525", "+14", "+13", "+27"],
-        ["Drozdov\u00e1 B", "C 0.32, Cr 1.54", "T\u209a 1471",
-         "1469", "1450", f"{MINUS}19", f"{MINUS}2", f"{MINUS}21"],
-        ["Drozdov\u00e1 C", "C 0.38, Cr 4.99", "T\u209b 1397",
-         "1456", "1435", f"{MINUS}21", "+59", "+38"],
-        ["Yamada 21Cr\u201316Ni", "Cr 21.0, Ni 16.6", "T\u2097 1441",
-         "1438", "1455", "+17", f"{MINUS}3", "+14"],
-    ]
-    table(doc, ["Alloy", "Composition (wt%)", "Published", "CALPHAD",
-                "Surrogate", f"sur{MINUS}cal", f"cal{MINUS}exp",
-                f"sur{MINUS}exp"], rows,
-          "Table 14. Transition temperatures: surrogate ensemble versus "
-          "full-set CALPHAD versus published DTA. All temperatures in "
-          "\u00b0C; deltas in K. The published quantity per alloy is the "
-          f"comparison target; transitions are located at liquid-fraction "
-          f"threshold 10{sup('-4')} on the sustained melting branch.",
-          note="T\u2097\u2194 last solid, T\u209a/"
-               "T\u209b\u2194 first liquid; detected at liquid "
-               f"fraction 10{sup('-4')} on the sustained branch. "
-               f"Composition in wt% (Fe balance); surrogate = 3-seed "
-               f"ensemble, primary head (Fe\u2013Cr\u2013C: "
-               f"sigmoid/{SIG}; Fe\u2013Cr\u2013Ni: renorm).",
-          left_cols=(0, 1))
-    figure(doc, "fig9_anchor",
-           "Figure 9. Melting curves for the four anchor alloys: "
-           "full-set CALPHAD (solid) versus surrogate ensemble (dashed), "
-           "with the published DTA transition marked. The two "
-           "calculations track each other along the entire melting "
-           "branch; the surrogate's transition-location deviation comes "
-           f"from sub-10{sup('-3')} tail differences, not from shifted "
-           f"curves.")
+         "At the primary 10\u207b\u2074 threshold the surrogate matches "
+         "full CALPHAD within 21 K (mean 17.75 K), the same order as the "
+         "database's own mean deviation from experiment (19 K, median 8 K, "
+         "driven by a single +59 K outlier); the surrogate term is larger "
+         "on three of the four alloys, and with n = 4 neither term can be "
+         "declared limiting.")
     RM = json.load(open(os.path.join(ROOT, "analysis_revision",
                                      "revision_analyses.json")))
     rmb = RM.get("region_matched_bands", {})
@@ -2162,11 +2020,11 @@ def build() -> None:
             rrows.append(row)
     table(doc, ["Band", "System", "MLP renorm", "random forest", "XGBoost"],
           rrows,
-          "Table 15. Region-matched band reanalysis: holdout mean MAE on "
+          "Table 13. Region-matched band reanalysis: holdout mean MAE on "
           "band rows divided by in-distribution mean MAE on the identical "
           "rows (ratio of means; per-seed ratios in parentheses), for the "
           "renorm MLP, the random forest and XGBoost. Complements the "
-          "random-control penalties of Table 10; see Section 7.1 for the "
+          "random-control penalties of Table 9; see Section 7.1 for the "
           "two references. The Fe\u2013Cr\u2013Ni temperature ordering "
           "reverses relative to the random-control picture; the "
           "Fe\u2013Mn\u2013Ni temperature per-seed spread (0.86/20.28/0.62) "
@@ -2192,7 +2050,7 @@ def build() -> None:
          f"shortlisting 10,936 hits (2.18%).")
     finding(doc, "Every shortlisted alloy checked validates; the frontier "
             "is a Ni\u2013Cr trade-off curve",
-            f"Figure 10 maps the screen. The shortlist hugs the lean edge "
+            f"Figure 9 maps the screen. The shortlist hugs the lean edge "
             f"of the austenite field; per-Cr-bin minimal-Ni points trace a "
             f"Pareto frontier falling from 7.5% Ni at 1.5% Cr to 4.8% Ni "
             f"near 12\u201313% Cr before rising again as sigma encroaches "
@@ -2235,7 +2093,7 @@ def build() -> None:
             f"split, under the identical protocol, gives test MAE 0.0231 "
             f"at 10% (568 equilibria), 0.0173 at 25% (1,420), 0.0121 at 50% "
             f"(2,840) and 0.0091 at 100% (5,681), seed-means over the same "
-            f"three seeds (Figure 10, panel c; Table 16). Half the "
+            f"three seeds (Figure 9, panel c; Table 14). Half the "
             f"data-generation bill reaches within a factor of 1.3 of "
             f"full-data accuracy, which halves the optimistic break-even "
             f"above; even 568 solves train a 0.023-MAE surrogate, roughly "
@@ -2283,14 +2141,14 @@ def build() -> None:
          "0.0231 / 0.0173 / 0.0121 / 0.0091"],
     ]
     table(doc, ["Quantity", "Value"], srows,
-          "Table 16. Application case: lean-Ni austenitic screen at 1000 K "
+          "Table 14. Application case: lean-Ni austenitic screen at 1000 K "
           f"on {LBL['fecrni']}. Break-even is the one-time cost (data "
           "generation at measured versus prose per-point cost, plus probe "
           "and 268 s training) divided by the measured 0.41 s per-point "
           "full-set saving.",
           left_cols=(0,))
     figure(doc, "fig10_screen",
-           "Figure 10. Lean-Ni austenitic screen at 1000 K. (a) Gibbs "
+           "Figure 9. Lean-Ni austenitic screen at 1000 K. (a) Gibbs "
            "triangle coloured by surrogate FCC (Ni apex at top, Cr "
            "bottom-right, Fe bottom-left): shortlist (dark dots), Pareto "
            "frontier of minimal Ni per Cr bin (gold, all 11 "
@@ -2546,7 +2404,7 @@ def build() -> None:
          f"control: the "
          f"temperature-band penalty is mostly a data effect against the "
          f"random control, with a region-matched residual on "
-         f"{LBL['fecrni']} (Table 15). Under strict "
+         f"{LBL['fecrni']} (Table 13). Under strict "
          f"one-sided out-of-range extrapolation all evaluated model "
          f"families degraded sharply, and the constrained MLP achieved the "
          f"lowest absolute far-side error in all five ternary systems, "
@@ -2635,7 +2493,7 @@ def build() -> None:
          "files, and the experimental-anchor extraction and evaluation "
           "(pointers to the source PDFs, extracted tables, and the sweep "
           "outputs "
-         "behind Table 14) are archived at [Zenodo DOI]. The MatCalc "
+         "behind Supplement Table S2) are archived at [Zenodo DOI]. The MatCalc "
          "mc_fe_v2.062 source database is distributed under its own "
          "license and is not redistributed here; scripts reproducing the "
          "ternary extraction from a local copy are provided.")

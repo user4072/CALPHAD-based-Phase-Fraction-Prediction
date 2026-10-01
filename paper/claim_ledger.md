@@ -264,3 +264,15 @@ Figure S1, own bibliography); main text keeps a scope-delimiter summary
 under the same \label{sec:negative} (all existing cross-refs resolve).
 No number changed sides without staying in at least one audited file;
 audit g_structural reads main + SI concatenated. Audit: 392/0/7.
+
+## ADDENDUM -- main/supplement split, step 2 (2026-10-01)
+
+Threshold detail (paragraph + Table threshold) -> SI Section S2
+(Table S1); anchor section full text + Table anchor + Figure anchor ->
+SI Section S3 (Table S2, Figure S2, own bibitems drozdovs2017/yamada1987).
+Main keeps: 2-sentence threshold pointer; slim "Experimental anchor in
+brief" section (same label, headline numbers 21 K / 17.75 K / 19 K).
+Contributions 6 -> 3 (what to fit / where it holds / why it matters);
+abstract trimmed to ~150 words (audit phrases intact). Docx mirrors all:
+threshold Table 8 and anchor Table 14 + Figure 9 removed; docx tables
+1--14 and figures 1--9 sequential. Main 53pp, SI 5pp. Audit: 392/0/7.

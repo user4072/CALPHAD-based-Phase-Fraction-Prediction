@@ -19,6 +19,8 @@
 \setlength{\evensidemargin}{0cm}
 \setlength{\topmargin}{-1cm}
 
+\newcommand{\Np}[1]{N^{#1}}
+
 \begin{document}
 
 \begin{center}
@@ -101,7 +103,7 @@ mechanism.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figures/fig6_failures}
-\caption{Three negative results. (a) Sparsemax: per-seed test MAE (orange)
+\caption{Figure S1. Three negative results. (a) Sparsemax: per-seed test MAE (orange)
 versus the renorm head (green) across all five ternary systems. The seed-to-seed
 spread of sparsemax is of the same order as its mean. (b) Sum-to-one penalty
 on Fe--Cr--Ni: MAE (bars, left axis) and closure violation (line, right axis)
@@ -112,7 +114,136 @@ versus the best constrained head (green star) across all five ternary systems.}
 \end{figure}
 
 % ======================================================================
+\section{Detection threshold sensitivity in full}
+\label{sec:si-threshold}
+
+The presence threshold $\Np{k} > 10^{-3}$ is a modelling decision. Table~S1
+recomputes mean $F_1$ at $10^{-4}$ and $10^{-2}$ from the stored
+predictions for the best constrained MLP head and the random forest.
+Absolute $F_1$ values move --- stricter thresholds make detection harder
+--- but the ordering does not on four of the five ternary systems: the
+random forest remains the better detector on Fe--Cr--Mn, Fe--Cr--V, and
+Fe--Mn--Ni at all three thresholds, and the MLP on Fe--Cr--Ni. On
+Fe--Cr--Mo the better detector flips with the threshold, consistent with
+that system's overall tie.
+
+\begin{table}[htbp]
+\centering
+\caption{Table S1. Sensitivity of phase-presence detection to the presence
+threshold. Mean $F_1$ (three seeds; uncertainty in units of the last digit)
+for the best constrained MLP head and the random forest at thresholds
+$10^{-4}$, $10^{-3}$ (main-study default), and $10^{-2}$.}
+\label{tab:si-threshold}
+\small
+\input{tab/threshold.tex}
+\end{table}
+
+% ======================================================================
+\section{Comparison against published experiments in full}
+\label{sec:si-anchor}
+
+Every accuracy claim in the main text is emulation fidelity: the surrogate
+reproduces the database. The complementary question is how large the
+surrogate's contribution is relative to the database's own disagreement
+with experiment. We anchor the pipeline on four published
+differential-thermal-analysis (DTA) transition temperatures.
+
+Three Fe--C--Cr alloys with tabulated DTA liquidus, peritectic, and
+solidus temperatures come from Drozdov\'a et al.\ \citep{drozdovs2017};
+the fourth point is the liquidus of an Fe--21.0Cr--16.6Ni (wt\%) alloy
+from Yamada et al.\ \citep{yamada1987}, who also located the
+peritectic--eutectic transition point of the iron-rich Fe--Cr--Ni
+subsection near 15~wt\%~Cr--10~wt\%~Ni (reported for completeness; not
+used quantitatively here). A $\delta$-ferrite fraction dataset with
+tabulated metallography was identified but excluded: its alloy (UNS
+S31803 duplex stainless steel, Fe--22.07Cr--5.68Ni--3.20Mo--0.17N--0.017C
+in wt\%) contains
+molybdenum, outside every modelled system, so any comparison would
+conflate database error with an unmodelled-element error. All extracted
+values, provenance, and caveats are archived with the data release.
+
+\paragraph{Protocol.}
+Compositions are converted from wt\% to mole fractions (all four lie
+inside the corresponding design box), and each alloy is swept in
+temperature from 600 to 1900\,\textdegree C --- coarsely at 5~K, refined to 1~K
+around every detected transition --- twice: once with the full eligible
+phase set on the pycalphad side, and once with the three-seed ensemble of
+that system's best head (sigmoid/$\Sigma$ for Fe--Cr--C, renorm for
+Fe--Cr--Ni; trained without any knowledge of the anchor values).
+Transitions are located on heating as the first sustained appearance of
+liquid (threshold $10^{-4}$ on the melting branch) and the last
+disappearance of solid; for each alloy the published quantity is matched
+to the corresponding transition (Table~S2) --- $T_L$ for
+alloy A and the Yamada
+alloy, first-liquid for alloy C ($T_S$), and first-liquid for alloy B,
+where the published peritectic arrest coincides in both calculations
+with the onset of melting (the liquid+$\delta$ field begins 24--26~K
+higher, and is therefore distinguishable).
+
+\paragraph{Results.}
+Table~S2 and Figure~S2 give the
+three-way comparison. Against the full-CALPHAD reference the surrogate's
+transitions land within 21~K at the $10^{-4}$ threshold (mean 14--17~K
+across the two transition types), and the residual is tail shape rather
+than curve shift: at a $10^{-3}$ threshold the mean deviation falls to
+6.8--7.3~K, and at $10^{-2}$ to 1.0--3.0~K, while the sweep-wide mean
+absolute fraction deviation is $6\times10^{-4}$--$1.4\times10^{-3}$.
+Against the published DTA values, the full-CALPHAD reference deviates by
+$-3$~K (Yamada liquidus), $+13$~K (alloy A), $-2$~K (alloy B) ---
+mean 19~K --- with alloy C the outlier at $+59$~K; adding the surrogate's
+error moves the mean to 25~K, no worse than 38~K anywhere. At the primary
+$10^{-4}$ threshold the two discrepancies are the same order of magnitude
+(surrogate--CALPHAD mean 17.75~K against CALPHAD--experiment mean 19~K,
+median 8~K), and per alloy the surrogate term is the larger of the two on
+three of the four points (A: 14 against 13; B: 19 against 2; Yamada: 17
+against 3; only C reverses, 21 against 59). The database mean is driven by
+the single $+59$~K outlier on the most Cr-rich alloy. With $n = 4$ neither
+term can be declared the limiting one: the anchor bounds the surrogate's
+contribution at tens of kelvin at the detection threshold the protocol
+actually uses, not single digits. The four points are too few, and the
+DTA method too rate-dependent, for a stronger claim; they are reported
+to bound the surrogate's contribution to an experiment-facing pipeline,
+not to validate the database.
+
+\begin{table}[htbp]
+\centering
+\caption{Table S2. Transition temperatures: surrogate ensemble versus full-set
+CALPHAD versus published DTA. All temperatures in \textdegree C;
+deltas in K. The published quantity per alloy is the comparison target;
+transitions are located at liquid-fraction threshold $10^{-4}$ on the
+sustained melting branch.}
+\label{tab:si-anchor}
+\small
+\input{tab/anchor.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/fig9_anchor}
+\caption{Figure S2. Melting curves for the four anchor alloys: full-set
+CALPHAD (solid) versus surrogate ensemble (dashed), with the published
+DTA transition marked. The two calculations track each other along the
+entire melting branch; the surrogate's transition-location deviation comes
+from sub-$10^{-3}$ tail differences, not from shifted curves.}
+\label{fig:si-anchor}
+\end{figure}
+
+% ======================================================================
 \begin{thebibliography}{99}
+
+\bibitem[Drozdov\'a et al.(2017)]{drozdovs2017}
+Drozdov\'a, \'L., Smetana, B., Zl\'a, S., Kalup, A., Kawulokov\'a, M.,
+Rosypalov\'a, S., \v{R}eh\'a\v{c}kov\'a, L., Vontorov\'a, J., Strouhalov\'a,
+M., 2017. Temperatures of liquidus, solidus and peritectic transformation
+of Fe--C--Cr based alloys. In: METAL 2017 --- 26th International
+Conference on Metallurgy and Materials, Brno, Czech Republic, pp. 65--70.
+VSB-Technical University of Ostrava / TANGER.
+
+\bibitem[Yamada et al.(1987)]{yamada1987}
+Yamada, A., Umeda, T., Suzuki, M., Aragane, G., Kihara, H., Kimura, K.,
+1987. Determination of liquidus and solidus surfaces at iron-rich region
+of Fe--Cr--Ni system. Tetsu-to-Hagan\'e 73, 1676--1683.
+\url{https://doi.org/10.2355/tetsutohagane1955.73.14_1676}.
 
 \bibitem[Martins and Astudillo(2016)]{martins2016sparsemax}
 Martins, A.F.T., Astudillo, R.F., 2016. From softmax to sparsemax: A sparse
