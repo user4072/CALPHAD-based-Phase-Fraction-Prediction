@@ -596,6 +596,13 @@ def g_penalty():
     check("tex:90 penalty degrades MAE lower 8x", min(r1, r10), "8")
     check("tex:90 penalty degrades MAE upper 16x", max(r1, r10), "16")
     check_ge("tex:1728 penalty detrimental in both variants", min(r1, r10), "1")
+    check("tex:1227 penalty_1 absolute MAE 0.0804",
+          sm(a23, "mlp_penalty_1"), "0.0804")
+    check("tex:1228 penalty_10 absolute MAE 0.1693",
+          sm(a23, "mlp_penalty_10"), "0.1693")
+    check("tex:1227 renorm reference MAE 0.0106", base, "0.0106")
+    check("tex:1195 power-norm probe MAE 0.0123",
+          sm(a23, "mlp_power_norm"), "0.0123")
 
     # spot: penalty closure 6.2e-2 -> 1.3e-3 (line 1229; Fe-Cr-Ni scope,
     # matching the penalty probe) -- sigmoid baseline closure on fecrni
@@ -944,13 +951,15 @@ def g_penalties_holdout():
     check("tex:1721 T extrap upper 20x",
           max(ext_extrap("fecrnic", "T"), ext_extrap("fecrc", "T")), "20")
 
-    # extension MLP leads forest 1.7-2.0x (tex:1718-1719)
+    # extension best constrained head leads forest ~1.9-2.0x (tex:1719):
+    # renorm on fecrnic, sigmoid/Sigma on fecrc
     lead = {}
+    ext_best = {"fecrnic": "mlp_renorm", "fecrc": "mlp_sig_norm"}
     for s in EXT:
         h = J(os.path.join(MODELS, f"results_heads_{s}.json"))
         b = J(os.path.join(MODELS, f"results_baselines_{s}.json"))
-        lead[s] = sm(b, "rf_renorm") / sm(h, "mlp_renorm")
-    check("tex:1719 extension MLP lead lower 1.7x", min(lead.values()), "1.7")
+        lead[s] = sm(b, "rf_renorm") / sm(h, ext_best[s])
+    check("tex:1719 extension MLP lead lower 1.9x", min(lead.values()), "1.9")
     check("tex:1719 extension MLP lead upper 2.0x", max(lead.values()), "2.0")
     check("tex:1376 fecrnic renorm 2.0x over forest", lead["fecrnic"], "2.0")
 

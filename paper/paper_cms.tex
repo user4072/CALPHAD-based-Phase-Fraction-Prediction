@@ -22,6 +22,7 @@
 \begin{document}
 
 \begin{frontmatter}
+\setlength{\emergencystretch}{3em}
 
 \title{Simplex Constraints, Spatial Generalization, and the
 Regressor--Detector Gap in Machine-Learning Surrogates for CALPHAD
@@ -31,64 +32,43 @@ Phase-Fraction Prediction}
 \address[a]{Anonymous}
 
 \begin{abstract}
-Surrogate models that map composition and temperature to equilibrium phase
+Surrogate models mapping composition and temperature to equilibrium phase
 fractions must respect the simplex constraint $\sum_k \Np{k} = 1$, yet the
-literature offers no consensus on how that constraint should be imposed. We
-compare six output heads --- sigmoid, softmax, sigmoid/$\Sigma$,
-clip-then-renormalise, sparsemax, and a residue closure head --- against
-four classical baselines across five Fe-based ternary systems (Fe--Cr--Ni,
-Fe--Cr--Mn, Fe--Cr--Mo, Fe--Cr--V, Fe--Mn--Ni) solved with pycalphad from
-the open MatCalc steel database, totalling 44{,}397 mass-balance-validated
-equilibria, and extend the same protocol to two scope-extension systems, a
-quaternary Fe--Cr--Ni--C (13{,}192 equilibria) and a carbide-rich
-Fe--Cr--C (13{,}199), for 70{,}788 equilibria in total; power
-normalisation and a sum-to-one loss penalty are evaluated additionally as
-mechanism probes on Fe--Cr--Ni. Structurally constrained heads satisfy
-sum-to-one closure to $\le 5\times10^{-8}$ at no accuracy cost; the
-unconstrained sigmoid violates it by 6--8\%, and the residue head, which
-enforces closure but not non-negativity, produces negative fractions on up
-to 1.2\% of cells. A projection analysis shows that post-hoc projection
-alone recovers the renorm head's accuracy (projected sigmoid matches renorm
-to $\le 1.3\times10^{-4}$ MAE in every system), and that closure is not
-membership: ridge regression closes the sum to $\sim10^{-10}$ yet emits
-negative fractions on 17--28\% of cells, whereas $k$-nearest neighbours, a
-convex combination of training labels, is the only evaluated baseline that
-is simplex-valid a priori. No single evaluated architecture consistently
-dominates: constrained multilayer perceptrons lead on systems with dense
-smooth coexistence (Fe--Cr--Ni, Fe--Cr--Mn), random forests win where sharp
-phase boundaries dominate (Fe--Mn--Ni), and paired-bootstrap tests confirm
-statistical ties in the remaining systems (Fe--Cr--Mo, Fe--Cr--V). Two
-spatial protocols, each with a size-matched random control and a
-region-matched reanalysis, separate \emph{where} points are held out from
-the penalty of having less data: on contiguous interior holdout bands ---
-which a Delaunay check shows to lie 99.3--99.4\% inside the convex hull of
-the remaining training points --- the random forest pays a $3.11\times$
-penalty against $1.61\times$ for the constrained MLP on the Fe--Cr--Ni
-composition band, whereas on the temperature band both pay $1.31\times$;
-under strict one-sided out-of-range extrapolation all evaluated model
-families degrade by roughly an order of magnitude, and the temperature
-protocol is additionally limited by the closed phase basis, as liquid is
-absent from the near-side training data in all five systems.
-Phase-presence detection degrades faster than regression under distribution
-shift, and the standard remedy works: a presence-gated two-stage head ---
-a per-phase presence classifier gating the fraction output --- raises
-macro-AUPRC from 0.36--0.99 to 0.91--0.99 across the ternary systems
-while \emph{reducing} MAE by 6--72\%, and from 0.56/0.81 to 0.92/0.97 on
-the two extension systems at a 12--47\% MAE cost. A three-seed
-disagreement score identifies high-error rows with mean AUROC 0.70, while
-input-space distance gives no signal (0.41); at 50\% retained coverage it
-cuts MAE up to fourfold on the systems where the ensemble helps. On the
-extension systems constrained MLPs lead both (MAE 0.0037 and 0.0029
-against 0.0075 and 0.0055 for the forest), quaternary phase-set
-validation passes at solver precision, and the nine Fe--Cr--C
-full-set deviations are reported. Against four literature DTA transition
-points the surrogate reproduces full-CALPHAD transition temperatures to
-21~K or better (1--3~K at a $10^{-2}$ detection threshold), while the
-database itself deviates from experiment by 19~K on average. Three
-negative results are reported in full: under the evaluated configuration
-sparsemax exhibits severe seed sensitivity; a sum-to-one penalty degrades
-MAE by 8--16$\times$; and the residue head is 1.4--2.5$\times$ worse than
-the best constrained head in all five systems.
+literature offers no consensus on how to impose it. We compare six output
+heads (sigmoid, softmax, sigmoid/$\Sigma$, clip-then-renormalise, sparsemax,
+and residue closure) and four classical baselines on five Fe-based ternaries
+solved with pycalphad from the open MatCalc steel database (44{,}397
+equilibria), and extend it to a quaternary Fe--Cr--Ni--C (13{,}192) and a
+carbide-rich Fe--Cr--C (13{,}199), 70{,}788 in total; two mechanism probes
+(power normalisation, sum-to-one loss penalty) are evaluated on Fe--Cr--Ni.
+The softmax, sigmoid/$\Sigma$, and renorm heads satisfy sum-to-one closure
+to $\le 5\times10^{-8}$ at no accuracy cost; the unconstrained sigmoid
+violates closure by 6--8\%, and ridge closes the sum to $\sim10^{-10}$ yet
+emits negative fractions on 17--28\% of cells: closure is not membership.
+Post-hoc projection alone recovers renorm-head accuracy: projected sigmoid
+matches renorm to $\le 1.3\times10^{-4}$ MAE in every system. Rankings
+depend on phase geometry: constrained multilayer perceptrons lead on
+smooth-coexistence systems, random forests where sharp phase boundaries
+dominate, ties elsewhere. Under distribution shift the random forest pays
+3.11 times the control MAE, the constrained MLP 1.61 times, on the
+Fe--Cr--Ni composition band; strict one-sided extrapolation degrades every
+evaluated model family by roughly an order of magnitude; the temperature
+protocol is limited by the closed phase basis (liquid absent from near-side
+training data in all five ternary systems). Phase-presence detection
+degrades faster than regression; a presence-gated two-stage head raises
+macro-AUPRC from 0.36--0.99 to 0.91--0.99 across the five ternary systems
+while \emph{reducing} MAE by 6--72\%, reaching 0.965 and 0.92 on the two
+extension systems. A three-seed disagreement score flags high-error rows
+with mean AUROC 0.70 (input-space distance 0.41), cutting MAE up to
+fourfold where the ensemble helps. On the extension systems constrained
+MLPs lead the forest (MAE 0.0037 and 0.0029 against 0.0075 and 0.0055), and
+temperature extrapolation costs 15.2 and 20 times the control. Against four
+DTA points it reproduces full-CALPHAD transition temperatures within 21~K
+(mean 17.75~K); the database deviates from experiment by 19~K. Three
+negative results: sparsemax exhibits severe seed sensitivity;
+a sum-to-one penalty degrades MAE by factors of 8--16;
+the residue head is 1.4--2.5 times worse than the best constrained
+head in all five ternary systems.
 \end{abstract}
 
 \begin{keyword}
@@ -164,20 +144,14 @@ coordinates altogether --- strict, one-sided extrapolation along that
 coordinate. The two are
 different tests: in the first the test points typically remain inside the
 convex hull of the training set, in the second they do not. Both protocols
-share a confound: removing the held-out region also removes training data,
-so a degradation in held-out accuracy conflates ``cannot generalise there''
-with ``had less to learn from''. We resolve this with size-matched random
-controls --- the same number of rows removed at random --- which isolate
-the spatial penalty from the data-volume penalty. Because the control rows
-differ from the held-out rows, those ratios alone still conflate region
-difficulty with distribution shift; a region-matched reanalysis, which
-compares the same held-out rows with and without regional training data,
-provides the complementary reference (Section~\ref{sec:protocols}).
+share a confound --- removing the held-out region also removes training
+data --- which Section~\ref{sec:protocols} resolves with size-matched
+random controls and a region-matched reanalysis.
 
 \subsection{Contributions}
 
 The study is deliberately scoped to small systems --- five ternaries plus
-one quaternary and one carbon-rich ternary as scope extensions --- where
+one quaternary and one carbide-rich ternary as scope extensions --- where
 ground-truth generation is inexpensive (a few CPU-hours per system), so
 that every protocol decision can be validated exhaustively; the
 methodological questions it isolates --- constraint enforcement,
@@ -187,9 +161,10 @@ where surrogate speed becomes a practical necessity.
 
 \begin{enumerate}
 \item A \textbf{systematic comparison of simplex-constraint mechanisms}
-for neural-network phase-fraction prediction --- six heads across all five
-systems plus two mechanism probes --- against four classical baselines
-(Section~\ref{sec:results}), together with a \textbf{projection analysis}
+for neural-network phase-fraction prediction --- six heads across the five
+ternary systems plus two mechanism probes (Section~\ref{sec:ablations})
+--- against four classical baselines (Section~\ref{sec:results}), together
+with a \textbf{projection analysis}
 separating closure from simplex membership and showing that the renorm
 head's accuracy is fully accounted for by post-hoc projection
 (Section~\ref{sec:closure}).
@@ -263,8 +238,8 @@ raw form. We parse it with a lenient custom parser, extract the five
 three-element subsystems, and apply minimal syntax repairs (reference-element
 blocks and malformed function ranges). Both a pruned database (constituents
 restricted to the system elements) and an unpruned database are built. Equivalence validation on 100 re-solved points
-per system confirms the pruning is bit-for-bit inert: maximum
-$|\Delta\Np{\phi}| = 0$ and $|\Delta G_m| = 0$~J/mol for all five systems.
+per ternary system confirms the pruning is bit-for-bit inert: maximum
+$|\Delta\Np{\phi}| = 0$ and $|\Delta G_m| = 0$~J/mol for all five ternary systems.
 All equilibrium calculations are performed with the open-source CALPHAD
 implementation pycalphad \citep{pycalphad} against this database, so the
 surrogates emulate this specific solver--database combination; their accuracy
@@ -361,21 +336,25 @@ number ever observed active in the probe.}
 
 \subsection{Sampling and acceptance}
 
-Design variables per system are $(x_2, x_3, T)$ with $x_{\mathrm{Fe}} =
-1 - x_2 - x_3$, temperature uniform in $[700, 2000]$~K. Five deterministic
+Design variables per ternary system are $(x_2, x_3, T)$ with
+$x_{\mathrm{Fe}} = 1 - x_2 - x_3$, temperature uniform in $[700, 2000]$~K.
+Five deterministic
 sampling strategies (RNG seed 42) generate 11{,}220 raw design points:
 6{,}000 Fe-weighted uniform draws, 2{,}000 sigma-field-focused draws, 720
 grid points on five isothermal slices, 1{,}500 liquidus-zone draws, and
 1{,}000 near-pure-Fe draws. A candidate is accepted only if the composition
 lies inside the defined sub-simplex and the equilibrium satisfies mass
 balance $|\sum_k \Np{k} - 1| < 10^{-6}$. Of the 11{,}220 raw design draws
-per system, 2{,}340 fell outside the sub-simplex and were discarded before
+per ternary system, 2{,}340 fell outside the sub-simplex and were discarded before
 any equilibrium solve; of the remaining 8{,}880 valid candidates, 8{,}877
 to 8{,}880 converged and satisfied mass balance, the only solver
 rejections being three non-converged points in Fe--Cr--Mo. The 11{,}220 to
 8{,}880 reduction is therefore a design-space filter rather than a
 convergence filter, and the datasets contain no solver-driven holes.
-Table~\ref{tab:dataset} summarises the datasets.
+Table~\ref{tab:dataset} summarises the datasets
+(Figure~\ref{fig:dataset} visualises the Fe--Cr--Ni case). The
+scope-extension datasets below follow the same acceptance rule inside
+their own design boxes.
 
 The sampling distribution is deliberately structured, not uniform: the
 five strategies over-represent the Fe-rich corner, the sigma field, the
@@ -401,11 +380,11 @@ element of the system).
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figures/fig1_dataset}
-\caption{Dataset for Fe--Cr--Ni and summary statistics across all five
-systems. (a) Design points in the $(x_{\mathrm{Cr}}, x_{\mathrm{Ni}})$
+\caption{Dataset for Fe--Cr--Ni and summary statistics across the five
+ternary systems. (a) Design points in the $(x_{\mathrm{Cr}}, x_{\mathrm{Ni}})$
 plane coloured by temperature. (b) Temperature density; the shaded band marks
 the region above 1300~K where liquid appears. (c) The stainless-steel subset
-(green) occupies 38\% of rows. (d) Phase occurrence across all five systems
+(green) occupies 38\% of rows. (d) Phase occurrence across all five ternary systems
 on a logarithmic scale; rare phases such as MNNI2 (0.00\%) and CR3MN5
 (0.03\%) are retained as targets. (e) Simplex closure of the target vectors:
 all systems satisfy $|\sum_k y_k - 1| < 10^{-6}$, with the bulk of rows at
@@ -420,17 +399,21 @@ dimension and chemistry, under the identical probe, acceptance, and split
 protocol. The \emph{quaternary Fe--Cr--Ni--C} system adds interstitial
 carbon: solutes are drawn from $x_{\mathrm{Cr}} \in [0.001, 0.35]$,
 $x_{\mathrm{Ni}} \in [0.001, 0.30]$, $x_{\mathrm{C}} \in [0.001, 0.05]$,
-with the same six deterministic strategies generalised from the Gibbs
-triangle to an axis-aligned design box --- uniform box draws, low-alloy
-(Fe-rich) draws, a high-solute low-temperature carbide zone, isothermal
-grid slices, liquidus-zone draws, and near-pure-Fe draws --- yielding
-13{,}200 raw candidates of which 13{,}192 converge and pass mass balance
+with six deterministic strategies: the five ternary strategies generalised
+from the Gibbs triangle to an axis-aligned design box (uniform box draws,
+low-alloy Fe-rich draws, isothermal grid slices, liquidus-zone draws,
+near-pure-Fe draws) plus a high-solute low-temperature carbide-zone draw
+replacing the ternary sigma-field draw --- yielding
+13{,}200 raw candidates, of which eight fail the in-run gate (solver
+exception or mass-balance violation) and 13{,}192 converge and pass mass
+balance
 ($\max |\sum_k \Np{k} - 1| = 8.2\times10^{-9}$; 69.9\% of rows inside the
 stainless box). The probe activates 9 of the 35 eligible phases, including
 the three carbides M23C6, M7C3, and CEMENTITE and a GRAPHITE field. The
 ternary \emph{Fe--Cr--C} system uses $x_{\mathrm{Cr}} \in [0.001, 0.30]$,
 $x_{\mathrm{C}} \in [0.0005, 0.06]$ and the same strategies, yielding
-13{,}199 accepted rows of 13{,}200 candidates ($\max |\sum_k \Np{k} - 1|
+13{,}199 accepted rows of 13{,}200 candidates (one fails the in-run
+solver/mass-balance gate; $\max |\sum_k \Np{k} - 1|
 = 6.8\times10^{-9}$, 100\% inside the box by construction), with 9 active
 phases among 32 eligible, SIGMA appearing in only 0.4\% of rows. Both
 datasets span $T \in [700, 2000]$~K. No hyperparameter search was
@@ -452,10 +435,11 @@ annealing over 300 epochs, batch size 128, gradient-norm clipping at 1.0,
 early stopping on validation MAE with patience 40). The loss is Huber with
 $\delta = 0.01$ by default. Inputs are standardised with a
 \texttt{StandardScaler} fitted on the training split only. Six output heads
-are compared across all five systems (Table~\ref{tab:main}); two further
+are compared across the five ternary systems (Table~\ref{tab:main}); two further
 mechanisms, power normalisation and a sum-to-one loss penalty, are
-evaluated on Fe--Cr--Ni only as mechanism probes
-(Sections~\ref{sec:ablations}--\ref{sec:negative}).
+evaluated on Fe--Cr--Ni only as mechanism probes, reported in
+Section~\ref{sec:ablations} (the penalty is revisited as a negative result
+in Section~\ref{sec:negative}).
 
 The \emph{sigmoid} head applies $\sigma(\mathbf{z})$ without normalisation
 and serves as the unconstrained control. The \emph{softmax} head applies
@@ -504,7 +488,8 @@ hyperparameters for any model family.
 
 \subsection{Splitting, seeds, and metrics}
 
-The split is cluster-stratified: KMeans ($k = 6$, seed-dependent
+The split is cluster-stratified: for the ternary systems, KMeans
+($k = 6$, seed-dependent
 initialisation) on standardised $(x_2, x_3, T)$, with each cluster
 contributing 64/16/20 train/validation/test by seed-dependent permutation.
 The K-means stratification, the per-cluster shuffle, and hence the split
@@ -512,7 +497,9 @@ itself are re-drawn for every seed, so the reported seed-to-seed spread
 reflects both split variation and training stochasticity.
 Six clusters give a coarse stratification of the three-dimensional design
 space while keeping each cluster large enough ($\sim$1{,}500 rows) for a
-stable within-cluster permutation. The validation partition is used only
+stable within-cluster permutation. (The scope-extension systems reuse this
+machinery with the K-means fit on each system's full design-coordinate set
+--- Section~\ref{sec:extensions}.) The validation partition is used only
 for early stopping and XGBoost's stopping criterion; the test partition is
 never touched during training or model selection, so all reported test
 metrics are computed on data that played no role in fitting. Three
@@ -552,8 +539,9 @@ metric, not a theoretically privileged loss.
 \section{Main accuracy}
 \label{sec:results}
 
-Table~\ref{tab:main} reports the test MAE for all heads and baselines across
-the five systems. Figure~\ref{fig:heads} visualises the comparison.
+Table~\ref{tab:main} reports the test MAE (Eq.~\eqref{eq:mae}) for all
+heads and baselines across
+the five ternary systems. Figure~\ref{fig:heads} visualises the comparison.
 
 \begin{table}[htbp]
 \centering
@@ -563,7 +551,7 @@ Eq.~\eqref{eq:simplex} structurally (on-simplex: softmax,
 sigmoid/$\Sigma$, sparsemax, renorm after its projection, power-norm), fail
 to satisfy it (off-simplex: the unconstrained sigmoid and the closure-only
 residue head), or are baselines (shown after post-hoc renormalisation). Six
-heads are compared across all five systems; the power-normalisation head
+heads are compared across the five ternary systems; the power-normalisation head
 ($\dagger$) was evaluated on Fe--Cr--Ni only.}
 \label{tab:main}
 \small
@@ -573,8 +561,8 @@ heads are compared across all five systems; the power-normalisation head
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figures/fig2_heads}
-\caption{Main comparison. (a) Test MAE for the six neural heads across all
-five systems (mean $\pm$ s.d., three seeds). (b) Best constrained MLP versus
+\caption{Main comparison. (a) Test MAE for the six neural heads across the
+five ternary systems (mean $\pm$ s.d., three seeds). (b) Best constrained MLP versus
 random forest; the annotation gives the RF/MLP ratio. (c) Simplex closure:
 constrained heads and renormalised baselines sit at or below $10^{-8}$;
 unconstrained outputs violate closure by $10^{-2}$--$10^{-1}$.}
@@ -584,7 +572,7 @@ unconstrained outputs violate closure by $10^{-2}$--$10^{-1}$.}
 \paragraph{Constrained MLPs lead on smooth-coexistence systems.}
 On Fe--Cr--Ni the renorm head achieves $0.0106 \pm 0.0006$ against
 $0.0180 \pm 0.0002$ for the random forest --- a 41\% reduction, roughly
-$12\times$ the seed standard deviation. On Fe--Cr--Mn the sigmoid/$\Sigma$
+12 times the seed standard deviation. On Fe--Cr--Mn the sigmoid/$\Sigma$
 head achieves $0.0074 \pm 0.0002$ against $0.0133 \pm 0.0005$ for the forest.
 Both systems feature extended smooth two- and three-phase coexistence fields
 (sigma with BCC/FCC in Fe--Cr--Ni; the Laves, mu, R and chi intermetallic
@@ -632,7 +620,7 @@ resamples of the test rows, three seeds pooled).}
 \end{table}
 
 \paragraph{Post-hoc renormalisation did not hurt accuracy in any of the
-five systems tested.}
+five ternary systems tested.}
 All four evaluated baselines improve or remain unchanged under
 renormalisation, by $0.0000$--$0.0004$ for the
 random forest and $k$-NN, $0.0007$--$0.0020$ for XGBoost, and
@@ -699,7 +687,10 @@ not an optimisation effect: evaluating an unconstrained model outside the
 simplex is what costs accuracy, and the repair is a projection costing
 microseconds at inference time. The projection is likewise not an
 accuracy lever for the already-admissible models: applied to the random
-forest and XGBoost it changes MAE by at most $10^{-4}$.
+forest and XGBoost it changes MAE by at most $5\times10^{-4}$ (random
+forest) and $2\times10^{-3}$ (XGBoost), small against the $0.0126$
+raw-versus-renorm sigmoid MAE gap on Fe--Cr--Ni
+(Section~\ref{sec:results}).
 
 \paragraph{A family taxonomy of closure and membership.}
 The baseline families occupy distinct positions relative to
@@ -767,7 +758,7 @@ systems (with a near-tie on Fe--Cr--Mo) but the worse detector on three.}
 \includegraphics[width=\textwidth]{figures/fig4_perphase}
 \caption{Per-phase accuracy and the regressor--detector gap. (a) Parity plot
 for the hardest and easiest phase of Fe--Cr--Ni under the renorm head.
-(b) Per-phase MAE versus phase occurrence across all five systems: rare
+ (b) Per-phase MAE versus phase occurrence across all five ternary systems: rare
 phases are cheap in aggregate MAE because the dominant zero-fraction rows
 contribute little error. (c) MAE ratio versus $F_1$ ratio (MLP over random
 forest): systems below the diagonal have an MLP that regresses better but
@@ -805,7 +796,7 @@ The presence threshold $\Np{k} > 10^{-3}$ is a modelling decision, so we
 recomputed $F_1$ at $10^{-4}$ and $10^{-2}$ from the stored predictions
 (Table~\ref{tab:threshold}). Absolute $F_1$ values move --- stricter
 thresholds make detection harder --- but the ordering does not on four of
-five systems: the random forest remains the better detector on Fe--Cr--Mn,
+the five ternary systems: the random forest remains the better detector on Fe--Cr--Mn,
 Fe--Cr--V, and Fe--Mn--Ni at all three thresholds, and the MLP on Fe--Cr--Ni.
 On Fe--Cr--Mo the better detector flips with the threshold, consistent
 with that system's overall tie. The regressor--detector gap is not an
@@ -826,7 +817,7 @@ $10^{-3}$ (main-study default), and $10^{-2}$.}
 This gap widens under distribution shift. On the held-out temperature band of
 Fe--Cr--Ni, the MLP's mean $F_1$ drops from 0.93 to 0.64 while its MAE rises
 only from 0.010 to 0.013 (Section~\ref{sec:extrapolation}). Across all five
-systems and both model families, macro-$F_1$ falls by roughly 20--60\% in
+ternary systems and both model families, macro-$F_1$ falls by roughly 20--60\% in
 relative terms on the held-out temperature bands, even as regression MAE
 remains comparatively stable, whereas the composition bands affect
 detection more mildly for the MLP (0.8--10\% relative) than for the random
@@ -857,7 +848,7 @@ seeds per system; no other hyperparameter was touched.
 zero-positive phases excluded) for the renorm MLP, the three tree/$k$-NN
 baselines, the phase-weighted ablation, and the gated two-stage head; the
 final column is the gated-head test MAE relative to the renorm MLP
-($<1$ means the gate also improves regression). Best AUPRC per row in
+($<1$ means the gated head also improves regression). Best AUPRC per row in
 bold.}
 \label{tab:remedy}
 \small
@@ -875,15 +866,15 @@ systems.}
 \label{fig:remedy}
 \end{figure}
 
-\paragraph{The gate closes most of the gap, at no regression cost on the
+\paragraph{The gated head closes most of the gap, at no regression cost on the
 ternaries.}
 Table~\ref{tab:remedy} and Figure~\ref{fig:remedy} summarise the result.
 Across the five ternaries the bare renorm MLP's macro-AUPRC spans
-0.36--0.99 and the gated head's 0.91--0.99; the gate beats the best of
-the random forest, XGBoost, and $k$-NN on four of the five systems
+0.36--0.99 and the gated head's 0.91--0.99; the gated head beats the best of
+the random forest, XGBoost, and $k$-NN on four of the five ternary systems
 (Fe--Cr--V is a 0.988 against 0.990 near-tie, matching that system's
 overall statistical tie), and it does so while \emph{reducing} test MAE
-on all five, by 6\% (Fe--Cr--Ni) to 72\% (Fe--Mn--Ni, 0.0140 to
+on all five ternaries, by 6\% (Fe--Cr--Ni) to 72\% (Fe--Mn--Ni, 0.0140 to
 0.0039). The per-phase picture is where the remedy matters: on Fe--Cr--Mn
 ALPHA\_MN rises from 0.004 to 0.933 and BETA\_MN from 0.005 to 0.896; on
 Fe--Mn--Ni MNNI rises from 0.003 to 1.00. One rare phase resists --- the
@@ -893,11 +884,12 @@ reported as such. The weighted-only ablation is insufficient (macro-AUPRC
 presence supervision, not the loss reweighting, is the operative
 ingredient.
 
-\paragraph{On the carbide-rich extension systems the gate buys detection
+\paragraph{On the two extension systems the gated head buys detection
 at a measurable regression cost.}
 On quaternary Fe--Cr--Ni--C the gated head raises macro-AUPRC from 0.805
-to 0.965 against 0.860 for the best classical detector, and the carbide
-macro from 0.661 to 0.947 --- CEMENTITE rises from 0.09 (MLP) and 0.17
+to 0.965 against 0.860 for the best classical detector, and the macro over
+the quaternary's carbide phases (M23C6, M7C3, CEMENTITE, GRAPHITE) from
+0.661 to 0.947 --- CEMENTITE rises from 0.09 (MLP) and 0.17
 (random forest) to 0.873, GRAPHITE from 0.58 to 0.926 --- at a 12\% MAE
 cost. On Fe--Cr--C the picture is sharper: the bare MLP is a weak
 detector (macro-AUPRC 0.559; CEMENTITE 0.036, SIGMA 0.003) while the
@@ -906,7 +898,9 @@ to 0.800, GRAPHITE to 0.808, and SIGMA to 0.805, and macro $F_1$ from
 0.515 to 0.832, at a 47\% MAE cost. Whether that trade is worthwhile
 depends on the application, but for alloy screening the metallurgically
 consequential question --- will this carbide precipitate --- is exactly
-what the bare regressor answers worst.
+what the bare regressor answers worst. Both extension systems are re-run
+through the full protocol --- heads, spatial holdouts, and phase-set
+validation --- in Section~\ref{sec:extensions}.
 
 % ======================================================================
 \section{Spatial generalisation: contiguous holdout and strict
@@ -918,7 +912,7 @@ extrapolation}
 
 The cluster-stratified split of Section~\ref{sec:models} is an interpolation
 test. We add two spatial protocols; in both the model is retrained from
-scratch (same protocol, three seeds, four models, five systems).
+scratch (same protocol, three seeds, four models, five ternary systems).
 
 \emph{Contiguous interior-band holdout.} Two blocks are removed from
 training and used as the test set: a temperature band $T \in [1200,
@@ -928,7 +922,7 @@ this is a missing-region generalisation test, not strict extrapolation. We
 verified this geometrically: a Delaunay triangulation of the remaining
 training points in scaled $(x_2, x_3, T)$ coordinates shows that
 99.3--99.4\% of the held-out band rows lie \emph{inside} the convex hull of
-the training set in all five systems. The held-out region is a hole in the
+the training set in all five ternary systems. The held-out region is a hole in the
 sampling, not an out-of-support region.
 
 \emph{Strict one-sided out-of-range extrapolation.} Training keeps only the
@@ -992,7 +986,7 @@ seed-to-seed; the large-looking Fe--Cr--V random-control deviation
 ($0.0242 \pm 0.0073$) reflects ordinary seed variability (per-seed values
 0.027/0.014/0.031), not a diverged run. The temperature protocol
 additionally tests an out-of-basis target, as LIQUID is absent from the
-near-side training data in all five systems.}
+near-side training data in all five ternary systems.}
 \label{tab:extrap}
 \small
 \input{tab/extrap.tex}
@@ -1002,7 +996,7 @@ near-side training data in all five systems.}
 \centering
 \includegraphics[width=\textwidth]{figures/fig5_ablation}
 \caption{(a) Contiguous-band penalty ratios (band MAE / random-control MAE)
-across all five systems for the MLP, random forest, and XGBoost. Filled
+across all five ternary systems for the MLP, random forest, and XGBoost. Filled
 markers: temperature band; open markers: composition band. The dashed line
 at 1.0 marks the random control. (b) Effect of hidden-layer width on test
 MAE for four heads on Fe--Cr--Ni. (c) Effect of the loss function on test
@@ -1027,28 +1021,25 @@ constrained MLP achieves the lowest absolute error.}
 
 \paragraph{Two complementary references are needed for the band results.}
 Results for the missing-region generalisation test (Table~\ref{tab:holdout},
-Figure~\ref{fig:ablation} panel~a) require two complementary references. The
-size-matched random controls ask whether removing a contiguous band is
-costlier than removing the same number of random rows, but they are
-evaluated on different, average-difficulty rows and therefore conflate
-region difficulty with distribution shift. The region-matched reanalysis
-(Section~\ref{sec:protocols}) instead compares the same band rows with and
-without regional training data, and under this measure the picture is
+Figure~\ref{fig:ablation} panel~a) rest on two complementary references ---
+the size-matched random controls and the region-matched reanalysis, both
+defined in Section~\ref{sec:protocols}. Under the region-matched measure
+the picture is
 consistent: the in-distribution-to-holdout penalty is smaller for the
-constrained MLPs than for the tree ensembles in nine of the ten band
-$\times$ system combinations. On the composition bands, which cross steep
+constrained MLPs than for the tree ensembles in nine of the ten band--system
+combinations. On the composition bands, which cross steep
 phase boundaries, the MLP penalty ratios are 1.2--2.1 versus 1.4--3.0 for
-the random forest and XGBoost in all five systems; on the temperature bands
+the random forest and XGBoost in all five ternary systems; on the temperature bands
 the MLP ratios are 0.9--2.8 versus 1.3--3.9, with Fe--Cr--Ni the single
-exception, where the random-forest ratio is lower ($2.1\times$ versus
-$2.8\times$) although its absolute holdout error remains twice the MLP's.
+exception, where the random-forest ratio is lower (2.1 versus
+2.8) although its absolute holdout error remains twice the MLP's.
 Ratios must nonetheless be read alongside absolute errors: a band that is
 easy in distribution, such as the nearly single-phase 1200--1400~K band of
 Fe--Mn--Ni, inflates ratios through a small denominator.
 
 \paragraph{The temperature-band penalty is largely a data effect.}
-On Fe--Cr--Ni the MLP and the random forest pay the \emph{same} $1.31\times$
-penalty once the random control is used as the reference. Comparing the
+On Fe--Cr--Ni the MLP and the random forest pay the \emph{same} penalty
+factor of 1.31 once the random control is used as the reference. Comparing the
 temperature band against the interpolation split instead would have
 suggested that trees cannot generalise in temperature; the size-matched
 control shows that the temperature band removes 1{,}275 training rows, and
@@ -1056,10 +1047,10 @@ the resulting data loss, not the spatial shift, accounts for most of the
 degradation.
 
 \paragraph{The composition band is where model families separate.}
-On Fe--Cr--Ni the random forest pays $3.11\times$ on the composition band
-against $1.61\times$ for the constrained MLP ($2.24\times$ for XGBoost).
-The same ordering holds on Fe--Cr--Mn ($1.57\times$ versus $0.85\times$) and
-Fe--Cr--Mo ($1.85\times$ versus $1.01\times$). Since the held-out rows lie
+On Fe--Cr--Ni the random forest pays a factor of 3.11 on the composition band
+against 1.61 for the constrained MLP (2.24 for XGBoost).
+The same ordering holds on Fe--Cr--Mn (1.57 versus 0.85) and
+Fe--Cr--Mo (1.85 versus 1.01). Since the held-out rows lie
 inside the training convex hull, this is not an extrapolation result in the
 strict sense; it is a result about graceful degradation under a contiguous
 missing region. Tree-based models partition the input space into
@@ -1071,19 +1062,19 @@ the MLP's smooth parametrisation degrades more gracefully.
 \paragraph{The composition-band ordering is consistent across all
 system--seed pairs.}
 As a statistical check on the spatial protocol, we applied a two-sided
-sign test to the 15 system$\times$seed penalty-ratio pairs. The MLP's
+sign test to the 15 system--seed penalty-ratio pairs. The MLP's
 composition-band penalty is lower than the random forest's and lower than
 XGBoost's on all 15 pairs ($p = 6.1\times10^{-5}$ for each comparison).
 On the temperature band the MLP--forest difference is not significant
 (11 of 15 pairs, $p = 0.12$), consistent with the shared
-$1.31\times$ penalty, while the MLP--XGBoost difference remains
+penalty factor of 1.31, while the MLP--XGBoost difference remains
 significant (15 of 15, $p = 6.1\times10^{-5}$).
 
 \paragraph{The penalty is system-dependent, not universal.}
-On Fe--Cr--V the random forest degrades $4.92\times$ on the temperature band
+On Fe--Cr--V the random forest degrades by a factor of 4.92 on the temperature band
 --- a phase-boundary-rich region where the forest's local averaging fails
 badly. On Fe--Mn--Ni the held-out bands are \emph{easier} than the random
-control ($0.04$--$0.73\times$), because the bands sit in the dataset's easy,
+control (0.04--0.73 times the control), because the bands sit in the dataset's easy,
 liquid-dominated corner. Generalisation difficulty is a property of the
 system and the region, not of the model alone.
 
@@ -1109,7 +1100,7 @@ this is the honest headline of the strict protocol.
 \paragraph{The temperature protocol is additionally limited by the closed
 phase basis.}
 Liquid has no active row in the near-side training data ($T \le 1200$~K) in
-all five systems, so the far side demands a phase that the target basis
+all five ternary systems, so the far side demands a phase that the target basis
 cannot express. In
 Fe--Mn--Ni this renders the task nearly uninformative: all four model
 families land within 4.1\% of the constant near-side-mean predictor (MAE
@@ -1126,13 +1117,13 @@ extrapolation.
 
 \paragraph{The constrained MLP reaches the lowest far-side error.}
 In absolute terms the constrained MLP's far-side MAE is the lowest of the
-three model families on composition extrapolation in all five systems and
-on temperature extrapolation in all five (Figure~\ref{fig:extrap},
+three model families on composition extrapolation in all five ternary systems and
+on temperature extrapolation in all five ternary systems (Figure~\ref{fig:extrap},
 panel b). Relative to its own matched control the MLP's penalty ratio can
 be \emph{higher} than the trees' --- the trees' controls are themselves
 degraded, so the ratio is reference-dependent --- and we report the
 absolute-error comparison as the cleaner statement. A two-sided sign test
-over the 15 system$\times$seed pairs agrees with that caveat: the MLP's
+over the 15 system--seed pairs agrees with that caveat: the MLP's
 penalty ratio is lower than the trees' on only 9 of 15 pairs
 ($p = 0.61$), so the ratio comparison is not significant. The ordering matches
 the contiguous-band result: smooth parametrisations degrade more
@@ -1146,7 +1137,7 @@ not reliable extrapolation.
 
 A deployment needs to know when \emph{not} to trust the surrogate. We
 evaluate two per-row scores on the five ternary systems, both computed
-from artifacts the protocol already produces.
+from artefacts the protocol already produces.
 \emph{Ensemble disagreement} (U1) is the per-row standard deviation across
 the three seed models' fraction predictions, averaged over phases; the
 ensemble prediction itself is the seed mean. \emph{Input-space distance}
@@ -1160,14 +1151,14 @@ Averaging the three seeds reduces test MAE by 2.26\% on average
 ($-0.62\%$ on Fe--Cr--Mo to $+5.53\%$ on Fe--Cr--V): ensembling is not a
 fix for any failure mode, but it is free accuracy. As a per-row score,
 however, U1 carries real signal. Its Spearman correlation with per-row
-error averages 0.707 across the five systems (0.94 on Fe--Cr--Ni, 0.93 on
+error averages 0.707 across the five ternary systems (0.94 on Fe--Cr--Ni, 0.93 on
 Fe--Cr--Mn, 0.87 on Fe--Cr--V, 0.69 on Fe--Cr--Mo, but 0.11 on
 Fe--Mn--Ni), and the AUROC for flagging rows whose mean absolute error
 exceeds 0.05 averages 0.695 (0.89, 0.86, 0.61, 0.73, and 0.39
 respectively). The operational form is a coverage--risk curve: retaining
 the 50\% of rows with the lowest U1 cuts MAE from 0.0123 to 0.0029 on
-Fe--Cr--Ni ($4.3\times$), from 0.0090 to 0.0023 on Fe--Cr--Mn
-($3.9\times$), and from 0.0147 to 0.0073 on Fe--Cr--Mo ($2\times$). On
+Fe--Cr--Ni (a factor of 4.3), from 0.0090 to 0.0023 on Fe--Cr--Mn
+(a factor of 3.9), and from 0.0147 to 0.0073 on Fe--Cr--Mo (a factor of 2). On
 Fe--Cr--V and Fe--Mn--Ni the curve is flat or reversed (0.0160 to
 0.0192; 0.0145 to 0.0196), so the gate is not universal: it should be
 validated once on a held-out split per system --- a cheap check ---
@@ -1193,8 +1184,10 @@ revalidation --- anywhere else.
 \section{Ablations}
 \label{sec:ablations}
 
-Table~\ref{tab:ablation} and Figure~\ref{fig:ablation} panels (b) and (c)
-report three ablations on Fe--Cr--Ni.
+Table~\ref{tab:ablation} reports three ablations on Fe--Cr--Ni; the loss
+and width ablations appear in Figure~\ref{fig:ablation} panels (b) and
+(c), and the closure-penalty ablation also appears in
+Figure~\ref{fig:failures} panel~b.
 
 \begin{table}[htbp]
 \centering
@@ -1224,8 +1217,9 @@ reported MLP configuration should therefore not be interpreted as
 architecture-optimal.
 
 \paragraph{The closure penalty is strongly detrimental.}
-Adding $\lambda(\sum_k \hat y_k - 1)^2$ to the loss degrades MAE by
-$8\times$ at $\lambda = 1$ and $16\times$ at $\lambda = 10$, while reducing
+Adding $\lambda(\sum_k \hat y_k - 1)^2$ to the loss raises MAE to $0.0804$
+at $\lambda = 1$ and $0.1693$ at $\lambda = 10$ --- factors of 8 and 16
+over the default renorm head's $0.0106$ --- while reducing
 the closure violation only from $6.2\times10^{-2}$ to $1.3\times10^{-3}$.
 For the tested penalty formulation and $\lambda$ values, the soft closure
 penalty substantially degraded MAE and did not achieve the numerical
@@ -1238,6 +1232,15 @@ two orders of magnitude, and no smaller $\lambda$, gradient-rescaled
 penalty, or warm-up schedule was evaluated. The defensible conclusion is
 therefore that the soft penalty adds nothing over the structural heads at
 the tested weights, not that soft penalties are unviable in general.
+
+\paragraph{Power normalisation does not beat renormalisation.}
+The power-norm probe (Section~\ref{sec:models}) reaches $0.0123 \pm
+0.0014$ MAE on Fe--Cr--Ni --- worse than the renorm head's
+$0.0106 \pm 0.0006$, though far better than the raw sigmoid's
+$0.0232 \pm 0.0010$ (Table~\ref{tab:main}). Squaring each sigmoid output
+before row-sum renormalisation reweights the distribution toward larger
+fractions without improving on plain renormalisation at the tested
+setting.
 
 % ======================================================================
 \section{Negative results}
@@ -1254,7 +1257,7 @@ producing exact zeros for phases the model deems absent. It satisfies closure
 to $\le 5\times10^{-8}$ and achieves the sparsity that softmax cannot. But
 under the evaluated training configuration it exhibited severe seed
 sensitivity and substantially worse MAE than the other constrained heads:
-2--4$\times$ worse than renorm or sigmoid/$\Sigma$, with the three seeds
+2--4 times worse than renorm or sigmoid/$\Sigma$, with the three seeds
 giving 0.018/0.037/0.117 on Fe--Cr--Mo, 0.053/0.067/0.013 on Fe--Cr--Ni,
 and 0.019/0.015/0.079 on Fe--Mn--Ni --- a seed standard deviation of the
 same order as the mean (Figure~\ref{fig:failures}, panel a).
@@ -1297,10 +1300,10 @@ the most negative cell at $-0.59$. It is therefore closure-valid but not
 simplex-valid, and any deployment would need a projection step after all.
 
 Beyond admissibility, the head is also the least accurate constrained
-variant: even the best residue head is 1.4--2.5$\times$ worse than the best
+variant: even the best residue head is 1.4--2.5 times worse than the best
 constrained head in the same system, and the choice of which phase to drop
 matters --- a sweep over all $K$ choices (Figure~\ref{fig:failures}, panel
-c) shows the best choice is the dominant phase in four of five systems. The
+c) shows the best choice is the dominant phase in four of the five ternary systems. The
 observed degradation is consistent with the residual phase absorbing the
 accumulated prediction error of the other $K{-}1$ channels; we note this
 as an interpretation supported by the sweep, not a directly demonstrated
@@ -1310,12 +1313,12 @@ mechanism.
 \centering
 \includegraphics[width=\textwidth]{figures/fig6_failures}
 \caption{Three negative results. (a) Sparsemax: per-seed test MAE (orange)
-versus the renorm head (green) across all five systems. The seed-to-seed
+versus the renorm head (green) across all five ternary systems. The seed-to-seed
 spread of sparsemax is of the same order as its mean. (b) Sum-to-one penalty
 on Fe--Cr--Ni: MAE (bars, left axis) and closure violation (line, right axis)
 as $\lambda$ increases. The penalty buys closure at the cost of the fit.
 (c) Residue sweep: per-phase MAE for each choice of dropped phase (red)
-versus the best constrained head (green star) across all five systems.}
+versus the best constrained head (green star) across all five ternary systems.}
 \label{fig:failures}
 \end{figure}
 
@@ -1340,7 +1343,7 @@ sampled data; it is not the exact thermodynamic distance to a phase
 boundary. Rows in the
 nearest third to the boundary proxy carry a mean MAE of 0.022, against 0.008
 in the middle third and 0.002 in the farthest third --- a boundary-to-interior
-ratio of $\sim$10$\times$. In this system, surrogate error is strongly
+ratio of $\sim$10. In this system, surrogate error is strongly
 concentrated near regions where the active-phase set changes, while the
 interior of phase fields is reproduced to high accuracy.
 
@@ -1360,9 +1363,13 @@ to high accuracy.}
 \label{sec:extensions}
 
 The preceding sections were developed on five ternaries with three
-inputs. This section re-runs the full protocol --- probe-driven phase
-set, fixed heads and baselines, identical split and seeds, no
-hyperparameter search --- on the two scope-extension datasets of
+inputs (Section~\ref{sec:remedy} already reports the gated head on both
+extension systems). This section re-runs the full protocol --- probe-driven
+phase set, fixed heads and baselines, identical split and seeds (for the
+quaternary the K-means fit uses all four design coordinates ---
+$x_{\mathrm{Cr}}$, $x_{\mathrm{Ni}}$, $x_{\mathrm{C}}$, and temperature ---
+with the same $k = 6$ and seeds 42, 123, 2024), no hyperparameter search
+--- on the two scope-extension datasets of
 Section~\ref{sec:data}, to test whether the head ranking, the
 regressor--detector gap and its remedy, and the spatial protocols
 survive a change of dimension (three to four inputs, with interstitial
@@ -1373,7 +1380,7 @@ stand out.
 
 \paragraph{The smooth-coexistence ranking survives four inputs.}
 On quaternary Fe--Cr--Ni--C the renorm head achieves $0.0037$ MAE
-against $0.0075$ for the random forest --- a $2.0\times$ margin, larger
+against $0.0075$ for the random forest --- a twofold margin, larger
 than on any ternary --- with sigmoid/$\Sigma$ at 0.0042 and softmax at
 0.0054; on Fe--Cr--C the sigmoid/$\Sigma$ head achieves 0.0029 against
 0.0055 for the forest. Both systems are dominated by extended smooth
@@ -1386,28 +1393,29 @@ not proof, that the ternary geometry--ranking correspondence extends to
 four inputs.
 
 \paragraph{The detector gap widens exactly where phases get rarer, and
-the gate transfers without retuning.}
+the gated head transfers without retuning.}
 The quaternary renorm MLP is a competent detector overall (macro-AUPRC
-0.805) but fails on the two rarer carbides (CEMENTITE 0.09); on Fe--Cr--C
-it collapses to 0.559 macro-AUPRC, with CEMENTITE 0.036, GRAPHITE 0.010,
-and SIGMA 0.003 --- the bare regressor essentially does not see phases
-occurring below about 2\% of rows, while the trees retain 0.56--0.97.
+0.805) but fails on the two rarer carbides, and on Fe--Cr--C it collapses
+to 0.559 macro-AUPRC --- the bare regressor essentially does not see
+phases occurring below about 2\% of rows, while the trees retain
+0.56--0.97.
 The presence-gated head, trained with the identical recipe used on the
 ternaries, lifts these systems to 0.965 and 0.922 macro-AUPRC
 (Section~\ref{sec:remedy}): the remedy transfers with no retuning, at the
 regression cost quantified there. The phase-set pre-screen passes at
 solver precision on the quaternary system and shows the nine documented
-Fe--Cr--C deviations (Section~\ref{sec:data}); neither the accuracy nor
+Fe--Cr--C deviations (Table~\ref{tab:extension} panel D;
+Section~\ref{sec:data}); neither the accuracy nor
 the detection results depend on repairing them, and none were repaired.
 
 \paragraph{The spatial protocols give the same qualitative answers.}
 On both extension systems the contiguous composition band costs
-$2.1$--$3.5\times$ the random control while the temperature band costs
-$0.7$--$1.2\times$ --- again, removing the band is mostly a data effect
+$2.1$--$3.5$ times the random control while the temperature band costs
+$0.7$--$1.2$ times --- again, removing the band is mostly a data effect
 in temperature and a regional effect in composition. Strict extrapolation
-again fails: $4.8\times$ (composition) and $15.2\times$ (temperature) on
-Fe--Cr--Ni--C; $2.6\times$ (carbon), $2.7\times$ (chromium), and
-$20\times$ (temperature) on Fe--Cr--C. The absolute-error ordering of
+again fails: factors of 4.8 (composition) and 15.2 (temperature) on
+Fe--Cr--Ni--C; factors of 2.6 (carbon), 2.7 (chromium), and
+20 (temperature) on Fe--Cr--C. The absolute-error ordering of
 Section~\ref{sec:extrapolation} --- no architecture extrapolates
 reliably, temperature is the worst axis --- does not depend on being
 ternary.
@@ -1417,8 +1425,8 @@ ternary.
 \caption{Scope-extension systems. (A) System and dataset statistics. (B)
 Test MAE (mean over three seeds; uncertainty in units of the last digit),
 best per system in bold. (C) Contiguous-band and strict-extrapolation
-holdouts against size-matched random controls (penalty ratios in
-parentheses). (D) Phase-set validation against the full eligible set.}
+holdouts against size-matched random controls (penalty ratios in the
+penalty rows). (D) Phase-set validation against the full eligible set.}
 \label{tab:extension}
 \small
 \input{tab/extension.tex}
@@ -1441,7 +1449,9 @@ from Yamada et al. \citep{yamada1987}, who also located the
 peritectic--eutectic transition point of the iron-rich Fe--Cr--Ni
 subsection near 15~wt\%~Cr--10~wt\%~Ni (reported for completeness; not
 used quantitatively here). A $\delta$-ferrite fraction dataset with
-tabulated metallography was identified but excluded: its alloy contains
+tabulated metallography was identified but excluded: its alloy (UNS
+S31803 duplex stainless steel, Fe--22.07Cr--5.68Ni--3.20Mo--0.17N--0.017C
+in wt\%) contains
 molybdenum, outside every modelled system, so any comparison would
 conflate database error with an unmodelled-element error. All extracted
 values, provenance, and caveats are archived with the data release.
@@ -1449,7 +1459,7 @@ values, provenance, and caveats are archived with the data release.
 \paragraph{Protocol.}
 Compositions are converted from wt\% to mole fractions (all four lie
 inside the corresponding design box), and each alloy is swept in
-temperature from 600 to 1900\,°C --- coarsely at 5~K, refined to 1~K
+temperature from 600 to 1900\,\textdegree C --- coarsely at 5~K, refined to 1~K
 around every detected transition --- twice: once with the full eligible
 phase set on the pycalphad side, and once with the three-seed ensemble of
 that system's best head (sigmoid/$\Sigma$ for Fe--Cr--C, renorm for
@@ -1457,7 +1467,8 @@ Fe--Cr--Ni; trained without any knowledge of the anchor values).
 Transitions are located on heating as the first sustained appearance of
 liquid (threshold $10^{-4}$ on the melting branch) and the last
 disappearance of solid; for each alloy the published quantity is matched
-to the corresponding transition --- $T_L$ for alloy A and the Yamada
+to the corresponding transition (Table~\ref{tab:anchor}) --- $T_L$ for
+alloy A and the Yamada
 alloy, first-liquid for alloy C ($T_S$), and first-liquid for alloy B,
 where the published peritectic arrest coincides in both calculations
 with the onset of melting (the liquid+$\delta$ field begins 24--26~K
@@ -1512,7 +1523,7 @@ sub-$10^{-3}$ tail differences, not from shifted curves.}
 
 \subsection{When do constrained MLPs beat trees?}
 
-In the five systems studied here, the answer tracked geometry. Systems with
+In the five ternary systems studied here, the answer tracked geometry. Systems with
 extended smooth coexistence fields --- Fe--Cr--Ni and Fe--Cr--Mn --- favoured
 the smooth function class of the MLP, with Fe--Cr--Mo a statistical tie
 between the families. Among the systems dominated by sharp, essentially
@@ -1520,11 +1531,12 @@ binary phase boundaries, Fe--Mn--Ni favoured axis-aligned tree splits,
 whereas Fe--Cr--V, another sharp-boundary system, is a statistical tie
 between the families. We present
 this as an empirical observation across the tested systems, not a universal
-law: with only five systems, system identity is confounded with phase
+law: with only seven systems (five ternaries and two extensions,
+Section~\ref{sec:extensions}), system identity is confounded with phase
 topology, rare-phase frequency, sampling density, and boundary geometry.
 A surrogate pipeline should evaluate both families and select per system;
 no single evaluated architecture consistently dominated across the five
-systems.
+ternary systems.
 
 \subsection{The spatial-generalisation result reframes the interpolation
 comparison}
@@ -1532,13 +1544,13 @@ comparison}
 The holdout results of Section~\ref{sec:extrapolation} reframe the main
 comparison. On Fe--Cr--Ni the MLP leads the random forest by 41\% on the
 interpolation split; on the contiguous composition band the gap widens to
-$3.11\times / 1.61\times \approx 1.9\times$ in penalty ratio, and the same
+$3.11 / 1.61 \approx 1.9$ in penalty ratio, and the same
 ordering persists under the tested strict one-sided extrapolation
 protocols. Under the region-matched reanalysis
 (Section~\ref{sec:protocols}), which compares identical band rows with and
 without regional training data, the in-distribution-to-holdout penalty
 remains smaller for the constrained MLPs than for the tree ensembles in
-nine of the ten band $\times$ system combinations. The MLP's advantage is
+nine of the ten band--system combinations. The MLP's advantage is
 not merely that it fits the training
 distribution better; within the tested protocols it also degrades less
 severely in absolute error when the query point leaves it. We do not claim
@@ -1546,7 +1558,7 @@ that the MLP extrapolates reliably: all evaluated model families degrade
 sharply in absolute terms, and the MLP's advantage is one of relative
 degradation. Part of the temperature-protocol degradation is a closed-basis
 limitation rather than a spatial-generalisation failure: liquid is absent
-from the near-side training data in all five systems, and in
+from the near-side training data in all five ternary systems, and in
 Fe--Mn--Ni all four model families come within 4.1\% of the constant
 near-side-mean predictor. Extrapolation conclusions should therefore be
 read as joint failures of basis and generalisation. For alloy-design
@@ -1590,7 +1602,7 @@ whole sampled domain, so all results are conditional on this globally
 predefined phase basis and do not assess discovery of previously unseen
 phases (Section~\ref{sec:data}). The closed phase set also bounds what the
 strict extrapolation protocols can test: liquid lies outside the near-side
-basis in all five temperature-extrapolation systems, so part of the
+basis in all five ternary temperature-extrapolation systems, so part of the
 far-side error there is a basis limitation. The contiguous-band holdout
 is a missing-region test inside the sampled domain; the strict
 extrapolation protocol is one-sided and covers only one coordinate at a
@@ -1622,9 +1634,9 @@ transforms are undefined where any component is zero, so these families
 would need ad hoc zero replacement before fitting. The presence-gated
 remedy is evaluated at one architecture, one presence threshold, and two
 loss variants; it leaves one rare phase (MU\_PHASE\_I in Fe--Cr--Mo)
-undetected and costs 12--47\% MAE on the carbide-rich extension systems,
+undetected and costs 12--47\% MAE on the two extension systems,
 so it is a demonstrated remedy, not a tuned optimum. The uncertainty gate
-is validated on five systems and fails on two of them; the seed
+is validated on five ternary systems and fails on two of them; the seed
 disagreement score must be checked per system before use. The experimental
 anchor comprises four points from two studies against one database, one
 of which (the most Cr-rich alloy) deviates by 59~K --- it bounds the
@@ -1643,7 +1655,7 @@ untested.
 \label{sec:conclusions}
 
 We compared simplex-constraint mechanisms for neural-network phase-fraction
-prediction --- six output heads across all five systems plus two mechanism
+prediction --- six output heads across all five ternary systems plus two mechanism
 probes --- against four classical baselines across five Fe-based ternary
 systems, totalling 44{,}397 mass-balance-validated equilibria, and
 extended the identical protocol to a quaternary Fe--Cr--Ni--C and a
@@ -1658,7 +1670,7 @@ precision at no accuracy cost relative to the unconstrained sigmoid, which
 violates closure by 6--8\%. The residue head enforces closure by
 construction but not non-negativity, emitting negative fractions on up to
 1.2\% of cells. Post-hoc renormalisation repairs all evaluated models to machine
-precision and did not hurt accuracy in any of the five systems tested;
+precision and did not hurt accuracy in any of the five ternary systems tested;
 the projection analysis shows it is also \emph{sufficient} --- projecting
 the unconstrained sigmoid reproduces the renorm head's accuracy to
 $1.3\times10^{-4}$ MAE everywhere --- while closure alone certifies
@@ -1666,28 +1678,29 @@ nothing (ridge closes to $10^{-10}$ with up to 28\% negative cells;
 $k$-NN is the only baseline simplex-valid a priori).
 
 No single evaluated architecture consistently dominated across the five
-systems; performance is topologically dependent. Within the five systems
-studied, constrained MLPs led the two systems dominated by continuous,
-smooth phase coexistence fields, the random forest led the one system
-defined by sharp, binary phase boundaries, and the remaining two systems
-were statistical ties --- a 2--1--2 pattern across the five systems --- as
-paired-bootstrap tests confirmed.
+ternary systems; performance is topologically dependent. Within the five
+ternary systems studied, constrained MLPs led the two systems dominated by
+continuous, smooth phase coexistence fields, the random forest led
+Fe--Mn--Ni --- one of the two systems defined by sharp, binary phase
+boundaries --- and the remaining two systems (Fe--Cr--Mo and Fe--Cr--V)
+were statistical ties --- a 2--1--2 pattern across the five ternary
+systems --- as paired-bootstrap tests confirmed.
 
 Two spatial protocols with size-matched random controls, complemented by a
 region-matched reanalysis, separated the
 spatial penalty from the data-volume penalty. On contiguous interior
 holdout bands --- which lie 99.3--99.4\% inside the convex hull of the
 remaining training points, and are therefore a distribution-shift test
-rather than extrapolation --- the random forest paid $3.11\times$ against
-$1.61\times$ for the constrained MLP on the Fe--Cr--Ni composition band,
-whereas on the temperature band both paid $1.31\times$: the
+rather than extrapolation --- the random forest paid a factor of 3.11
+against 1.61 for the constrained MLP on the Fe--Cr--Ni composition band,
+whereas on the temperature band both paid 1.31 times the control: the
 temperature-band penalty is largely a data effect. Under strict one-sided
 out-of-range extrapolation all evaluated model families degraded sharply,
 and the constrained MLP achieved the lowest absolute far-side error in all
-five systems, although absolute extrapolation performance remains poor. The
+five ternary systems, although absolute extrapolation performance remains poor. The
 temperature protocol is additionally limited by the closed phase basis, as
 liquid is unseen on the near-side training data in all five
-systems. Constrained MLPs degrade
+ternary systems. Constrained MLPs degrade
 more gracefully than trees when queries leave the trained region; graceful
 degradation is not reliable extrapolation. For alloy-design workflows,
 band-limited spatial shifts are tolerable for constrained MLPs, whereas
@@ -1706,19 +1719,19 @@ flips with the threshold on Fe--Cr--Mo. The gap is nonetheless closable: a
 presence-gated two-stage head raises macro-AUPRC to 0.91--0.99 on all
 seven systems --- beating the best classical detector on six --- while
 reducing MAE on the five ternaries and paying 12--47\% on the two
-carbide-rich extension systems; the presence supervision, not loss
+extension systems; the presence supervision, not loss
 reweighting, is what works.
 
 Two further results complete the operational picture. A three-seed
 disagreement score ranks per-row error (mean AUROC 0.70) and gates MAE by
-up to $4.3\times$ at 50\% coverage on the systems where it is validated,
+up to a factor of 4.3 at 50\% coverage on the systems where it helps,
 whereas input-space distance has no power at all (AUROC 0.41) ---
 in-distribution error is driven by proximity to phase boundaries, not by
-distance from training rows. And the protocol transfers: on the quaternary
-and carbide-rich extension systems constrained MLPs lead by
-$1.7$--$2.0\times$ over the forest, the spatial protocols reproduce the
+distance from training rows. And the protocol transfers: on the two
+extension systems constrained MLPs lead the forest by factors of
+1.9--2.0, the spatial protocols reproduce the
 same qualitative penalties (temperature extrapolation remains
-$15$--$20\times$), and against four published DTA transition points the
+15--20 times the control), and against four published DTA transition points the
 surrogate matches the full-CALPHAD answer within 1--3~K at a
 $10^{-2}$ threshold --- a small term beside the database's own 19~K mean
 deviation from experiment.
@@ -1727,8 +1740,8 @@ Three negative results are informative. Under the evaluated configuration
 sparsemax exhibited severe seed sensitivity, consistent with a
 zero-gradient sparsity trap. For the tested formulation and $\lambda$
 values, a sum-to-one penalty was redundant and strongly detrimental. The
-residue head, which closes the sum algebraically, is 1.4--2.5$\times$
-worse than the best constrained head in all five systems, consistent with the
+residue head, which closes the sum algebraically, is 1.4--2.5 times
+worse than the best constrained head in all five ternary systems, consistent with the
 residual phase absorbing the accumulated error of the other channels.
 
 % ======================================================================
@@ -1742,7 +1755,7 @@ ablation, and the reconstruction of the design-space accounting) is
 available at [GitHub URL]. The seven datasets (70{,}788 equilibria with
 per-phase fractions and thermodynamic potentials), the stored per-seed
 model predictions, all result files, and the experimental-anchor
-extraction and evaluation (source PDFs pointers, extracted tables, and
+extraction and evaluation (pointers to the source PDFs, extracted tables, and
 the sweep outputs behind Table~\ref{tab:anchor}) are archived at [Zenodo
 DOI]. The MatCalc
 \texttt{mc\_fe\_v2.062} source database is distributed under its own
