@@ -263,7 +263,7 @@ def fig2_heads():
     ax.bar(xs - 0.2, best_mlp, width=0.4, color=C["mlp"], label="best constrained MLP")
     ax.bar(xs + 0.2, rf, width=0.4, color=C["rf"], label="random forest")
     for i, (a, b) in enumerate(zip(best_mlp, rf)):
-        ax.text(i, max(a, b) + 0.0008, f"{b / a:.2f}$\\times$", ha="center",
+        ax.text(i, max(a, b) + 0.0008, f"{b / a:.2f}", ha="center",
                 fontsize=6.0)
     ax.set_xticks(xs)
     ax.set_xticklabels([LBL[s] for s in SYS], rotation=20, fontsize=6.8)
