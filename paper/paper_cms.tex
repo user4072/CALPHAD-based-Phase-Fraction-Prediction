@@ -202,9 +202,10 @@ full protocol re-run on a quaternary Fe--Cr--Ni--C and a carbide-rich
 Fe--Cr--C (Section~\ref{sec:extensions}), and transition temperatures
 compared against four published DTA points, separating emulator error
 from database error against experiment (Section~\ref{sec:anchor}).
-\item Three \textbf{negative results reported in full} --- sparsemax,
-sum-to-one penalty, and residue closure --- each informative about why the
-constraint mechanism matters (Section~\ref{sec:negative}).
+\item Three \textbf{failed mechanisms as scope delimiters} --- sparsemax,
+sum-to-one penalty, and residue closure --- each marking where the
+constraint story stops working, with the full evidence in the Supplement
+(Section~\ref{sec:negative}, Supplement Section~S1).
 \end{enumerate}
 
 Figure~\ref{fig:workflow} summarises the pipeline end to end: the CALPHAD
@@ -1296,8 +1297,8 @@ revalidation --- anywhere else.
 
 Table~\ref{tab:ablation} reports three ablations on Fe--Cr--Ni; the loss
 and width ablations appear in Figure~\ref{fig:ablation} panels (b) and
-(c), and the closure-penalty ablation also appears in
-Figure~\ref{fig:failures} panel~b.
+(c), and the closure-penalty ablation also appears in the Supplement,
+Figure~S1 panel~b.
 
 \begin{table}[htbp]
 \centering
@@ -1355,84 +1356,39 @@ fractions without improving on plain renormalisation at the tested
 setting.
 
 % ======================================================================
-\section{Negative results}
+\section{Constraint mechanisms that fail}
 \label{sec:negative}
 
-Three constraint mechanisms that are plausible in principle fail in practice.
-We report each in full because the failure modes are informative.
+Three constraint mechanisms that are plausible in principle fail in
+practice under the evaluated protocol. Each failure delimits the scope of
+the positive results above rather than qualifying them: the main text
+states each boundary, and the Supplement (Section~S1, Figure~S1) reports
+the full evidence.
 
-\subsection{Sparsemax: severe seed sensitivity under the evaluated
-configuration}
+\paragraph{Sparsemax: sparsity at the cost of stability.}
+Sparsemax \citep{martins2016sparsemax} satisfies closure to
+$\le 5\times10^{-8}$ with exact zeros, but it exhibited severe seed
+sensitivity and substantially worse MAE: 2--4 times worse than renorm or
+sigmoid/$\Sigma$, with a seed standard deviation of the same order as the
+mean (0.018/0.037/0.117 on Fe--Cr--Mo, for example) --- consistent with a
+zero-gradient sparsity trap, and tested for one implementation and
+optimisation configuration only. Dedicated sparsemax losses and entmax
+variants remain untested.
 
-Sparsemax \citep{martins2016sparsemax} projects the logits onto the simplex,
-producing exact zeros for phases the model deems absent. It satisfies closure
-to $\le 5\times10^{-8}$ and achieves the sparsity that softmax cannot. But
-under the evaluated training configuration it exhibited severe seed
-sensitivity and substantially worse MAE than the other constrained heads:
-2--4 times worse than renorm or sigmoid/$\Sigma$, with the three seeds
-giving 0.018/0.037/0.117 on Fe--Cr--Mo, 0.053/0.067/0.013 on Fe--Cr--Ni,
-and 0.019/0.015/0.079 on Fe--Mn--Ni --- a seed standard deviation of the
-same order as the mean (Figure~\ref{fig:failures}, panel a).
+\paragraph{Sum-to-one penalty: redundant and harmful.}
+The targets already sum to one, so a soft sum-to-one penalty competes with
+the data fit: MAE rises to $0.0804$ at $\lambda = 1$ and $0.1693$ at
+$\lambda = 10$ (Table~\ref{tab:ablation}) while closure improves only to
+$1.3\times10^{-3}$. Full curves are in Supplement Figure~S1.
 
-The observed behaviour is consistent with a \emph{sparsity trap}: once the
-sparsemax projection drives a phase's logit below the threshold $\tau$,
-the gradient at that logit is exactly zero, so a phase that starts out
-clipped can never recover, and whether it recovers is decided by
-initialisation. We present this as a mechanistic interpretation of the
-observed seed sensitivity, not as a demonstrated cause; the experiment
-evaluates one implementation and optimisation configuration. Notably, the
-head was trained with a regression loss on its projected outputs --- the
-configuration most exposed to that zero-gradient region --- so the
-dedicated sparsemax loss and $\alpha$-entmax variants remain untested; a
-fixed-scale entmax ($\alpha < 2$) or a warm start from softmax would be the
-natural remedies. We therefore do not claim that sparsemax is
-unsuitable for phase-fraction prediction in general --- only that it
-performed poorly and unreliably under the configuration studied here.
-
-\subsection{Sum-to-one penalty: redundant and harmful}
-
-The penalty head of Section~\ref{sec:ablations} is included here as a
-negative result. The sum-to-one constraint is already satisfied by the
-targets; adding it as a soft penalty creates a redundant loss term that
-competes with the data fit. At $\lambda = 10$ the penalty dominates the Huber
-loss entirely, and the model learns to minimise closure violation at the
-expense of phase-fraction accuracy.
-
-\subsection{Residue closure: closure without non-negativity, and the
-error concentrates}
-
-The residue head predicts $K{-}1$ phase fractions and closes the sum
-algebraically: $\hat y_K = 1 - \sum_{k<K} \hat y_k$. This enforces the
-sum-to-one equality by construction but does not intrinsically guarantee
-non-negativity: if the other predicted fractions sum to more than one, the
-residue is negative. In the stored predictions the residue head emits
-negative values on 0.0\% (Fe--Cr--V), 0.02\% (Fe--Mn--Ni), 0.40\%
-(Fe--Cr--Ni), 0.50\% (Fe--Cr--Mn), and 1.21\% (Fe--Cr--Mo) of cells, with
-the most negative cell at $-0.59$. It is therefore closure-valid but not
-simplex-valid, and any deployment would need a projection step after all.
-
-Beyond admissibility, the head is also the least accurate constrained
-variant: even the best residue head is 1.4--2.5 times worse than the best
-constrained head in the same system, and the choice of which phase to drop
-matters --- a sweep over all $K$ choices (Figure~\ref{fig:failures}, panel
-c) shows the best choice is the dominant phase in four of the five ternary systems. The
-observed degradation is consistent with the residual phase absorbing the
-accumulated prediction error of the other $K{-}1$ channels; we note this
-as an interpretation supported by the sweep, not a directly demonstrated
-mechanism.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{figures/fig6_failures}
-\caption{Three negative results. (a) Sparsemax: per-seed test MAE (orange)
-versus the renorm head (green) across all five ternary systems. The seed-to-seed
-spread of sparsemax is of the same order as its mean. (b) Sum-to-one penalty
-on Fe--Cr--Ni: MAE (bars, left axis) and closure violation (line, right axis)
-as $\lambda$ increases. The penalty buys closure at the cost of the fit.
-(c) Residue sweep: per-phase MAE for each choice of dropped phase (red)
-versus the best constrained head (green star) across all five ternary systems.}
-\label{fig:failures}
-\end{figure}
+\paragraph{Residue closure: closure without non-negativity.}
+Closing the sum algebraically ($\hat y_K = 1 - \sum_{k<K} \hat y_k$)
+guarantees the equality but not non-negativity: the residue head emits
+negative fractions on 0.0\% (Fe--Cr--V) to 1.21\% (Fe--Cr--Mo) of cells,
+worst cell $-0.59$, and is 1.4--2.5 times worse than the best constrained
+head in every system, with the dropped phase best chosen as the dominant
+one in four of five systems. Any deployment would need a projection step
+after all.
 
 % ======================================================================
 \section{Predicted phase fields}
@@ -2005,13 +1961,15 @@ lean-nickel query at 1000~K shortlists 10{,}936 candidates in 0.4~s with
 (Section~\ref{sec:screen}) --- the screening-filter claim, demonstrated
 rather than asserted.
 
-Three negative results are informative. Under the evaluated configuration
+Three failed mechanisms delimit the scope. Under the evaluated configuration
 sparsemax exhibited severe seed sensitivity, consistent with a
 zero-gradient sparsity trap. For the tested formulation and $\lambda$
 values, a sum-to-one penalty was redundant and strongly detrimental. The
 residue head, which closes the sum algebraically, is 1.4--2.5 times
 worse than the best constrained head in all five ternary systems, consistent with the
 residual phase absorbing the accumulated error of the other channels.
+Section~\ref{sec:negative} states each boundary; the full evidence is in
+the Supplement, Section~S1.
 
 % ======================================================================
 \section*{Data availability}

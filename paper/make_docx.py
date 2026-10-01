@@ -422,9 +422,10 @@ def build() -> None:
         "temperatures compared against four published DTA points, "
         "separating emulator error from database error against experiment "
         "(Section 13).",
-        "Three negative results reported in full \u2014 sparsemax, "
-        "sum-to-one penalty, and residue closure \u2014 each informative "
-        "about why the constraint mechanism matters (Section 10).",
+        "Three failed mechanisms as scope delimiters \u2014 sparsemax, "
+        "sum-to-one penalty, and residue closure \u2014 each marking where "
+        "the constraint story stops working, with the full evidence in the "
+        "Supplement (Section 10, Supplement Section S1).",
     ], start=1):
         p = doc.add_paragraph(style="List Number")
         p.add_run(c)
@@ -1761,7 +1762,8 @@ def build() -> None:
     body(doc,
          f"Table 12 reports three ablations on {LBL['fecrni']}; the loss "
          f"and width ablations appear in Figure 6 panels (b) and (c), and "
-         f"the closure-penalty ablation also appears in Figure 8 panel b.")
+            f"the closure-penalty ablation also appears in Supplement Figure "
+            f"S1 panel b.")
     d = RES["fecrni"]
     rows = []
     for lk, lab in [("huber", "Huber, \u03b4 = 0.01 (default)"),
@@ -1847,99 +1849,45 @@ def build() -> None:
             f"toward larger fractions without improving on plain "
             f"renormalisation at the tested setting.")
 
-    # 10. Negative results
-    doc.add_heading("10. Negative results", level=1)
+    # 10. Constraint mechanisms that fail
+    doc.add_heading("10. Constraint mechanisms that fail", level=1)
     body(doc,
-         "Three constraint mechanisms that are plausible in principle fail in "
-         "practice. We report each in full because the failure modes are "
-         "informative.")
-    doc.add_heading("10.1 Sparsemax: severe seed sensitivity under the "
-                    "evaluated configuration", level=2)
-    body(doc,
-         f"Sparsemax (Martins and Astudillo, 2016) projects the logits onto "
-         f"the simplex, producing exact zeros for phases the model deems "
-         f"absent. It satisfies closure to {LEQ} 5{TIMES}10{sup('-8')} and "
-         f"achieves the sparsity that softmax cannot. But under the "
-         f"evaluated training configuration it exhibited severe seed "
-         f"sensitivity and substantially worse MAE than the other "
-         f"constrained heads: 2\u20134 times worse than renorm or "
-         f"sigmoid/{SIG}, with the three seeds giving 0.018/0.037/0.117 on "
-         f"{LBL['fecrmo']}, 0.053/0.067/0.013 on {LBL['fecrni']}, and "
-         f"0.019/0.015/0.079 on {LBL['femnni']} \u2014 a seed standard "
-          f"deviation of the same order as the mean (Figure 8, panel a).")
-    body(doc,
-         f"The observed behaviour is consistent with a sparsity trap: once "
-         f"the sparsemax projection drives a phase's logit below the "
-         f"threshold {TAU}, the gradient at that logit is exactly zero, so "
-         f"a phase that starts out clipped can never recover, and whether "
-         f"it recovers is decided by initialisation. We present this as a "
-         f"mechanistic interpretation of the observed seed sensitivity, not "
-         f"as a demonstrated cause; the experiment evaluates one "
-         f"implementation and optimisation configuration. Notably, the head "
-         f"was trained with a regression loss on its projected outputs "
-         f"\u2014 the configuration most exposed to that zero-gradient "
-         f"region \u2014 so the dedicated sparsemax loss and "
-         f"{ALPHA}-entmax variants remain untested; a fixed-scale entmax "
-         f"({ALPHA} < 2) or a warm start from softmax would be the natural "
-         f"remedies. We therefore do not claim "
-         f"that sparsemax is unsuitable for phase-fraction prediction in "
-         f"general \u2014 only that it performed poorly and unreliably under "
-         f"the configuration studied here.")
-    doc.add_heading("10.2 Sum-to-one penalty: redundant and harmful", level=2)
-    body(doc,
-         "The penalty head of Section 9 is included here as a negative "
-         "result. The sum-to-one constraint is already satisfied by the "
-         "targets; adding it as a soft penalty creates a redundant loss term "
-         f"that competes with the data fit (related physics-informed "
-         f"superalloy workflows report the same constraint\u2013data-loss "
-         f"tension; Karthik and Rao, 2025). At {LAMBDA} = 10 the penalty "
-         f"dominates the Huber loss entirely, and the model learns to "
-         f"minimise closure violation at the expense of phase-fraction "
-         f"accuracy.")
-    doc.add_heading("10.3 Residue closure: closure without non-negativity, "
-                    "and the error concentrates", level=2)
-    body(doc,
-         f"The residue head predicts K{MINUS}1 phase fractions and closes "
-         f"the sum algebraically: \u0177(K) = 1 {MINUS} {SIG}{{k<K}} "
-         f"\u0177(k). This enforces the sum-to-one equality by construction "
-         f"but does not intrinsically guarantee non-negativity: if the "
-         f"other predicted fractions sum to more than one, the residue is "
-         f"negative. In the stored predictions the residue head emits "
-         f"negative values on 0.0% ({LBL['fecrv']}), 0.02% "
-         f"({LBL['femnni']}), 0.40% ({LBL['fecrni']}), 0.50% "
-         f"({LBL['fecrmn']}), and 1.21% ({LBL['fecrmo']}) of cells, with "
-         f"the most negative cell at {MINUS}0.59. It is therefore "
-         f"closure-valid but not simplex-valid, and any deployment would "
-         f"need a projection step after all.")
-    body(doc,
-         "Beyond admissibility, the head is also the least accurate "
-         "constrained variant: even the best residue head is "
-         f"1.4\u20132.5 times worse than the best constrained head in the "
-         f"same system, and the choice of which phase to drop matters \u2014 "
-         f"a sweep over all K choices (Figure 8, panel c) shows the best "
-         f"choice is the dominant phase in four of the five ternary "
-         f"systems. The "
-         f"observed degradation is consistent with the residual phase "
-         f"absorbing the accumulated prediction error of the other "
-         f"K{MINUS}1 channels; we note this as an interpretation supported "
-         f"by the sweep, not a directly demonstrated mechanism.")
-
-    figure(doc, "fig6_failures",
-           "Figure 8. Three negative results. (a) Sparsemax: per-seed test "
-           "MAE (orange) versus the renorm head (green) across all five "
-           "ternary systems. The seed-to-seed spread of sparsemax is of the "
-           "same "
-           "order as its mean. (b) Sum-to-one penalty on Fe\u2013Cr\u2013Ni: "
-           "MAE (bars, left axis) and closure violation (line, right axis) as "
-           "\u03bb increases. The penalty buys closure at the cost of the "
-           "fit. (c) Residue sweep: per-phase MAE for each choice of dropped "
-           "phase (red) versus the best constrained head (green star) across "
-           "all five ternary systems.")
+         "Three constraint mechanisms that are plausible in principle fail "
+         "in practice under the evaluated protocol. Each failure delimits "
+         "the scope of the positive results above rather than qualifying "
+         "them: the main text states each boundary, and the Supplement "
+         "(Section S1, Figure S1) reports the full evidence.")
+    finding(doc, "Sparsemax: sparsity at the cost of stability",
+            f"Sparsemax (Martins and Astudillo, 2016) satisfies closure to "
+            f"{LEQ} 5{TIMES}10{sup('-8')} with exact zeros, but it exhibited "
+            f"severe seed sensitivity and substantially worse MAE: "
+            f"2\u20134 times worse than renorm or sigmoid/{SIG}, with a "
+            f"seed standard deviation of the same order as the mean "
+            f"(0.018/0.037/0.117 on {LBL['fecrmo']}, for example) \u2014 "
+            f"consistent with a zero-gradient sparsity trap, and tested for "
+            f"one implementation and optimisation configuration only. "
+            f"Dedicated sparsemax losses and entmax variants remain "
+            f"untested.")
+    finding(doc, "Sum-to-one penalty: redundant and harmful",
+            f"The targets already sum to one, so a soft sum-to-one penalty "
+            f"competes with the data fit: MAE rises to 0.0804 at "
+            f"{LAMBDA} = 1 and 0.1693 at {LAMBDA} = 10 (Table 12) while "
+            f"closure improves only to 1.3{TIMES}10{sup('-3')}. Full curves "
+            f"are in Supplement Figure S1.")
+    finding(doc, "Residue closure: closure without non-negativity",
+            f"Closing the sum algebraically guarantees the equality but not "
+            f"non-negativity: the residue head emits negative fractions on "
+            f"0.0% ({LBL['fecrv']}) to 1.21% ({LBL['fecrmo']}) of cells, "
+            f"worst cell {MINUS}0.59, and is 1.4\u20132.5 times worse than "
+            f"the best constrained head in every system, with the dropped "
+            f"phase best chosen as the dominant one in four of five "
+            f"systems. Any deployment would need a projection step after "
+            f"all.")
 
     # 11. Predicted phase fields
     doc.add_heading("11. Predicted phase fields", level=1)
     body(doc,
-         f"Figure 9 shows the predicted phase-fraction fields for "
+         f"Figure 8 shows the predicted phase-fraction fields for "
          f"{LBL['fecrni']} under the renorm head, alongside the CALPHAD "
          f"oracle, for all four target phases. The surrogate reproduces the "
          f"phase-boundary structure \u2014 the BCC, FCC, liquid and sigma "
@@ -1963,7 +1911,7 @@ def build() -> None:
          f"active-phase set changes, while the interior of phase fields is "
          f"reproduced to high accuracy.")
     figure(doc, "fig3_fields",
-            f"Figure 9. Predicted phase-fraction fields for {LBL['fecrni']} "
+           f"Figure 8. Predicted phase-fraction fields for {LBL['fecrni']} "
            f"under the renorm head (seed 42). Top row: CALPHAD oracle. Middle "
            f"row: surrogate prediction. Bottom row: absolute error. Errors "
            f"concentrate near regions where the active-phase set changes; "
@@ -2138,7 +2086,7 @@ def build() -> None:
             f"melting (the liquid+\u03b4 field begins 24\u201326 K "
             f"higher, and is therefore distinguishable).")
     finding(doc, "Results",
-            f"Table 14 and Figure 10 give the three-way comparison. "
+            f"Table 14 and Figure 9 give the three-way comparison. "
             f"Against the full-CALPHAD reference the surrogate's "
             f"transitions land within 21 K at the 10{sup('-4')} threshold "
             f"(mean 14\u201317 K across the two transition types), and the "
@@ -2192,7 +2140,7 @@ def build() -> None:
                f"sigmoid/{SIG}; Fe\u2013Cr\u2013Ni: renorm).",
           left_cols=(0, 1))
     figure(doc, "fig9_anchor",
-           "Figure 10. Melting curves for the four anchor alloys: "
+           "Figure 9. Melting curves for the four anchor alloys: "
            "full-set CALPHAD (solid) versus surrogate ensemble (dashed), "
            "with the published DTA transition marked. The two "
            "calculations track each other along the entire melting "
@@ -2244,7 +2192,7 @@ def build() -> None:
          f"shortlisting 10,936 hits (2.18%).")
     finding(doc, "Every shortlisted alloy checked validates; the frontier "
             "is a Ni\u2013Cr trade-off curve",
-            f"Figure 11 maps the screen. The shortlist hugs the lean edge "
+            f"Figure 10 maps the screen. The shortlist hugs the lean edge "
             f"of the austenite field; per-Cr-bin minimal-Ni points trace a "
             f"Pareto frontier falling from 7.5% Ni at 1.5% Cr to 4.8% Ni "
             f"near 12\u201313% Cr before rising again as sigma encroaches "
@@ -2287,7 +2235,7 @@ def build() -> None:
             f"split, under the identical protocol, gives test MAE 0.0231 "
             f"at 10% (568 equilibria), 0.0173 at 25% (1,420), 0.0121 at 50% "
             f"(2,840) and 0.0091 at 100% (5,681), seed-means over the same "
-            f"three seeds (Figure 11, panel c; Table 16). Half the "
+            f"three seeds (Figure 10, panel c; Table 16). Half the "
             f"data-generation bill reaches within a factor of 1.3 of "
             f"full-data accuracy, which halves the optimistic break-even "
             f"above; even 568 solves train a 0.023-MAE surrogate, roughly "
@@ -2342,7 +2290,7 @@ def build() -> None:
           "full-set saving.",
           left_cols=(0,))
     figure(doc, "fig10_screen",
-           "Figure 11. Lean-Ni austenitic screen at 1000 K. (a) Gibbs "
+           "Figure 10. Lean-Ni austenitic screen at 1000 K. (a) Gibbs "
            "triangle coloured by surrogate FCC (Ni apex at top, Cr "
            "bottom-right, Fe bottom-left): shortlist (dark dots), Pareto "
            "frontier of minimal Ni per Cr bin (gold, all 11 "
@@ -2659,7 +2607,7 @@ def build() -> None:
          f"(Section 14) \u2014 the screening-filter claim, demonstrated "
          f"rather than asserted.")
     body(doc,
-         f"Three negative results are informative. Under the evaluated "
+         f"Three failed mechanisms delimit the scope. Under the evaluated "
          f"configuration sparsemax exhibited severe seed sensitivity, "
          f"consistent with a zero-gradient sparsity trap. For the tested "
          f"formulation and {LAMBDA} values, a sum-to-one penalty was "
@@ -2668,7 +2616,8 @@ def build() -> None:
          f"the best constrained head in all five ternary systems, "
          f"consistent with the "
          f"residual phase absorbing the accumulated error of the other "
-         f"channels.")
+         f"channels. Section 10 states each boundary; the full evidence is "
+         f"in the Supplement, Section S1.")
 
     # Data availability
     doc.add_heading("Data availability", level=1)

@@ -256,3 +256,11 @@ solves (audited `_cal_run` solver). Audit group `g_screen`: 10/10 PASS.
 | tab:screen | break-even ~1e4 (optimistic) -- ~7e4 (conservative) points; 501k screen pays back ~7--50x | (8880x0.33 + 2000x0.41 + 268)/0.41 ; (8880x2.5 + 2000x2.5 + 268)/0.41 | P |
 | sec:screen | learning curve (identical-protocol retrains): 0.0231 @568 / 0.0173 @1420 / 0.0121 @2840 / 0.0091 @5681; 25 % seed stalls at 0.0217 vs 0.0156/0.0146 | screen_data/learning_fecrni_renorm.json | P |
 | sec:screen | full-data retrain 0.0091 vs Table 3 stored 0.0106 (retrain-to-retrain variation, same order as seed spread) | learning json vs results_heads_fecrni.json | P |
+
+## ADDENDUM -- main/supplement split, step 1 (2026-10-01)
+
+Negative-results full evidence moved to paper_si.tex (Section S1,
+Figure S1, own bibliography); main text keeps a scope-delimiter summary
+under the same \label{sec:negative} (all existing cross-refs resolve).
+No number changed sides without staying in at least one audited file;
+audit g_structural reads main + SI concatenated. Audit: 392/0/7.

@@ -1450,6 +1450,9 @@ def g_recompute():
 # ================================================ GROUP 20 structural checks
 def g_structural():
     tex = open(os.path.join(PAPER, "paper_cms.tex"), encoding="utf-8").read()
+    si_path = os.path.join(PAPER, "paper_si.tex")
+    if os.path.exists(si_path):  # supplement carries moved evidence
+        tex += "\n" + open(si_path, encoding="utf-8").read()
     gd = open(os.path.join(ROOT, "generate_data.py"), encoding="utf-8",
               errors="replace").read()
     cfg = open(os.path.join(SRC, "fe_surrogate", "config.py"), encoding="utf-8",
