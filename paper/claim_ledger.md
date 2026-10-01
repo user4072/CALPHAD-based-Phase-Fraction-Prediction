@@ -216,3 +216,24 @@ Legend: **P** pass, **P\*** pass with a recorded note/reading, **C** corrected
 | 310–312 | "a phase stable in less than roughly 0.05 % of the design space could evade both probes" | back-of-envelope heuristic, no artefact. |
 | 155 | "a few CPU-hours per system" | no timing log. |
 | 52–57, 1095, 1390 | prose summaries of penalty structure ("order of magnitude") | verified via documented reading (geometric mean 6.3 over 40 ratios); no single printed number to test. |
+
+## ADDENDUM -- reviewer-response revision (2026-10-01)
+
+New numbers introduced while answering the ten-point critique, each
+re-derived from stored artefacts (see audit run 2026-10-01: 377/0/7).
+
+| tex | claim | artifact | status |
+|---|---|---|---|
+| tab:main | gated absolute MAE 0.0100 / 0.0075 / 0.0110 / 0.0110 / 0.0039, all ahead of RF | results_remedy.json aggregated gated mae | P |
+| tab:extension | gated 0.0041 / 0.0047, ahead of RF, behind best fraction-only head | results_remedy_fecrnic/fecrc.json aggregated | P |
+| sec:uncertainty | paired common-rows ensemble gain mean 0.35 % (0.39 / 0.40 / 0.89 / 0.06 / 0.00), n = 75--78 | ensemble_gate.json gain_pct_vs_mean_single_common_rows | P |
+| sec:extrapolation | system-level sign tests: X2 5/5 vs RF and XGB (p = 0.062); T 3/5 vs RF (p = 1.0), 5/5 vs XGB (p = 0.062) | block_holdout_*.json penalties recomputed by hand | P |
+| sec:extrapolation | system-level extrap ratio cells favouring MLP 6/10 | holdout_extrap_*.json penalties recomputed by hand | P |
+| tab:region | ratio-of-means headlines with per-seed ratios; MnNi-T per-seed 0.86/20.28/0.62, headline 1.06 | revision_analyses.json region_matched_bands | P |
+| sec:closure | sum-bias floor 0.062/4 = 0.0155 of raw 0.0232 | tab:ablation closure 6.2e-2, K = 4 | P |
+| sec:anchor | per-alloy sur-cal larger on 3/4 (14v13, 19v2, 17v3, 21v59); median cal-exp 8 K | tab:anchor deltas | P |
+| sec:data | Box 38.0 % all five; shared seed-42 template; sigma_focus identical incl. Fe-Mn-Ni | systems.py box/sigma_focus; generate_data.py default_rng(42) | P |
+| sec:data | Fe-Mn-Ni probe has no active SIGMA; Fe-Cr-Mn has no active Laves/MU/R/CHI | fecrmn/femnni_probe.json active_counts | P |
+| sec:models | width 64->256 moves renorm 0.0137->0.0099 (28 %) vs 5 % head gap | tab:ablation | P |
+| sec:models | softmax/sparsemax = single linear map, others per-phase block + scale | train_mlp.py MLP4 | P |
+| train | RF/XGB/ridge/kNN fit one single-output regressor per channel | train_baselines.py run_sklearn / per-channel loop | P |

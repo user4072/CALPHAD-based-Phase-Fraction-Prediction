@@ -32,43 +32,28 @@ Phase-Fraction Prediction}
 \address[a]{Anonymous}
 
 \begin{abstract}
-Surrogate models mapping composition and temperature to equilibrium phase
-fractions must respect the simplex constraint $\sum_k \Np{k} = 1$, yet the
-literature offers no consensus on how to impose it. We compare six output
-heads (sigmoid, softmax, sigmoid/$\Sigma$, clip-then-renormalise, sparsemax,
-and residue closure) and four classical baselines on five Fe-based ternaries
-solved with pycalphad from the open MatCalc steel database (44{,}397
-equilibria), and extend it to a quaternary Fe--Cr--Ni--C (13{,}192) and a
-carbide-rich Fe--Cr--C (13{,}199), 70{,}788 in total; two mechanism probes
-(power normalisation, sum-to-one loss penalty) are evaluated on Fe--Cr--Ni.
-The softmax, sigmoid/$\Sigma$, and renorm heads satisfy sum-to-one closure
-to $\le 5\times10^{-8}$ at no accuracy cost; the unconstrained sigmoid
-violates closure by 6--8\%, and ridge closes the sum to $\sim10^{-10}$ yet
-emits negative fractions on 17--28\% of cells: closure is not membership.
-Post-hoc projection alone recovers renorm-head accuracy: projected sigmoid
-matches renorm to $\le 1.3\times10^{-4}$ MAE in every system. Rankings
-depend on phase geometry: constrained multilayer perceptrons lead on
-smooth-coexistence systems, random forests where sharp phase boundaries
-dominate, ties elsewhere. Under distribution shift the random forest pays
-3.11 times the control MAE, the constrained MLP 1.61 times, on the
-Fe--Cr--Ni composition band; strict one-sided extrapolation degrades every
-evaluated model family by roughly an order of magnitude; the temperature
-protocol is limited by the closed phase basis (liquid absent from near-side
-training data in all five ternary systems). Phase-presence detection
-degrades faster than regression; a presence-gated two-stage head raises
-macro-AUPRC from 0.36--0.99 to 0.91--0.99 across the five ternary systems
-while \emph{reducing} MAE by 6--72\%, reaching 0.965 and 0.92 on the two
-extension systems. A three-seed disagreement score flags high-error rows
-with mean AUROC 0.70 (input-space distance 0.41), cutting MAE up to
-fourfold where the ensemble helps. On the extension systems constrained
-MLPs lead the forest (MAE 0.0037 and 0.0029 against 0.0075 and 0.0055), and
-temperature extrapolation costs 15.2 and 20 times the control. Against four
-DTA points it reproduces full-CALPHAD transition temperatures within 21~K
-(mean 17.75~K); the database deviates from experiment by 19~K. Three
-negative results: sparsemax exhibits severe seed sensitivity;
-a sum-to-one penalty degrades MAE by factors of 8--16;
-the residue head is 1.4--2.5 times worse than the best constrained
-head in all five ternary systems.
+We benchmark simplex-constraint mechanisms for machine-learning surrogates
+mapping composition and temperature to CALPHAD phase fractions: six neural
+output heads and four classical baselines on five Fe-based ternaries
+(44{,}397 equilibria), extended to a quaternary Fe--Cr--Ni--C (13{,}192)
+and a carbide-rich Fe--Cr--C (13{,}199). Softmax, sigmoid/$\Sigma$ and
+clip-then-renormalise satisfy closure to $\le 5\times10^{-8}$ at no
+accuracy cost against the unconstrained sigmoid (6--8\% violation);
+projection alone recovers renorm accuracy to $\le 1.3\times10^{-4}$, and
+at least $0.0155$ of the raw $0.0232$ MAE on Fe--Cr--Ni is sum-bias
+arithmetic. Under fraction-only supervision the ranking tracks phase
+geometry (multilayer perceptrons lead on smooth coexistence, forests where
+sharp boundaries dominate, ties elsewhere) --- but a presence-gated
+two-stage head, which additionally sees presence labels, leads the forest
+on all seven systems while lifting macro-AUPRC from 0.36--0.99 to
+0.91--0.99. Contiguous-band holdout with random and region-matched
+controls, strict one-sided extrapolation, uncertainty screening and three
+negative results (sparsemax exhibits severe seed sensitivity; a
+sum-to-one penalty degrades MAE; the residue head is 1.4--2.5 times worse)
+complete the benchmark. Against four published DTA
+transition temperatures the surrogate matches full CALPHAD within 21~K
+(mean 17.75~K), the same order as the database's own 19~K mean deviation
+from experiment.
 \end{abstract}
 
 \begin{keyword}
@@ -91,7 +76,7 @@ The CALPHAD method predicts equilibrium phase assemblages from assessed
 thermodynamic databases \citep{saunders1998calphad,lukas2007computational}.
 Given a database, the equilibrium at fixed composition $\mathbf{x}$,
 temperature $T$ and pressure $P$ follows from constrained Gibbs-energy
-minimisation, and the output of interest in alloy design is frequently the
+minimisation \citep{connolly2017primer}, and the output of interest in alloy design is frequently the
 vector of phase fractions $\mathbf{y} = (\Np{1}, \ldots, \Np{K})$, where
 $K$ is the number of phases that can appear. This vector lies on the
 probability simplex,
@@ -105,14 +90,27 @@ $\mathbf{y}$ should respect Eq.~\eqref{eq:simplex}; a prediction that
 violates it is not merely inaccurate but physically inadmissible.
 
 Machine-learning surrogates replace the per-point minimisation with a forward
-pass \citep{hart2021fast}. Surrogates of phase-equilibrium and
+pass \citep{hart2021fast}, within the broader Integrated Computational
+Materials Engineering and materials-informatics programmes
+\citep{wang2019icme,panchal2013key,agrawal2016perspective,ward2017review}.
+Surrogates of phase-equilibrium and
 quasi-equilibrium calculations have been developed for process optimisation
-and phase-field coupling \citep{nentwich2019surrogate,jiang2019fast},
+and phase-field coupling \citep{nentwich2019surrogate,jiang2019fast,eiken2006multiphase},
 deep-learning surrogates now reproduce CALPHAD phase fractions fast enough
 to screen composition spaces spanning more than ten elements
-\citep{tahkola2026accelerated}, machine-learning models of phase formation
+\citep{tahkola2026accelerated}, and neighbouring efforts target
+phase-diagram construction \citep{xi2025phasediagram}, high-entropy phase
+fractions \citep{liu2024hea}, phase constitution in multicomponent alloys
+\citep{vazquez2023dnn}, steel phase volume fractions by unsupervised
+learning \citep{kim2021phasevol}, counterfactual steel design
+\citep{xie2026knowledge}, Fe-based hardfacing alloys \citep{yu2026hardfacing},
+unsupervised high-entropy alloy design \citep{lis2026unsupervised}, and
+accelerated flash calculations \citep{zhang2020flash}.
+Machine-learning models of phase formation
 and transformation temperatures are widely used in alloy design
-\citep{feng2021general,lu2024classified}, and uncertainty quantification for
+\citep{feng2021general,lu2024classified}, high-throughput microstructure
+simulation in compositionally complex alloys builds on the same foundations
+\citep{liy2021micro}, and uncertainty quantification for
 CALPHAD-based workflows is an active companion topic
 \citep{wang2020uncertainty}. For phase fractions the modelling question
 decomposes into two: how to represent the output so that
@@ -146,7 +144,13 @@ different tests: in the first the test points typically remain inside the
 convex hull of the training set, in the second they do not. Both protocols
 share a confound --- removing the held-out region also removes training
 data --- which Section~\ref{sec:protocols} resolves with size-matched
-random controls and a region-matched reanalysis.
+random controls and a region-matched reanalysis. Out-of-distribution
+generalisation is an active concern across materials machine learning
+\citep{li2025ood,segal2025ood}: tabular models degrade under geometric
+shift \citep{lix2025transfer}, generative approaches are explored for
+extrapolation \citep{hatakeyama2021generative}, and statistical
+extrapolation carries risk even for physics-based models
+\citep{speckhard2025extrapolation}.
 
 \subsection{Contributions}
 
@@ -161,7 +165,8 @@ where surrogate speed becomes a practical necessity.
 
 \begin{enumerate}
 \item A \textbf{systematic comparison of simplex-constraint mechanisms}
-for neural-network phase-fraction prediction --- six heads across the five
+for neural-network phase-fraction prediction --- six fraction-only heads
+plus a presence-supervised gated head (Section~\ref{sec:remedy}) across the five
 ternary systems plus two mechanism probes (Section~\ref{sec:ablations})
 --- against four classical baselines (Section~\ref{sec:results}), together
 with a \textbf{projection analysis}
@@ -177,7 +182,8 @@ extrapolation protocol (one coordinate at a time); together these separate
 spatial penalties from data-volume reductions. Constrained MLPs degrade
 more gracefully than trees under composition-band holdout and under the
 tested strict extrapolation protocols; the temperature-band penalty is
-largely a data effect.
+mostly a data effect against the random control, with a region-matched
+residual on Fe--Cr--Ni.
 \item A \textbf{regressor--detector gap and its demonstrated remedy}: the
 model with the lowest MAE is not necessarily the best phase-presence
 detector, detection degrades faster than regression under distribution
@@ -468,7 +474,10 @@ power-norm guarantee both; renorm guarantees both after its projection;
 the residue head guarantees closure only.
 
 Non-softmax heads use a per-phase two-layer output block ($192 \to 192 \to 1$)
-and a learnable per-phase output scale.
+and a learnable per-phase output scale. The softmax (and sparsemax) head is
+therefore a single linear map from the shared trunk, while every other head
+adds a per-phase block plus scale: capacity is not matched across heads, so
+the softmax shortfall confounds constraint mechanism with capacity.
 
 \subsection{Baselines}
 
@@ -484,7 +493,16 @@ admissible ones reported in the main comparison. All hyperparameters ---
 neural and classical --- are fixed for the study: the comparison is intended
 to isolate output-constraint and model-family behaviour under a fixed,
 reproducible protocol rather than to identify globally optimal
-hyperparameters for any model family.
+hyperparameters for any model family. No model is tuned, and the tuning
+lever is large: the width ablation (Section~\ref{sec:ablations}) moves
+renorm MAE by 28\% from $3\times64$ to $3\times256$ (0.0137 to 0.0099),
+against a 5\% gap between the best heads (0.0112 for sigmoid/$\Sigma$,
+0.0106 for renorm), so head rankings sit within tuning noise. No
+Gaussian-process or radial-basis baseline is evaluated, although
+three-dimensional inputs with $\sim$9{,}000 rows per system make that
+family an obvious omitted comparator. Hybrid tree--neural comparisons for
+phase equilibria have precedent in neighbouring domains
+\citep{song2019clathrate}.
 
 \subsection{Splitting, seeds, and metrics}
 
@@ -508,7 +526,10 @@ mean $\pm$ standard deviation over seeds, a measure of seed-to-seed training
 stochasticity only, not a full uncertainty quantification (which would
 additionally cover sampling, architecture, phase-set, and database
 uncertainty). The test set is capped at 4{,}000
-rows.
+rows. The cluster-stratified split does not group near-duplicate rows:
+dense sampling regions can place near-identical points on both sides of a
+split boundary, so interpolation errors are optimistic for all models; no
+grouped split is evaluated.
 
 The primary metric is the mean absolute error averaged over phases,
 \begin{equation}
@@ -548,11 +569,17 @@ the five ternary systems. Figure~\ref{fig:heads} visualises the comparison.
 \caption{Test MAE (mean over three seeds; uncertainty in units of the last
 digit). Best per system in bold. Heads are grouped by whether they satisfy
 Eq.~\eqref{eq:simplex} structurally (on-simplex: softmax,
-sigmoid/$\Sigma$, sparsemax, renorm after its projection, power-norm), fail
+sigmoid/$\Sigma$, sparsemax, renorm after its projection, power-norm, and
+the presence-supervised gated head), fail
 to satisfy it (off-simplex: the unconstrained sigmoid and the closure-only
 residue head), or are baselines (shown after post-hoc renormalisation). Six
-heads are compared across the five ternary systems; the power-normalisation head
-($\dagger$) was evaluated on Fe--Cr--Ni only.}
+fraction-only heads are compared across the five ternary systems; the
+power-normalisation head
+($\dagger$) was evaluated on Fe--Cr--Ni only. The gated head
+($\ddagger$) additionally sees presence labels
+(Section~\ref{sec:remedy}), so its row is not a like-for-like family
+comparison: it shows what presence supervision buys on top of the
+fraction-only ranking discussed in the text.}
 \label{tab:main}
 \small
 \input{tab/main.tex}
@@ -562,7 +589,7 @@ heads are compared across the five ternary systems; the power-normalisation head
 \centering
 \includegraphics[width=\textwidth]{figures/fig2_heads}
 \caption{Main comparison. (a) Test MAE for the six neural heads across the
-five ternary systems (mean $\pm$ s.d., three seeds). (b) Best constrained MLP versus
+five ternary systems (mean $\pm$ s.d., three seeds). (b) Best fraction-only constrained MLP versus
 random forest; the annotation gives the RF/MLP ratio. (c) Simplex closure:
 constrained heads and renormalised baselines sit at or below $10^{-8}$;
 unconstrained outputs violate closure by $10^{-2}$--$10^{-1}$.}
@@ -575,8 +602,8 @@ $0.0180 \pm 0.0002$ for the random forest --- a 41\% reduction, roughly
 12 times the seed standard deviation. On Fe--Cr--Mn the sigmoid/$\Sigma$
 head achieves $0.0074 \pm 0.0002$ against $0.0133 \pm 0.0005$ for the forest.
 Both systems feature extended smooth two- and three-phase coexistence fields
-(sigma with BCC/FCC in Fe--Cr--Ni; the Laves, mu, R and chi intermetallic
-family in Fe--Cr--Mo), which favour the smooth function class of the MLP.
+(sigma with BCC/FCC in Fe--Cr--Ni; BCC/FCC/liquid with dilute Mn
+intermetallics in Fe--Cr--Mn), which favour the smooth function class of the MLP.
 
 \paragraph{Trees win where boundaries are sharp.}
 On Fe--Cr--V the forest achieves $0.0137 \pm 0.0004$ against
@@ -588,7 +615,13 @@ FCC$\leftrightarrow$LIQUID in Fe--Mn--Ni) with rare phases.
 Axis-aligned tree splits can represent such sharp transitions efficiently;
 on Fe--Cr--V, however, the margin is statistically indistinguishable from
 a tie, formally confirmed via paired bootstrap resampling over 10{,}000
-iterations (Table~\ref{tab:bootstrap}).
+iterations (Table~\ref{tab:bootstrap}). This family ranking is conditional
+on fraction-only supervision: the presence-supervised gated head of
+Section~\ref{sec:remedy} leads the forest on all five ternaries
+(Table~\ref{tab:main}, $\ddagger$ row: 0.0100, 0.0075, 0.0110, 0.0110 and
+0.0039 against 0.0180, 0.0133, 0.0123, 0.0137 and 0.0058), so ``trees win
+where boundaries are sharp'' describes the fraction-only benchmark, not an
+intrinsic family ordering.
 
 \paragraph{Fe--Cr--Mo is a statistical tie.}
 The random forest ($0.0123 \pm 0.0002$) and sigmoid/$\Sigma$
@@ -606,6 +639,11 @@ Table~\ref{tab:bootstrap}). The
 of the MLP on Fe--Cr--Ni and Fe--Cr--Mn and in favour of the random forest
 on Fe--Mn--Ni, while it includes zero on Fe--Cr--Mo and Fe--Cr--V: the two
 near-ties claimed above are genuine ties, not under-powered comparisons.
+A caveat: pooling three seeds treats test rows as independent, but rows
+from one design share spatial correlation, so these intervals are
+optimistic; they support rather than certify the ranking. The comparison
+is also fraction-only: the presence-supervised gated head is not part of
+this bootstrap.
 
 \begin{table}[htbp]
 \centering
@@ -685,7 +723,12 @@ sigmoid--renorm gap in Table~\ref{tab:main} --- 0.0232 raw against 0.0106
 renorm on Fe--Cr--Ni --- is therefore a scoring and constraint effect,
 not an optimisation effect: evaluating an unconstrained model outside the
 simplex is what costs accuracy, and the repair is a projection costing
-microseconds at inference time. The projection is likewise not an
+microseconds at inference time. Part of the raw number is pure arithmetic:
+a mean sum violation of 0.062 contributes at least $0.062/4 \approx 0.0155$
+to raw MAE on this four-phase system, so most of the raw 0.0232 is the
+closure violation itself rather than misplaced fraction mass. ``No accuracy
+cost'' is therefore a statement against the raw sigmoid only, not against
+an already-admissible model. The projection is likewise not an
 accuracy lever for the already-admissible models: applied to the random
 forest and XGBoost it changes MAE by at most $5\times10^{-4}$ (random
 forest) and $2\times10^{-3}$ (XGBoost), small against the $0.0126$
@@ -708,7 +751,13 @@ unconstrained sigmoid never leaves $(0,1)$ but violates closure by
 6--8\%. $k$-nearest neighbours, as a convex combination of complete
 training label vectors, is simplex-valid a priori: closure better than
 $5\times10^{-9}$ and no negative cell anywhere in the evaluated test
-sets. Closure statistics alone therefore cannot certify admissibility;
+sets. This taxonomy describes the evaluated implementations, not intrinsic
+family properties: the forest, XGBoost, ridge and $k$-NN arms each fit an
+independent single-output regressor per phase channel
+(Section~\ref{sec:models}), which is why the forest's per-channel averages
+do not sum to one. A multi-output forest whose leaves store whole label
+vectors would be simplex-valid by construction, like $k$-NN; it was not
+evaluated here. Closure statistics alone therefore cannot certify admissibility;
 the two conditions of Eq.~\eqref{eq:simplex} must be reported
 separately.
 
@@ -730,7 +779,10 @@ violates Eq.~\eqref{eq:simplex} cannot be used directly in any downstream
 calculation that assumes a valid phase assemblage --- lever-rule property
 averaging, for instance, or a subsequent kinetic simulation. The constrained
 heads and post-hoc renormalisation both produce admissible outputs; the
-former do so without a separate projection step.
+former do so without a separate projection step. Differentiable
+thermodynamic equilibria, which bake constraints into the solver itself,
+are an emerging alternative not evaluated here
+\citep{benhicham2026diffthermo}.
 
 % ======================================================================
 \section{Regression versus detection}
@@ -744,8 +796,8 @@ MAE is not always the best detector.
 
 \begin{table}[htbp]
 \centering
-\caption{Regression versus detection. For each system the best constrained
-MLP head and the random forest are compared on MAE, mean $F_1$, balanced
+\caption{Regression versus detection. For each system the best fraction-only
+constrained MLP head and the random forest are compared on MAE, mean $F_1$, balanced
 accuracy, and entropy-weighted MAE. The MLP is the better regressor on two
 systems (with a near-tie on Fe--Cr--Mo) but the worse detector on three.}
 \label{tab:detection}
@@ -776,7 +828,11 @@ represents it; it is an artefact of the averaging. Detecting its presence
 distinguish a small positive signal from noise, which is what the
 presence metrics measure. On Fe--Mn--Ni the MLP predicts MNNI, MNNI2, and
 ALPHA\_MN as absent ($F_1 = 0$ for all three) while the random forest
-resolves two of them.
+resolves two of them. Missing such phases is not a numerical footnote:
+intermetallic precipitation and sigma/carbide formation control real alloy
+performance and service life \citep{rahnama2018precip,anburaj2012ageing,aditya2023sigma},
+and Fe--Cr--Ni reliability is an active modelling target in its own right
+\citep{hao2025mlip}.
 
 \paragraph{The gap is not an artefact of the zero-positive scoring
 convention.}
@@ -790,6 +846,19 @@ Fe--Mn--Ni; the exception is FCC in Fe--Cr--Mo at 0.63), whereas the random
 forest retains 0.40--0.97 in all of them except the two near-zero-occurrence
 phases (CR3MN5 at 0.03\% and MU\_PHASE\_I at 0.1\%), where both families
 fail.
+
+\paragraph{The gap is partly shaped by design choices.}
+Three asymmetries favour the trees here and qualify the gap. First, the
+Huber loss ($\delta = 0.01$) gives near-zero gradient to errors far below
+$10^{-2}$, so tiny fractions contribute little training signal. Second, a
+sigmoid output never reaches exactly zero while a tree leaf can, so at a
+$10^{-3}$ presence threshold with MLP noise around $10^{-2}$, the
+thresholded regressor comparison structurally favours trees. Third, no
+dedicated classifier baseline is evaluated: detection is scored by
+thresholding regressors, and the gated head that closes the gap sees
+presence labels the other models never see. The gap is therefore a property
+of this fixed-protocol comparison --- thresholded Huber-trained regressors
+--- not a general statement that neural models cannot detect phases.
 
 \paragraph{The gap is stable across presence thresholds.}
 The presence threshold $\Np{k} > 10^{-3}$ is a modelling decision, so we
@@ -875,7 +944,19 @@ the random forest, XGBoost, and $k$-NN on four of the five ternary systems
 (Fe--Cr--V is a 0.988 against 0.990 near-tie, matching that system's
 overall statistical tie), and it does so while \emph{reducing} test MAE
 on all five ternaries, by 6\% (Fe--Cr--Ni) to 72\% (Fe--Mn--Ni, 0.0140 to
-0.0039). The per-phase picture is where the remedy matters: on Fe--Cr--Mn
+0.0039). In absolute terms the gated head's test MAE is 0.0100, 0.0075,
+0.0110, 0.0110 and 0.0039 across the five ternaries (Table~\ref{tab:main},
+$\ddagger$ row) --- ahead of the random forest on every one of them ---
+and 0.0041 and 0.0047 on the two extension systems, again ahead of the
+forest (0.0075 and 0.0055) though behind the best fraction-only head on
+those systems. Two caveats bound this result. The remedy was designed
+\emph{after} seeing the bare regressor fail on these same test sets, so
+its test numbers are post-hoc by construction; and the gated head was not
+evaluated under the spatial protocols of Section~\ref{sec:extrapolation},
+which is where the regressor--detector gap is worst. The presence
+supervision, not the architecture, should therefore be read as the finding:
+fraction-only rankings do not survive giving the MLP the labels the task
+actually needs. The per-phase picture is where the remedy matters: on Fe--Cr--Mn
 ALPHA\_MN rises from 0.004 to 0.933 and BETA\_MN from 0.005 to 0.896; on
 Fe--Mn--Ni MNNI rises from 0.003 to 1.00. One rare phase resists --- the
 0.1\%-occurrence MU\_PHASE\_I in Fe--Cr--Mo remains below 0.5 --- and is
@@ -965,7 +1046,7 @@ control (an equal number of rows removed at random and evaluated on those
 random rows). This quantifies whether removing a contiguous band is costlier
 than removing random rows, but does not by itself separate region difficulty
 from distribution shift; a region-matched reanalysis on identical band rows
-is reported in the text.}
+is reported in Table~\ref{tab:region}.}
 \label{tab:holdout}
 \small
 \input{tab/holdout.tex}
@@ -1024,27 +1105,39 @@ Results for the missing-region generalisation test (Table~\ref{tab:holdout},
 Figure~\ref{fig:ablation} panel~a) rest on two complementary references ---
 the size-matched random controls and the region-matched reanalysis, both
 defined in Section~\ref{sec:protocols}. Under the region-matched measure
-the picture is
-consistent: the in-distribution-to-holdout penalty is smaller for the
-constrained MLPs than for the tree ensembles in nine of the ten band--system
+(Table~\ref{tab:region}; ratio of mean MAEs on identical band rows) the
+in-distribution-to-holdout penalty is smaller for the constrained MLP
+than for the tree ensembles in nine of the ten band--system
 combinations. On the composition bands, which cross steep
 phase boundaries, the MLP penalty ratios are 1.2--2.1 versus 1.4--3.0 for
 the random forest and XGBoost in all five ternary systems; on the temperature bands
 the MLP ratios are 0.9--2.8 versus 1.3--3.9, with Fe--Cr--Ni the single
 exception, where the random-forest ratio is lower (2.1 versus
-2.8) although its absolute holdout error remains twice the MLP's.
+2.8) although its absolute holdout error remains twice the MLP's
+(0.0258 against 0.0132). The per-seed ratios in Table~\ref{tab:region}
+show one instability behind the headline: on Fe--Mn--Ni the MLP
+temperature ratios spread 0.9, 20.3 and 0.6 across seeds from a
+near-zero denominator on one seed, which the ratio-of-means headline
+(1.1) downweights.
 Ratios must nonetheless be read alongside absolute errors: a band that is
 easy in distribution, such as the nearly single-phase 1200--1400~K band of
 Fe--Mn--Ni, inflates ratios through a small denominator.
 
-\paragraph{The temperature-band penalty is largely a data effect.}
+\paragraph{The temperature-band penalty is mostly a data effect against
+the random control, with a genuine shift residual on identical rows.}
 On Fe--Cr--Ni the MLP and the random forest pay the \emph{same} penalty
 factor of 1.31 once the random control is used as the reference. Comparing the
 temperature band against the interpolation split instead would have
 suggested that trees cannot generalise in temperature; the size-matched
 control shows that the temperature band removes 1{,}275 training rows, and
 the resulting data loss, not the spatial shift, accounts for most of the
-degradation.
+degradation. The region-matched reference adds a residual: on the identical
+Ni band rows, removing regional training data costs the MLP a factor of
+2.8 (per-seed 2.7--2.9) against 2.1 for the forest. The two references
+answer different questions --- the random control asks whether a
+contiguous hole costs more than random removal, the region-matched
+comparison asks whether the hole costs more on hard rows --- and on
+Fe--Cr--Ni the second answer is yes.
 
 \paragraph{The composition band is where model families separate.}
 On Fe--Cr--Ni the random forest pays a factor of 3.11 on the composition band
@@ -1062,13 +1155,14 @@ the MLP's smooth parametrisation degrades more gracefully.
 \paragraph{The composition-band ordering is consistent across all
 system--seed pairs.}
 As a statistical check on the spatial protocol, we applied a two-sided
-sign test to the 15 system--seed penalty-ratio pairs. The MLP's
-composition-band penalty is lower than the random forest's and lower than
-XGBoost's on all 15 pairs ($p = 6.1\times10^{-5}$ for each comparison).
-On the temperature band the MLP--forest difference is not significant
-(11 of 15 pairs, $p = 0.12$), consistent with the shared
-penalty factor of 1.31, while the MLP--XGBoost difference remains
-significant (15 of 15, $p = 6.1\times10^{-5}$).
+sign test with the system as the independent unit: seeds within a system
+share the same dataset, so seed-level pairs are not independent. On the
+composition band the MLP's penalty is lower than the random forest's and
+lower than XGBoost's on all five systems ($n = 5$, $p = 0.062$ for each
+comparison; all 15 system--seed pairs agree). On the temperature band the
+MLP--forest ordering holds on three of five systems ($p = 1.0$),
+consistent with the shared penalty factor of about 1.3, while the
+MLP--XGBoost ordering holds on all five systems ($p = 0.062$).
 
 \paragraph{The penalty is system-dependent, not universal.}
 On Fe--Cr--V the random forest degrades by a factor of 4.92 on the temperature band
@@ -1125,7 +1219,10 @@ degraded, so the ratio is reference-dependent --- and we report the
 absolute-error comparison as the cleaner statement. A two-sided sign test
 over the 15 system--seed pairs agrees with that caveat: the MLP's
 penalty ratio is lower than the trees' on only 9 of 15 pairs
-($p = 0.61$), so the ratio comparison is not significant. The ordering matches
+($p = 0.61$), so the ratio comparison is not significant. Seeds within a
+system are not independent, so the system-level reading is 6 of 10
+system--protocol cells favouring the MLP --- the same non-significant
+picture. The ordering matches
 the contiguous-band result: smooth parametrisations degrade more
 gracefully than leaf averaging when the query leaves the trained region.
 The difference is one of degree, not of kind --- graceful degradation is
@@ -1148,8 +1245,19 @@ error should grow away from training support.
 \paragraph{Ensemble averaging is a refinement; its disagreement is a
 usable error ranker on most systems.}
 Averaging the three seeds reduces test MAE by 2.26\% on average
-($-0.62\%$ on Fe--Cr--Mo to $+5.53\%$ on Fe--Cr--V): ensembling is not a
-fix for any failure mode, but it is free accuracy. As a per-row score,
+($-0.62\%$ on Fe--Cr--Mo to $+5.53\%$ on Fe--Cr--V) when every test row
+contributes the mean over whichever seeds cover it. That union estimate
+mixes one-, two- and three-seed partial ensembles; the fully paired
+comparison on the rows covered by all three seeds gives a mean gain of
+0.35\% (0.39, 0.40, 0.89, 0.06 and 0.00\% per system), on only 75--78
+common rows per system. All contributing predictions are out-of-sample for
+their seed (each seed's stored predictions cover its own test rows only),
+so there is no train--test contamination; the gap between the two estimates
+is partial-ensemble mixing plus small-$n$ noise, not leakage. The honest
+reading is that the ensemble gain is small and uncertain under redrawn
+splits: ensembling is not a fix for any failure mode, but it is free
+accuracy, and a fixed-split rerun is needed to pin the number down
+(Section~\ref{sec:discussion}). As a per-row score,
 however, U1 carries real signal. Its Spearman correlation with per-row
 error averages 0.707 across the five ternary systems (0.94 on Fe--Cr--Ni, 0.93 on
 Fe--Cr--Mn, 0.87 on Fe--Cr--V, 0.69 on Fe--Cr--Mo, but 0.11 on
@@ -1224,7 +1332,9 @@ the closure violation only from $6.2\times10^{-2}$ to $1.3\times10^{-3}$.
 For the tested penalty formulation and $\lambda$ values, the soft closure
 penalty substantially degraded MAE and did not achieve the numerical
 closure obtained by structural constraints. The penalty is redundant ---
-the targets already sum to one --- and competes with the data loss. The
+the targets already sum to one --- and competes with the data loss; related
+physics-informed superalloy workflows report the same constraint--data-loss
+tension \citep{karthik2025sumrule}. The
 penalty weights were restricted to $\lambda \in \{1, 10\}$: with the Huber
 regression term saturating its per-output gradient at $\delta = 0.01$, these
 weights make the closure term dominate the regression gradient by one to
@@ -1485,11 +1595,16 @@ absolute fraction deviation is $6\times10^{-4}$--$1.4\times10^{-3}$.
 Against the published DTA values, the full-CALPHAD reference deviates by
 $-3$~K (Yamada liquidus), $+13$~K (alloy A), $-2$~K (alloy B) ---
 mean 19~K --- with alloy C the outlier at $+59$~K; adding the surrogate's
-error moves the mean to 25~K, no worse than 38~K anywhere. The
-emulator is therefore not the limiting term in this comparison: the
-database--experiment discrepancy (mean 19~K, and 59~K on the most
-Cr-rich alloy) exceeds the surrogate--database discrepancy at any
-reasonable detection threshold. The four points are too few, and the
+error moves the mean to 25~K, no worse than 38~K anywhere. At the primary
+$10^{-4}$ threshold the two discrepancies are the same order of magnitude
+(surrogate--CALPHAD mean 17.75~K against CALPHAD--experiment mean 19~K,
+median 8~K), and per alloy the surrogate term is the larger of the two on
+three of the four points (A: 14 against 13; B: 19 against 2; Yamada: 17
+against 3; only C reverses, 21 against 59). The database mean is driven by
+the single $+59$~K outlier on the most Cr-rich alloy. With $n = 4$ neither
+term can be declared the limiting one: the anchor bounds the surrogate's
+contribution at tens of kelvin at the detection threshold the protocol
+actually uses, not single digits. The four points are too few, and the
 DTA method too rate-dependent, for a stronger claim; they are reported
 to bound the surrogate's contribution to an experiment-facing pipeline,
 not to validate the database.
@@ -1504,6 +1619,22 @@ sustained melting branch.}
 \label{tab:anchor}
 \small
 \input{tab/anchor.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Region-matched band reanalysis: holdout mean MAE on band rows divided
+by in-distribution mean MAE on the identical rows (ratio of means; per-seed
+ratios in parentheses), for the renorm MLP, the random forest
+and XGBoost. Complements the random-control penalties of
+Table~\ref{tab:holdout}; see Section~\ref{sec:protocols} for the two
+references. The Fe--Cr--Ni temperature ordering reverses relative to the
+random-control picture; the Fe--Mn--Ni temperature per-seed spread
+(0.86/20.28/0.62) comes from a near-zero denominator on one seed and is
+downweighted in the headline ratio.}
+\label{tab:region}
+\small
+\input{tab/region.tex}
 \end{table}
 
 \begin{figure}[htbp]
@@ -1533,10 +1664,17 @@ between the families. We present
 this as an empirical observation across the tested systems, not a universal
 law: with only seven systems (five ternaries and two extensions,
 Section~\ref{sec:extensions}), system identity is confounded with phase
-topology, rare-phase frequency, sampling density, and boundary geometry.
-A surrogate pipeline should evaluate both families and select per system;
-no single evaluated architecture consistently dominated across the five
-ternary systems.
+topology, rare-phase frequency, sampling density, and boundary geometry ---
+and all five ternaries share the same seed-42 sampling template
+(Section~\ref{sec:data}), so coverage is confounded with system
+identity too. No quantitative sharpness metric is evaluated, so the
+topology story is a hypothesis consistent with the results, not a measured
+result. Crucially, the ranking above is conditional on fraction-only
+supervision: the presence-supervised gated head leads the forest on all
+five ternaries (Table~\ref{tab:main}). A surrogate pipeline should
+therefore evaluate both families \emph{and} the presence-supervised variant
+and select per system; no single fraction-only architecture consistently
+dominated across the five ternary systems.
 
 \subsection{The spatial-generalisation result reframes the interpolation
 comparison}
@@ -1547,10 +1685,10 @@ interpolation split; on the contiguous composition band the gap widens to
 $3.11 / 1.61 \approx 1.9$ in penalty ratio, and the same
 ordering persists under the tested strict one-sided extrapolation
 protocols. Under the region-matched reanalysis
-(Section~\ref{sec:protocols}), which compares identical band rows with and
+(Section~\ref{sec:protocols}; Table~\ref{tab:region}), which compares identical band rows with and
 without regional training data, the in-distribution-to-holdout penalty
-remains smaller for the constrained MLPs than for the tree ensembles in
-nine of the ten band--system combinations. The MLP's advantage is
+remains smaller for the constrained MLP than for the tree ensembles in
+nine of the ten band--system combinations (Section~\ref{sec:extrapolation}). The MLP's advantage is
 not merely that it fits the training
 distribution better; within the tested protocols it also degrades less
 severely in absolute error when the query point leaves it. We do not claim
@@ -1570,13 +1708,18 @@ this relative comparison is the more relevant one.
 These results frame the surrogate as a high-speed screening filter rather
 than a thermodynamic arbiter: while the MLP speedups enable the screening
 of multi-million composition databases in seconds, any candidate alloy
-identified during high-throughput screening must be independently
+identified during high-throughput screening \citep{mayr2009screening} must be independently
 re-validated using direct CALPHAD calculations and, ultimately, targeted
 experimental synthesis. Measured on CPU, the 192-unit MLP forward pass
 costs 2--3~$\mu$s per point in batch inference (0.4--0.6~ms for a single
 query), against roughly 2.5~s per equilibrium on the CALPHAD side of this
 work --- a speedup of about $10^{6}$ in batch mode and
-$4$--$6\times10^{3}$ for single queries.
+$4$--$6\times10^{3}$ for single queries. The 2.5~s denominator is the full
+eligible phase set (28--31 phases); the probe-reduced set actually used for
+data generation costs less per point (unrecorded), so the factor against
+the as-run pipeline is smaller. No break-even is computed: data generation
+(70{,}788 equilibria) plus training time must be amortised before the
+surrogate pays off, and that accounting is left to the deploying workflow.
 
 The surrogate emulates the oracle: for a queried $(\mathbf{x}, T)$ it returns
 the phase fractions the database's equilibrium routine would return, fast.
@@ -1587,10 +1730,13 @@ here means ``reproduces the database's answers to solver precision on the
 validated points'', not ``thermodynamically true''. The experimental anchor
 of Section~\ref{sec:anchor} bounds what this distinction costs in
 practice: on four published DTA transition temperatures the surrogate
-stays within 1--3~K of the full-CALPHAD answer (at a $10^{-2}$
-detection threshold) while the database itself deviates from experiment
-by 19~K on average --- the emulator is the small term, and both terms
-are reported separately rather than conflated.
+stays within 21~K of the full-CALPHAD answer (mean 17.75~K at the
+$10^{-4}$ detection threshold the protocol uses) while the database
+itself deviates from experiment by 19~K on average (median 8~K) --- the
+same order of magnitude, with the surrogate term larger on three of the
+four points. The $10^{-2}$-threshold figure of 1--3~K describes tail shape,
+not the headline comparison, and both terms are reported separately rather
+than conflated.
 
 \subsection{Limitations}
 
@@ -1628,7 +1774,7 @@ regression, might approximate these three-dimensional phase-fraction fields
 competitively, and we did not evaluate them; the $k$-NN baseline partially
 covers the local-smoothness regime. Compositional-data-analysis regressors
 such as log-ratio (ALR/CLR/ILR) regression and Dirichlet regression are
-likewise not evaluated: the targets contain structural zeros --- typically only one
+likewise not evaluated \citep{meloni2026coda,parent2025nutrition}: the targets contain structural zeros --- typically only one
 to three of the $K$ phases are active on any given row --- and log-ratio
 transforms are undefined where any component is zero, so these families
 would need ad hoc zero replacement before fitting. The presence-gated
@@ -1643,7 +1789,19 @@ of which (the most Cr-rich alloy) deviates by 59~K --- it bounds the
 surrogate's contribution but cannot validate the database. The Fe--Cr--C
 pre-screen deviation (9 of 1{,}497 points) is a known imperfection of the
 probe-based phase-set construction at rare-phase margins, kept in the
-released dataset. All conclusions are furthermore scoped to systems of at
+released dataset. Three further design limitations bound generality. All
+five ternaries share one seed-42 sampling template --- identical
+stainless-box thresholds (38.0\% in-box on every system) and identical
+sigma-focus boxes, including on Fe--Mn--Ni, where no sigma phase is ever
+active and the draw has no metallurgical meaning --- so system identity is
+confounded with sampling coverage. Label noise is documented but not
+removed: near-degenerate solver minima in Fe--Cr--Mo and nine genuinely
+wrong Fe--Cr--C target rows mean part of the boundary-concentrated error
+may be solver disagreement rather than model error, and no second-solver
+cross-check is performed. Physical admissibility stops at the simplex: no
+lever-rule mass-balance or phase-rule check is applied to predictions, the
+gated head is absent from the shift protocols, and the ensemble gain is not
+re-estimated on a fixed split. All conclusions are furthermore scoped to systems of at
 most four inputs: the MLP/tree crossover, the band-holdout behaviour, and
 the regressor--detector gap are tested up to the quaternary system, and
 whether they persist in genuinely higher-dimensional design spaces,
@@ -1655,7 +1813,8 @@ untested.
 \label{sec:conclusions}
 
 We compared simplex-constraint mechanisms for neural-network phase-fraction
-prediction --- six output heads across all five ternary systems plus two mechanism
+prediction --- six fraction-only output heads plus a presence-supervised
+gated head across all five ternary systems plus two mechanism
 probes --- against four classical baselines across five Fe-based ternary
 systems, totalling 44{,}397 mass-balance-validated equilibria, and
 extended the identical protocol to a quaternary Fe--Cr--Ni--C and a
@@ -1677,14 +1836,18 @@ $1.3\times10^{-4}$ MAE everywhere --- while closure alone certifies
 nothing (ridge closes to $10^{-10}$ with up to 28\% negative cells;
 $k$-NN is the only baseline simplex-valid a priori).
 
-No single evaluated architecture consistently dominated across the five
+No single fraction-only architecture consistently dominated across the five
 ternary systems; performance is topologically dependent. Within the five
 ternary systems studied, constrained MLPs led the two systems dominated by
 continuous, smooth phase coexistence fields, the random forest led
 Fe--Mn--Ni --- one of the two systems defined by sharp, binary phase
 boundaries --- and the remaining two systems (Fe--Cr--Mo and Fe--Cr--V)
 were statistical ties --- a 2--1--2 pattern across the five ternary
-systems --- as paired-bootstrap tests confirmed.
+systems --- as paired-bootstrap tests confirmed. That pattern is
+conditional on fraction-only supervision: the presence-supervised gated
+head leads the forest on all five ternaries
+(Table~\ref{tab:main}), so the durable finding is that presence
+supervision, not family selection, resolves the sharp-boundary cases.
 
 Two spatial protocols with size-matched random controls, complemented by a
 region-matched reanalysis, separated the
@@ -1731,10 +1894,13 @@ distance from training rows. And the protocol transfers: on the two
 extension systems constrained MLPs lead the forest by factors of
 1.9--2.0, the spatial protocols reproduce the
 same qualitative penalties (temperature extrapolation remains
-15--20 times the control), and against four published DTA transition points the
-surrogate matches the full-CALPHAD answer within 1--3~K at a
-$10^{-2}$ threshold --- a small term beside the database's own 19~K mean
-deviation from experiment.
+15--20 times the control on the extension systems, subject to the same
+closed-basis limitation documented for the ternaries), and against four
+published DTA transition points the
+surrogate matches the full-CALPHAD answer within 21~K (mean 17.75~K at the
+$10^{-4}$ threshold) --- the same order as the database's own 19~K mean
+deviation from experiment, with the surrogate term larger on three of the
+four points.
 
 Three negative results are informative. Under the evaluated configuration
 sparsemax exhibited severe seed sensitivity, consistent with a
@@ -1752,7 +1918,7 @@ evaluation, and all analyses reported in this paper, including the
 region-matched reanalysis, AUPRC, phase-rule admissibility, the
 presence-gated remedy, the uncertainty-gate analysis, the projection
 ablation, and the reconstruction of the design-space accounting) is
-available at [GitHub URL]. The seven datasets (70{,}788 equilibria with
+available at \url{https://github.com/user4072/CALPHAD-based-Phase-Fraction-Prediction}. The seven datasets (70{,}788 equilibria with
 per-phase fractions and thermodynamic potentials), the stored per-seed
 model predictions, all result files, and the experimental-anchor
 extraction and evaluation (pointers to the source PDFs, extracted tables, and
@@ -1768,6 +1934,19 @@ artefacts; no reported value is hand-entered. The recompute audit re-derives
 every metric from the stored prediction tensors and confirms agreement to
 $<10^{-9}$ on all seven summary fields for all 99 stored MLP runs of the
 five-system benchmark.
+
+% ======================================================================
+\section*{Declaration of interests}
+
+The authors declare that they have no known competing financial interests
+or personal relationships that could have appeared to influence the work
+reported in this paper.
+
+% ======================================================================
+\section*{Funding}
+
+The authors did not receive support from any organization for the submitted
+work.
 
 % ======================================================================
 \bibliographystyle{elsarticle-harv}
@@ -1848,6 +2027,149 @@ Yamada, A., Umeda, T., Suzuki, M., Aragane, G., Kihara, H., Kimura, K.,
 1987. Determination of liquidus and solidus surfaces at iron-rich region
 of Fe--Cr--Ni system. Tetsu-to-Hagan\'e 73, 1676--1683.
 \url{https://doi.org/10.2355/tetsutohagane1955.73.14_1676}.
+
+\bibitem[Yi Wang et al.(2019)]{wang2019icme}
+Yi Wang, W., et al., 2019. Integrated computational materials engineering
+for advanced materials: a brief review. Comput. Mater. Sci. 158, 42--48.
+
+\bibitem[Bordonhos et al.(2023)]{bordonhos2023multiscale}
+Bordonhos, M., et al., 2023. Multiscale computational approaches toward the
+understanding of materials. Adv. Theory Simul. 6, 2200628.
+
+\bibitem[Xi et al.(2025)]{xi2025phasediagram}
+Xi, S., et al., 2025. Phase diagram construction and prediction method
+based on machine learning algorithms. J. Mater. Res. Technol. 36,
+1917--1929.
+
+\bibitem[Liu et al.(2024)]{liu2024hea}
+Liu, S., et al., 2024. A comparative study of predicting high entropy alloy
+phase fractions with traditional machine learning and deep neural networks.
+npj Comput. Mater. 10, 172.
+
+\bibitem[Connolly(2017)]{connolly2017primer}
+Connolly, J.A.D., 2017. A primer in Gibbs energy minimization for
+geophysicists. Petrology 25, 526--534.
+
+\bibitem[Kim et al.(2021)]{kim2021phasevol}
+Kim, S.W., et al., 2021. Estimating the phase volume fraction of
+multi-phase steel via unsupervised deep learning. Sci. Rep. 11, 5902.
+
+\bibitem[Xie et al.(2026)]{xie2026knowledge}
+Xie, C., et al., 2026. From processing text to counterfactual steel design:
+a knowledge-graph-organized and reliability-aware machine learning
+framework. Mater. Des., 116691.
+
+\bibitem[Li et al.(2026)]{lis2026unsupervised}
+Li, S., et al., 2026. Unsupervised machine learning guides the design of
+MnFeCoNiMg high-entropy alloys for optimizing MoS2 interface properties.
+J. Mater. Res. Technol.
+
+\bibitem[Vazquez et al.(2023)]{vazquez2023dnn}
+Vazquez, G., et al., 2023. A deep neural network regressor for phase
+constitution estimation in the high entropy alloy system
+Al-Co-Cr-Fe-Mn-Nb-Ni. npj Comput. Mater. 9, 68.
+
+\bibitem[Yu et al.(2026)]{yu2026hardfacing}
+Yu, W., et al., 2026. Integrated design of hardness and weldability for
+multi-component Fe-based hardfacing alloys driven by machine learning and
+high-throughput computation. J. Mater. Res. Technol. 42, 11496--11509.
+
+\bibitem[Mayr and Bojanic(2009)]{mayr2009screening}
+Mayr, L.M., Bojanic, D., 2009. Novel trends in high-throughput screening.
+Curr. Opin. Pharmacol. 9, 580--588.
+
+\bibitem[Zhang et al.(2020)]{zhang2020flash}
+Zhang, T., et al., 2020. A self-adaptive deep learning algorithm for
+accelerating multi-component flash calculation. Comput. Methods Appl. Mech.
+Eng. 369, 113207.
+
+\bibitem[Ben Hicham et al.(2026)]{benhicham2026diffthermo}
+Ben Hicham, K.K., et al., 2026. Differentiable thermodynamic
+phase-equilibria for machine learning. J. Chem. Inf. Model.
+
+\bibitem[Meloni et al.(2026)]{meloni2026coda}
+Meloni, F., et al., 2026. Integrating Compositional Data Analysis (CoDA)
+and Random Forest for lithology-specific geochemical baseline
+determination. Sci. Total Environ. 1011, 181169.
+
+\bibitem[Parent(2025)]{parent2025nutrition}
+Parent, L.E., 2025. Compositional and machine learning tools to model plant
+nutrition: overview and perspectives. Horticulturae 11, 161.
+
+\bibitem[Karthik and Rao(2025)]{karthik2025sumrule}
+Karthik, M.R., Rao, T.B., 2025. Physics-informed data-driven ensemble and
+transfer learning approaches for prediction of temperature field and
+cutting force during machining IN625 superalloy. Int. J. Interact. Des.
+Manuf. 19, 7027--7060.
+
+\bibitem[Agrawal and Choudhary(2016)]{agrawal2016perspective}
+Agrawal, A., Choudhary, A., 2016. Perspective: Materials informatics and
+big data: Realization of the ``fourth paradigm'' of science in materials
+science. APL Mater. 4(5).
+
+\bibitem[Ward and Wolverton(2017)]{ward2017review}
+Ward, L., Wolverton, C., 2017. Atomistic calculations and materials
+informatics: a review. Curr. Opin. Solid State Mater. Sci. 21, 167--176.
+
+\bibitem[Li et al.(2025a)]{li2025ood}
+Li, K., et al., 2025. Probing out-of-distribution generalization in machine
+learning for materials. Commun. Mater. 6, 9.
+
+\bibitem[Segal et al.(2025)]{segal2025ood}
+Segal, N., et al., 2025. Known unknowns: out-of-distribution property
+prediction in materials and molecules. npj Comput. Mater. 11, 345.
+
+\bibitem[Li et al.(2025b)]{lix2025transfer}
+Li, X., et al., 2025. Combining transfer learning and statistical measures
+to predict performance of composite materials with limited data.
+Comput.-Aided Civ. Infrastruct. Eng. 40, 817--838.
+
+\bibitem[Hatakeyama-Sato and Oyaizu(2021)]{hatakeyama2021generative}
+Hatakeyama-Sato, K., Oyaizu, K., 2021. Generative models for extrapolation
+prediction in materials informatics. ACS Omega 6, 14566--14574.
+
+\bibitem[Speckhard et al.(2025)]{speckhard2025extrapolation}
+Speckhard, D.T., et al., 2025. Extrapolation to the complete basis-set
+limit in density-functional theory using statistical learning. Phys. Rev.
+Mater. 9, 013801.
+
+\bibitem[Li et al.(2021)]{liy2021micro}
+Li, Y., et al., 2021. Towards high-throughput microstructure simulation in
+compositionally complex alloys via machine learning. Calphad 72, 102231.
+
+\bibitem[Rahnama et al.(2018)]{rahnama2018precip}
+Rahnama, A., Clark, S., Sridhar, S., 2018. Machine learning for predicting
+occurrence of interphase precipitation in HSLA steels. Comput. Mater. Sci.
+154, 169--177.
+
+\bibitem[Hao et al.(2025)]{hao2025mlip}
+Hao, S., et al., 2025. Developing reliable machine learning interatomic
+potential for Fe--Cr--Ni austenitic alloys. J. Appl. Phys. 138.
+
+\bibitem[Panchal et al.(2013)]{panchal2013key}
+Panchal, J.H., Kalidindi, S.R., McDowell, D.L., 2013. Key computational
+modeling issues in Integrated Computational Materials Engineering.
+Comput.-Aided Des. 45, 4--25.
+
+\bibitem[Song et al.(2019)]{song2019clathrate}
+Song, Y., et al., 2019. Prediction of clathrate hydrate phase equilibria
+using gradient boosted regression trees and deep neural networks. J. Chem.
+Thermodyn. 135, 86--96.
+
+\bibitem[Eiken et al.(2006)]{eiken2006multiphase}
+Eiken, J., B\"ottger, B., Steinbach, I., 2006. Multiphase-field approach
+for multicomponent alloys with extrapolation scheme for numerical
+application. Phys. Rev. E 73, 066122.
+
+\bibitem[Anburaj et al.(2012)]{anburaj2012ageing}
+Anburaj, J., et al., 2012. Ageing of forged superaustenitic stainless
+steel: precipitate phases and mechanical properties. Mater. Sci. Eng. A
+535, 99--107.
+
+\bibitem[Aditya et al.(2023)]{aditya2023sigma}
+Aditya, D.M., et al., 2023. The study of sigma and carbide in cast
+austenitic stainless-steel grade HH after 24 years of high-temperature
+service. Heliyon 9(3).
 
 \end{thebibliography}
 

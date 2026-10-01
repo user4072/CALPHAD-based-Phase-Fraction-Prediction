@@ -133,16 +133,26 @@ ROWS = [("mlp_sigmoid", "sigmoid (unconstrained)", 0),
         ("mlp_softmax", "softmax", 1),
         ("mlp_sig_norm", "sigmoid/$\\Sigma$ (train-time)", 1),
         ("mlp_renorm", "sigmoid + renorm (post hoc)", 1),
+        ("gated", "gated (presence-supervised)$^{\\ddagger}$", 1),
         ("mlp_power_norm", "power-normalisation$^{\\dagger}$", 1),
         (None, None, None),
         ("ridge_renorm", "ridge", 2),
         ("knn_renorm", "$k$-NN, $k=10$", 2),
         ("xgb_renorm", "XGBoost", 2),
         ("rf_renorm", "random forest", 2)]
+GATED = {}
+_rem_path = os.path.join(M, "results_remedy.json")
+if os.path.exists(_rem_path):
+    _rem = json.load(open(_rem_path, encoding="utf-8"))
+    for _s, _v in _rem["aggregated"].items():
+        _g = _v.get("gated", {})
+        GATED[_s] = (_g.get("mae", np.nan), _g.get("mae_std", np.nan))
 best = {}
 for s in SYS:
     d = results(s)
-    cand = {k: agg(d, k)[0] for k, _, _ in ROWS if k}
+    cand = {k: agg(d, k)[0] for k, _, _ in ROWS if k and k != "gated"}
+    if s in GATED and not np.isnan(GATED[s][0]):
+        cand["gated"] = GATED[s][0]
     best[s] = min(cand, key=cand.get)
 W("\\scriptsize")
 W("\\setlength{\\tabcolsep}{3pt}")
@@ -152,7 +162,7 @@ W("\\toprule")
 W(" & Model & " + " & ".join(LBL[s] for s in SYS) + " \\\\")
 W("\\midrule")
 group = {0: "\\multirow{2}{*}{\\rotatebox{90}{\\tiny off-simplex}}",
-         1: "\\multirow{5}{*}{\\rotatebox{90}{\\tiny on-simplex}}",
+         1: "\\multirow{6}{*}{\\rotatebox{90}{\\tiny on-simplex}}",
          2: "\\multirow{4}{*}{\\rotatebox{90}{\\tiny baselines}}"}
 seen = set()
 for key, lab, g in ROWS:
@@ -163,12 +173,18 @@ for key, lab, g in ROWS:
     seen.add(g)
     cells = []
     for s in SYS:
-        m, sd, _ = agg(results(s), key)
+        if key == "gated":
+            m, sd = GATED.get(s, (np.nan, np.nan))
+        else:
+            m, sd, _ = agg(results(s), key)
         cells.append(mae_cell(m, sd, bold=(best[s] == key)))
     W(f"{tag} & {lab} & " + " & ".join(cells) + " \\\\")
 W("\\midrule")
 W("\\multicolumn{7}{l}{\\scriptsize $^{\\dagger}$Evaluated on Fe--Cr--Ni "
   "only (mechanism probe; see Section~\\ref{sec:negative}).} \\\\")
+W("\\multicolumn{7}{l}{\\scriptsize $^{\\ddagger}$Two-stage head with "
+  "presence supervision (see Section~\\ref{sec:remedy}); not a "
+  "fraction-only model.} \\\\")
 W("\\bottomrule")
 W("\\end{tabular}")
 emit("main")
@@ -660,8 +676,21 @@ if all(SUM.values()):
     BASE14 = [("rf_renorm", "random forest"), ("xgb_renorm", "XGBoost"),
               ("knn_renorm", "$k$-NN"), ("ridge_renorm", "ridge")]
     allk = [k for k, _ in HEAD14] + [k for k, _ in BASE14]
-    best = {s: min(allk, key=lambda k: SUM[s]["heads_mae_mean_over_seeds"].get(
-        k, SUM[s]["baselines_mae_mean_over_seeds"].get(k, np.inf)))
+    G14 = {}
+    for _f, _s in [("results_remedy_fecrnic.json", "fecrnic"),
+                   ("results_remedy_fecrc.json", "fecrc")]:
+        _r = jload(os.path.join(M, _f))
+        if _r:
+            _g = _r["aggregated"][_s].get("gated", {})
+            G14[_s] = _g.get("mae", np.nan)
+
+    def _v14(s, k):
+        if k == "gated":
+            v = G14.get(s, np.nan)
+            return np.inf if np.isnan(v) else v
+        return SUM[s]["heads_mae_mean_over_seeds"].get(
+            k, SUM[s]["baselines_mae_mean_over_seeds"].get(k, np.inf))
+    best = {s: min(allk + ["gated"], key=lambda k, s=s: _v14(s, k))
             for s in ESYS}
     W("\\begin{tabular}{lcc}")
     W("\\toprule")
@@ -685,6 +714,16 @@ if all(SUM.values()):
             cells.append(f"\\textbf{{{v:.4f}}}" if best[s] == key
                          else f"{v:.4f}")
         W(f"{lab} & " + " & ".join(cells) + " \\\\")
+    W("\\addlinespace")
+    W("\\multicolumn{3}{l}{\\scriptsize presence-supervised "
+      "(see Section~\\ref{sec:remedy})} \\\\")
+    cells = []
+    for s in ESYS:
+        v = G14.get(s, np.nan)
+        cells.append("---" if np.isnan(v) else
+                     (f"\\textbf{{{v:.4f}}}" if best[s] == "gated"
+                      else f"{v:.4f}"))
+    W("gated & " + " & ".join(cells) + " \\\\")
     W("\\bottomrule")
     W("\\end{tabular}")
     W("")
@@ -813,5 +852,42 @@ if AN:
 else:
     W("% anchor_eval.json not present -- run anchor_eval.py")
 emit("anchor")
+
+# ---------------------------------------------------------------- Table 16
+W("% Table 16: region-matched band reanalysis, holdout vs in-distribution "
+  "on identical band rows")
+RM = jload(os.path.join(ROOT, "analysis_revision", "revision_analyses.json"))
+rmb = RM.get("region_matched_bands") if RM else None
+if rmb and all(s in rmb for s in SYS):
+    W("\\scriptsize")
+    W("\\setlength{\\tabcolsep}{3pt}")
+    W("\\resizebox{\\textwidth}{!}{")
+    W("\\begin{tabular}{llccc}")
+    W("\\toprule")
+    W("Band & System & MLP renorm & random forest & XGBoost \\\\")
+    W("\\midrule")
+    for bi, (blk, blab) in enumerate([("X2_band", "$x_2$ band"),
+                                      ("T_band", "$T$ band")]):
+        for si, s in enumerate(SYS):
+            cells = []
+            for key in ["mlp_renorm", "rf_renorm", "xgb_renorm"]:
+                entry = rmb[s][f"{blk}_{key}"]
+                m = entry["region_matched_ratio_of_means"]
+                vals = [p["region_matched_ratio"] for p in entry["per_seed"]]
+                cells.append(f"{m:.2f} ({'/'.join(f'{v:.2f}' for v in vals)})")
+            tag = blab if si == 0 else ""
+            W(f"{tag} & {LBL[s]} & " + " & ".join(cells) + " \\\\")
+        if bi == 0:
+            W("\\addlinespace")
+    W("\\midrule")
+    W("\\multicolumn{5}{l}{\\scriptsize Region-matched ratio of mean MAEs: "
+      "holdout mean MAE on band rows divided by in-distribution mean MAE on "
+      "the identical rows; per-seed ratios in parentheses (seeds "
+      "42/123/2024).} \\\\")
+    W("\\bottomrule")
+    W("\\end{tabular}}")
+else:
+    W("% revision_analyses.json region_matched_bands not present")
+emit("region")
 
 print(f"tables -> {TAB}")
