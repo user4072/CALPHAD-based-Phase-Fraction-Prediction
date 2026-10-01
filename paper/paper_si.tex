@@ -229,6 +229,42 @@ from sub-$10^{-3}$ tail differences, not from shifted curves.}
 \end{figure}
 
 % ======================================================================
+\section{Predicted phase fields in full}
+\label{sec:si-fields}
+
+Figure~S3 shows the predicted phase-fraction fields for
+Fe--Cr--Ni under the renorm head, alongside the CALPHAD oracle, for all four
+target phases. The surrogate reproduces the phase-boundary structure --- the
+BCC, FCC, liquid and sigma fields --- with visible accuracy. The error panel
+shows that errors concentrate at phase boundaries, where the fraction changes
+rapidly, and are small in the interior of single-phase fields.
+
+We quantified this concentration on the Fe--Cr--Ni test set. For each row
+we computed the distance, in scaled $(x_2, x_3, T)$ coordinates, to the
+nearest test row with a different active-phase set (a KD-tree boundary
+proxy; a differing set was found within 64 neighbours for 92.9\% of rows),
+and binned the per-row mean absolute error by that distance. This proxy
+measures proximity to regions where the active-phase set changes in the
+sampled data; it is not the exact thermodynamic distance to a phase
+boundary. Rows in the
+nearest third to the boundary proxy carry a mean MAE of 0.022, against 0.008
+in the middle third and 0.002 in the farthest third --- a boundary-to-interior
+ratio of $\sim$10. In this system, surrogate error is strongly
+concentrated near regions where the active-phase set changes, while the
+interior of phase fields is reproduced to high accuracy.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/fig3_fields}
+\caption{Figure S3. Predicted phase-fraction fields for Fe--Cr--Ni under
+the renorm head (seed 42). Top row: CALPHAD oracle. Middle row: surrogate
+prediction. Bottom row: absolute error. Errors concentrate near regions
+where the active-phase set changes; the interior of single-phase fields
+is reproduced to high accuracy.}
+\label{fig:si-fields}
+\end{figure}
+
+% ======================================================================
 \begin{thebibliography}{99}
 
 \bibitem[Drozdov\'a et al.(2017)]{drozdovs2017}

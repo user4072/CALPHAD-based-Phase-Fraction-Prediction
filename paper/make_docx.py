@@ -1839,36 +1839,12 @@ def build() -> None:
     # 11. Predicted phase fields
     doc.add_heading("11. Predicted phase fields", level=1)
     body(doc,
-         f"Figure 8 shows the predicted phase-fraction fields for "
-         f"{LBL['fecrni']} under the renorm head, alongside the CALPHAD "
-         f"oracle, for all four target phases. The surrogate reproduces the "
-         f"phase-boundary structure \u2014 the BCC, FCC, liquid and sigma "
-         f"fields \u2014 with visible accuracy. The error panel shows that "
-         f"errors concentrate at phase boundaries, where the fraction changes "
-         f"rapidly, and are small in the interior of single-phase fields.")
-    body(doc,
-         f"We quantified this concentration on the {LBL['fecrni']} test set. "
-         f"For each row we computed the distance, in scaled (x\u2082, "
-         f"x\u2083, T) coordinates, to the nearest test row with a different "
-         f"active-phase set (a KD-tree boundary proxy; a differing set was "
-         f"found within 64 neighbours for 92.9% of rows), and binned the "
-         f"per-row mean absolute error by that distance. This proxy "
-         f"measures proximity to regions where the active-phase set changes "
-         f"in the sampled data; it is not the exact thermodynamic distance "
-         f"to a phase boundary. Rows in the nearest "
-         f"third to the boundary proxy carry a mean MAE of 0.022, against "
-         f"0.008 in the middle third and 0.002 in the farthest third \u2014 "
-          f"a boundary-to-interior ratio of ~10. In this system, "
-         f"surrogate error is strongly concentrated near regions where the "
-         f"active-phase set changes, while the interior of phase fields is "
-         f"reproduced to high accuracy.")
-    figure(doc, "fig3_fields",
-           f"Figure 8. Predicted phase-fraction fields for {LBL['fecrni']} "
-           f"under the renorm head (seed 42). Top row: CALPHAD oracle. Middle "
-           f"row: surrogate prediction. Bottom row: absolute error. Errors "
-           f"concentrate near regions where the active-phase set changes; "
-           f"the interior of single-phase fields is reproduced to high "
-           f"accuracy.")
+         f"Surrogate error concentrates near regions where the "
+         f"active-phase set changes: on {LBL['fecrni']}, rows in the "
+         f"nearest third to a KD-tree boundary proxy carry mean MAE 0.022 "
+         f"against 0.002 in the farthest third, a boundary-to-interior "
+         f"ratio of ~10. Full fields, error maps and the proxy definition "
+         f"are in the Supplement, Section S4 (Figure S3).")
 
     # 12. Scope extensions
     doc.add_heading("12. Scope extensions: quaternary Fe\u2013Cr\u2013Ni"
@@ -1923,18 +1899,11 @@ def build() -> None:
             "the accuracy nor the detection results depend on repairing "
             "them, and none were repaired.")
     finding(doc, "The spatial protocols give the same qualitative answers",
-            "On both extension systems the contiguous composition band "
-            f"costs 2.1\u20133.5 times the random control while the "
-            f"temperature band costs 0.7\u20131.2 times \u2014 again, "
-            f"removing the band is mostly a data effect in temperature "
-            f"and a regional effect in composition. Strict extrapolation "
-            f"again fails: factors of 4.8 (composition) and 15.2 "
-            f"(temperature) on Fe\u2013Cr\u2013Ni\u2013C; factors of 2.6 "
-            f"(carbon), 2.7 (chromium), and "
-            f"20 (temperature) on Fe\u2013Cr\u2013C. The absolute-error "
-            f"ordering of Section 7 \u2014 no architecture extrapolates "
-            f"reliably, temperature is the worst axis \u2014 does not "
-            f"depend on being ternary.")
+            "Composition-band holdout costs 2.1\u20133.5 times the random "
+            "control and strict extrapolation fails on every tested axis, "
+            "worst in temperature (Table 12 panel C); the absolute-error "
+            "ordering of Section 7 \u2014 no architecture extrapolates "
+            "reliably \u2014 does not depend on being ternary.")
     rows = [
         ["(A) Dataset and target statistics", "", ""],
         ["Eligible phases", "35", "32"],
@@ -2050,7 +2019,7 @@ def build() -> None:
          f"shortlisting 10,936 hits (2.18%).")
     finding(doc, "Every shortlisted alloy checked validates; the frontier "
             "is a Ni\u2013Cr trade-off curve",
-            f"Figure 9 maps the screen. The shortlist hugs the lean edge "
+            f"Figure 8 maps the screen. The shortlist hugs the lean edge "
             f"of the austenite field; per-Cr-bin minimal-Ni points trace a "
             f"Pareto frontier falling from 7.5% Ni at 1.5% Cr to 4.8% Ni "
             f"near 12\u201313% Cr before rising again as sigma encroaches "
@@ -2093,7 +2062,7 @@ def build() -> None:
             f"split, under the identical protocol, gives test MAE 0.0231 "
             f"at 10% (568 equilibria), 0.0173 at 25% (1,420), 0.0121 at 50% "
             f"(2,840) and 0.0091 at 100% (5,681), seed-means over the same "
-            f"three seeds (Figure 9, panel c; Table 14). Half the "
+            f"three seeds (Figure 8, panel c; Table 14). Half the "
             f"data-generation bill reaches within a factor of 1.3 of "
             f"full-data accuracy, which halves the optimistic break-even "
             f"above; even 568 solves train a 0.023-MAE surrogate, roughly "
@@ -2148,7 +2117,7 @@ def build() -> None:
           "full-set saving.",
           left_cols=(0,))
     figure(doc, "fig10_screen",
-           "Figure 9. Lean-Ni austenitic screen at 1000 K. (a) Gibbs "
+           "Figure 8. Lean-Ni austenitic screen at 1000 K. (a) Gibbs "
            "triangle coloured by surrogate FCC (Ni apex at top, Cr "
            "bottom-right, Fe bottom-left): shortlist (dark dots), Pareto "
            "frontier of minimal Ni per Cr bin (gold, all 11 "

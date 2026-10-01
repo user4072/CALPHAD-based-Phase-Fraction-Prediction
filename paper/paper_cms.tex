@@ -1356,37 +1356,11 @@ after all.
 \section{Predicted phase fields}
 \label{sec:fields}
 
-Figure~\ref{fig:fields} shows the predicted phase-fraction fields for
-Fe--Cr--Ni under the renorm head, alongside the CALPHAD oracle, for all four
-target phases. The surrogate reproduces the phase-boundary structure --- the
-BCC, FCC, liquid and sigma fields --- with visible accuracy. The error panel
-shows that errors concentrate at phase boundaries, where the fraction changes
-rapidly, and are small in the interior of single-phase fields.
-
-We quantified this concentration on the Fe--Cr--Ni test set. For each row
-we computed the distance, in scaled $(x_2, x_3, T)$ coordinates, to the
-nearest test row with a different active-phase set (a KD-tree boundary
-proxy; a differing set was found within 64 neighbours for 92.9\% of rows),
-and binned the per-row mean absolute error by that distance. This proxy
-measures proximity to regions where the active-phase set changes in the
-sampled data; it is not the exact thermodynamic distance to a phase
-boundary. Rows in the
-nearest third to the boundary proxy carry a mean MAE of 0.022, against 0.008
-in the middle third and 0.002 in the farthest third --- a boundary-to-interior
-ratio of $\sim$10. In this system, surrogate error is strongly
-concentrated near regions where the active-phase set changes, while the
-interior of phase fields is reproduced to high accuracy.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{figures/fig3_fields}
-\caption{Predicted phase-fraction fields for Fe--Cr--Ni under the renorm
-head (seed 42). Top row: CALPHAD oracle. Middle row: surrogate prediction.
-Bottom row: absolute error. Errors concentrate near regions where the
-active-phase set changes; the interior of single-phase fields is reproduced
-to high accuracy.}
-\label{fig:fields}
-\end{figure}
+Surrogate error concentrates near regions where the active-phase set
+changes: on Fe--Cr--Ni, rows in the nearest third to a KD-tree boundary
+proxy carry mean MAE 0.022 against 0.002 in the farthest third, a
+boundary-to-interior ratio of $\sim$10. Full fields, error maps and the
+proxy definition are in the Supplement, Section~S4 (Figure~S3).
 
 % ======================================================================
 \section{Scope extensions: quaternary Fe--Cr--Ni--C and Fe--Cr--C}
@@ -1439,16 +1413,11 @@ Section~\ref{sec:data}); neither the accuracy nor
 the detection results depend on repairing them, and none were repaired.
 
 \paragraph{The spatial protocols give the same qualitative answers.}
-On both extension systems the contiguous composition band costs
-$2.1$--$3.5$ times the random control while the temperature band costs
-$0.7$--$1.2$ times --- again, removing the band is mostly a data effect
-in temperature and a regional effect in composition. Strict extrapolation
-again fails: factors of 4.8 (composition) and 15.2 (temperature) on
-Fe--Cr--Ni--C; factors of 2.6 (carbon), 2.7 (chromium), and
-20 (temperature) on Fe--Cr--C. The absolute-error ordering of
+Composition-band holdout costs 2.1--3.5 times the random control and
+strict extrapolation fails on every tested axis, worst in temperature
+(Table~\ref{tab:extension} panel C); the absolute-error ordering of
 Section~\ref{sec:extrapolation} --- no architecture extrapolates
-reliably, temperature is the worst axis --- does not depend on being
-ternary.
+reliably --- does not depend on being ternary.
 
 \begin{table}[htbp]
 \centering

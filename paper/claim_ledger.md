@@ -276,3 +276,13 @@ Contributions 6 -> 3 (what to fit / where it holds / why it matters);
 abstract trimmed to ~150 words (audit phrases intact). Docx mirrors all:
 threshold Table 8 and anchor Table 14 + Figure 9 removed; docx tables
 1--14 and figures 1--9 sequential. Main 53pp, SI 5pp. Audit: 392/0/7.
+
+## ADDENDUM -- main/supplement split, step 3 (2026-10-01)
+
+Fields section + Figure 3 -> SI Section S4 (Figure S3); main keeps
+2-sentence pointer with boundary numbers (0.022/0.002, ~10x) under the
+same \label{sec:fields}. Extension spatial paragraph slimmed (panel-C
+numbers stay via Table 14, kept whole in main). Docx mirrors all:
+Section 11 slimmed, fields Figure 8 removed, screen Figure 9 -> 8;
+docx tables 1--14 and figures 1--8 sequential. Main 52pp, SI 6pp.
+Audit: 392/0/7.
