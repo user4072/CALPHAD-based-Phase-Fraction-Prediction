@@ -1539,6 +1539,21 @@ def g_screen():
     fr = s["X"][v["order"][kinds == "frontier"]]
     check("tex:screen min Ni 0.048",
           round(float(fr[:, 2].min()), 3), "0.048")
+    lc = J(os.path.join(PAPER, "screen_data",
+                        "learning_fecrni_renorm.json"))
+
+    def lc_mean(frac):
+        v = [lc[f"frac{frac:g}_s{s}"]["mean_mae"] for s in SEEDS]
+        return sum(v) / len(v)
+
+    check("tex:screen learning 10% MAE 0.0231", lc_mean(0.1), "0.0231")
+    check("tex:screen learning 25% MAE 0.0173", lc_mean(0.25), "0.0173")
+    check("tex:screen learning 50% MAE 0.0121", lc_mean(0.5), "0.0121")
+    check("tex:screen learning 100% MAE 0.0091", lc_mean(1.0), "0.0091")
+    check_exact("tex:screen learning n_train values",
+                sorted({lc[f"frac{f:g}_s{s}"]["n_train"]
+                        for f in (0.1, 0.25, 0.5, 1.0) for s in SEEDS}),
+                [568, 1420, 2840, 2841, 5679, 5681, 5682])
 
 
 # ================================================================== main

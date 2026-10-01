@@ -2282,6 +2282,23 @@ def build() -> None:
             f"Screening is cheap; trusting the screen still requires spot "
             f"CALPHAD, and the numbers above say how much spot-checking "
             f"suffices.")
+    finding(doc, "Half the data buys most of the accuracy",
+            f"Retraining the screened head on fractions of its training "
+            f"split, under the identical protocol, gives test MAE 0.0231 "
+            f"at 10% (568 equilibria), 0.0173 at 25% (1,420), 0.0121 at 50% "
+            f"(2,840) and 0.0091 at 100% (5,681), seed-means over the same "
+            f"three seeds (Figure 11, panel c; Table 16). Half the "
+            f"data-generation bill reaches within a factor of 1.3 of "
+            f"full-data accuracy, which halves the optimistic break-even "
+            f"above; even 568 solves train a 0.023-MAE surrogate, roughly "
+            f"the raw-sigmoid baseline. The 25% point carries a caveat "
+            f"\u2014 one seed stalls at 0.0217 while the other two reach "
+            f"0.015 \u2014 so small-data training is seed-sensitive and "
+            f"wants the same multi-seed discipline as the main benchmark. "
+            f"The full-data retrain lands at 0.0091 against Table 3's "
+            f"0.0106: retrain-to-retrain variation from early stopping, of "
+            f"the same order as the seed spread, and one more reason the "
+            f"headline comparisons use three seeds.")
     SC = json.load(open(os.path.join(ROOT, "paper", "screen_data",
                                      "screen_fecrni_T1000K_step0.001.json")))
     SV = json.load(open(os.path.join(ROOT, "paper", "screen_data",
@@ -2314,6 +2331,8 @@ def build() -> None:
         ["Break-even screen size (one-time \u00f7 per-point saving)",
          "~10\u2074 (optimistic) \u2013 ~7\u00d710\u2074 (conservative; "
          "see text)"],
+        ["renorm test MAE at 10 / 25 / 50 / 100% of training data",
+         "0.0231 / 0.0173 / 0.0121 / 0.0091"],
     ]
     table(doc, ["Quantity", "Value"], srows,
           "Table 16. Application case: lean-Ni austenitic screen at 1000 K "
@@ -2331,7 +2350,9 @@ def build() -> None:
            "crosses, rejected on predicted sigma or FCC just below "
            "cutoff). (b) The frontier as minimal qualifying Ni versus Cr: "
            "Cr substitutes for Ni to ~12% before sigma encroaches; misses "
-           "sit above the line.")
+           "sit above the line. (c) Data efficiency: test MAE versus "
+           "training-set size for retrains under the identical protocol "
+           "(3-seed mean \u00b1 s.d.; the 25% bar shows one stalled seed).")
 
     # 15. Discussion
     doc.add_heading("15. Discussion", level=1)

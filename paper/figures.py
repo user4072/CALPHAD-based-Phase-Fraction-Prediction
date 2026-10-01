@@ -776,8 +776,10 @@ def fig10_screen():
     def tri(fe, cr, ni):
         return cr + 0.5 * ni, 0.8660254 * ni
 
-    fig = plt.figure(figsize=(FULLW, 0.46 * FULLW))
-    gs = fig.add_gridspec(1, 2, width_ratios=(1.15, 1.0))
+    _clu = mpl.rcParams["figure.constrained_layout.use"]
+    mpl.rcParams["figure.constrained_layout.use"] = False
+    fig = plt.figure(figsize=(FULLW, 0.60 * FULLW))
+    gs = fig.add_gridspec(1, 3, width_ratios=(1.15, 1.0, 0.95))
 
     ax = fig.add_subplot(gs[0, 0])
     sub = np.arange(0, len(X), 4)
@@ -792,13 +794,13 @@ def fig10_screen():
                  X[order[kinds == "frontier"], 1],
                  X[order[kinds == "frontier"], 2])
     ax.plot(fx, fy, c="k", lw=1.2, marker="o", ms=3.5, mfc="gold",
-            mec="k", mew=0.6, label="Pareto frontier (CALPHAD-confirmed)")
+            mec="k", mew=0.6, label="frontier")
     miss = (kinds == "bg") & (X[order, 2] <= 0.12) & conf
     if miss.any():
         mx, my = tri(X[order[miss], 0], X[order[miss], 1],
                      X[order[miss], 2])
         ax.scatter(mx, my, s=28, c="#c44e52", lw=1.4,
-                   marker="x", label="missed in scope")
+                   marker="x", label="missed")
     for tri_xy in (((0, 0), (1, 0)), ((1, 0), (0.5, 0.8660254)),
                    ((0.5, 0.8660254), (0, 0))):
         guide(ax.plot([tri_xy[0][0], tri_xy[1][0]],
@@ -808,8 +810,8 @@ def fig10_screen():
     ax.set_yticks([])
     for sp in ax.spines.values():
         sp.set_visible(False)
-    legend_below(ax, 3, y=-0.16)
-    panel(ax, "a", "lean-Ni austenitic screen at 1000 K (surrogate FCC)")
+    legend_below(ax, 3, y=-0.22, fontsize=5.8)
+    panel(ax, "a", "lean-Ni screen, 1000 K")
 
     ax = fig.add_subplot(gs[0, 1])
     fr = order[kinds == "frontier"]
@@ -821,10 +823,34 @@ def fig10_screen():
                    lw=1.4, marker="x",
                    label="missed in scope (4)")
     ax.set_xlabel("Cr mole fraction")
-    ax.set_ylabel("minimal qualifying Ni mole fraction")
+    ax.set_ylabel("min Ni mole fraction", labelpad=9)
     legend_below(ax, 2, y=-0.24)
     panel(ax, "b", "Pareto frontier: Ni minimum vs Cr")
+
+    ax = fig.add_subplot(gs[0, 2])
+    lc = json.load(open(os.path.join(
+        SD, "learning_fecrni_renorm.json")))
+    fr, mm, ss, nn = [], [], [], []
+    for f in (0.1, 0.25, 0.5, 1.0):
+        v = [lc[f"frac{f:g}_s{s}"]["mean_mae"] for s in SEEDS]
+        fr.append(f)
+        mm.append(float(np.mean(v)))
+        ss.append(float(np.std(v)))
+        nn.append(int(np.mean([lc[f"frac{f:g}_s{s}"]["n_train"]
+                               for s in SEEDS])))
+    ax.errorbar(nn, mm, yerr=ss, c="k", lw=1.2, marker="o", ms=4,
+                mfc="white", mec="k", mew=1.0, capsize=2.5,
+                label="3-seed mean $\\pm$ s.d.")
+    ax.set_xscale("log")
+    ax.set_xlabel("training equilibria")
+    ax.set_ylabel("test MAE")
+    ax.set_xticks(nn, [f"{n:,}" for n in nn])
+    ax.minorticks_off()
+    panel(ax, "c", "data efficiency (renorm, Fe-Cr-Ni)")
+    fig.subplots_adjust(left=0.06, right=0.95, bottom=0.27, top=0.90,
+                        wspace=0.45)
     save(fig, "fig10_screen")
+    mpl.rcParams["figure.constrained_layout.use"] = _clu
 
 
 if __name__ == "__main__":

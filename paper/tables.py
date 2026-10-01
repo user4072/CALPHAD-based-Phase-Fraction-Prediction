@@ -937,6 +937,15 @@ if SC and SV:
     W("Break-even screen size (one-time $\\div$ per-point saving) & "
       "$\\sim$10$^4$ (optimistic) -- $\\sim$7$\\times$10$^4$ "
       "(conservative; see text) \\\\")
+    LC = jload(os.path.join(ROOT, "paper", "screen_data",
+                            "learning_fecrni_renorm.json"))
+    if LC:
+        cells = []
+        for f in (0.1, 0.25, 0.5, 1.0):
+            v = [LC[f"frac{f:g}_s{s}"]["mean_mae"] for s in SEEDS]
+            cells.append(f"{float(np.mean(v)):.4f}")
+        W("renorm test MAE at 10 / 25 / 50 / 100\\% of training data & "
+          + " / ".join(cells) + " \\\\")
     W("\\bottomrule")
     W("\\end{tabular}}")
 else:
