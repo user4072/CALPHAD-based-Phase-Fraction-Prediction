@@ -1638,6 +1638,19 @@ def g_screen():
           float(sqq["X"][vq["order"][(_kk == "frontier")
                                      & (vq["confirmed"] == 1)], 2].min()),
           "0.029")
+    ahq = J(os.path.join(PAPER, "screen_data",
+                         "validate_all_hits_fecrnic_T1000K_box.json"))
+    check_exact("tex:screenq all-hits n=14055 confirmed",
+                (ahq["n"], ahq["n_ok"], ahq["n_confirmed"]),
+                (14055, 14055, 13736))
+    check_exact("tex:screenq combined shortlist 14143/14475",
+                ahq["n_confirmed"] + 15 + 392, 14143)
+    vahq = np.load(os.path.join(PAPER, "screen_data",
+                                "validate_all_hits_fecrnic_T1000K_box.npz"))
+    _mm = vahq["ok"] & ~vahq["confirmed"]
+    check("tex:screenq 319 misses", int(_mm.sum()), "319")
+    check("tex:screenq worst miss CAL FCC 0.731",
+          float(np.nanmin(vahq["FCC"][_mm])), "0.731")
     aq = J(os.path.join(PAPER, "screen_data", "screen_analysis_q.json"))
     check("tex:screenq U1 AUROC 0.856",
           aq["Q_u1_gate"]["auroc_miss_vs_hits"], "0.856")

@@ -1008,6 +1008,20 @@ if SCQ and SVQ:
       f"{_qbgc}/{_qbgn} \\\\")
     nq = (SVQ['frontier']['n_confirmed'] + SVQ['hit']['n_confirmed'])
     nqt = SVQ['frontier']['n'] + SVQ['hit']['n']
+    SVAQ = jload(os.path.join(ROOT, "paper", "screen_data",
+                              "validate_all_hits_fecrnic_T1000K_box.json"))
+    if SVAQ:
+        nq += SVAQ['n_confirmed']
+        nqt += SVAQ['n']
+        _va = np.load(os.path.join(ROOT, "paper", "screen_data",
+                                   "validate_all_hits_fecrnic_T1000K_box.npz"))
+        _miss = _va["ok"] & ~_va["confirmed"]
+        _worst = float(np.nanmin(_va["FCC"][_miss])) if _miss.any() else None
+        W(f"Follow-up: remaining {SVAQ['n']:,} shortlist points & "
+          f"{SVAQ['n_confirmed']:,}/{SVAQ['n']:,} confirm "
+          f"({SVAQ['precision']:.3f})"
+          + (f"; worst miss CAL FCC {_worst:.3f}" if _worst else "")
+          + " \\\\")
     W(f"Shortlist precision ({nqt} validated shortlist points) & "
       f"{nq / nqt:.2f} \\\\")
     W("In-scope recall estimate (Ni$\\le$0.12, see text) & $\\sim$0.8 \\\\")

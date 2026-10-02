@@ -2236,6 +2236,12 @@ def build() -> None:
     _qbgc, _qbgn = int(_vq["confirmed"][_qbg].sum()), int(_qbg.sum())
     _nq = SVQ["frontier"]["n_confirmed"] + SVQ["hit"]["n_confirmed"]
     _nqt = SVQ["frontier"]["n"] + SVQ["hit"]["n"]
+    SVAQ = json.load(open(os.path.join(ROOT, "paper", "screen_data",
+                                       "validate_all_hits_fecrnic_T1000K_box.json")))
+    _va = np.load(os.path.join(ROOT, "paper", "screen_data",
+                               "validate_all_hits_fecrnic_T1000K_box.npz"))
+    _mm = _va["ok"] & ~_va["confirmed"]
+    _worst = float(np.nanmin(_va["FCC"][_mm])) if _mm.any() else None
     finding(doc, "With carbon in the query, the screen still works --- "
             "and its failures mark the model's edge",
             f"The same design task on quaternary Fe\u2013Cr\u2013Ni\u2013C "
@@ -2254,7 +2260,13 @@ def build() -> None:
             f"over-smooths a two-phase pocket at its own decision edge. "
             f"The 400-point hit subset validates at 392/400, and all 8 "
             f"misses sit within ~0.05 of a cutoff --- boundary flips, none "
-            f"catastrophic. Background in-scope misses (5 of 131) put "
+            f"catastrophic --- and a follow-up run validated the remaining "
+            f"14,055 shortlist points: 13,736 confirm (0.977; 319 misses, "
+            f"worst CALPHAD FCC 0.731 against ~0.91 at the low-Cr edge; "
+            f"210 fail the carbide cap, 109 FCC, sigma never breached), "
+            f"for a combined shortlist precision of 14,143/14,475 = 0.98. "
+            f"Unlike the ternary screen's conservative misses, these are "
+            f"optimistic flips near cutoffs. Background in-scope misses (5 of 131) put "
             f"recall at ~0.8, as on the ternary. Disagreement gates transfer "
             f"too: quaternary misses carry above-median spread (AUROC "
             f"0.856), with the worst at 3.6 times the shortlist p99; the "
@@ -2280,8 +2292,12 @@ def build() -> None:
          f"{SVQ['frontier']['n_confirmed']}/{SVQ['frontier']['n']} / "
          f"{SVQ['hit']['n_confirmed']}/{SVQ['hit']['n']} / "
          f"{_qbgc}/{_qbgn}"],
-        [f"Shortlist precision ({_nqt} validated shortlist points)",
-         f"{_nq / _nqt:.2f}"],
+        [f"Shortlist precision ({_nqt + SVAQ['n']:,} validated shortlist "
+         "points)",
+         f"{(_nq + SVAQ['n_confirmed']) / (_nqt + SVAQ['n']):.2f}"],
+        ["Follow-up: remaining 14,055 shortlist points",
+         f"13,736/14,055 confirm (0.977)"
+         + (f"; worst miss CAL FCC {_worst:.3f}" if _worst else "")],
         ["In-scope recall estimate (Ni\u22640.12, see text)", "~0.8"],
         ["Full-set CALPHAD cost per point, this workload (wall)",
          f"{SVQ['calphad_s_per_point_wall']:.2f} s"],

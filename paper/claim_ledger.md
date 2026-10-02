@@ -361,3 +361,14 @@ V-T collapse (FCC 0.096 / LIQUID 0.490) locate both M2 failures:
 calibration failure on X2, closed-basis failure on T. Tex paragraphs +
 2 computed screenq table rows; docx findings + rows mirrored; 12 new
 audit checks. Audit: 426/0/7.
+
+## ADDENDUM -- B1 full quaternary validation (2026-10-01)
+
+paper/screen_validate_all_q.py (chunked, resumable) validated the
+remaining 14,055 shortlist points with the full 35-phase set:
+13,736/14,055 ok and confirmed (0.977; 319 misses: 210 carbide-cap,
+109 FCC with worst CAL 0.731 at the low-Cr edge, sigma never breached;
+optimistic flips, unlike the ternary's conservative misses). Combined
+shortlist precision 14,143/14,475 = 0.98 (recall arithmetic unchanged,
+~0.8). Text/table updated in tex + docx (precision row now computed
+over all three validation files). Audit +4. Audit: 430/0/7.
