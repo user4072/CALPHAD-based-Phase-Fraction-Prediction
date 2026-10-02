@@ -1581,6 +1581,30 @@ def g_screen():
           max(a["d1_train"] for a in ms["misses"]), "0.166")
     check_exact("tex:screen hits median d1",
                 round(ms["hits_median_d1_train"], 4), 0.1023)
+    gs = J(os.path.join(MODELS, "gated_shift.json"))["runs"]
+
+    def gs_mean(sys, blk, field):
+        v = [r[field] for r in gs.values()
+             if r["system"] == sys and r["block"] == blk]
+        return sum(v) / len(v), len(v)
+
+    g, n = gs_mean("fecrni", "X2_band", "mae")
+    check("tex:remedy gated Ni-X2-band 0.013", g, "0.013")
+    check_exact("tex:remedy gated-shift 42 runs x3 seeds", n, 3)
+    g, _ = gs_mean("fecrv", "T_band", "mae")
+    check("tex:remedy gated V-T-band 0.023", g, "0.023")
+    g, _ = gs_mean("fecrni", "X2_extrap", "mae")
+    check("tex:remedy gated Ni-X2-extrap 0.147", g, "0.147")
+    g, _ = gs_mean("fecrv", "X2_extrap", "mae")
+    check("tex:remedy gated V-X2-extrap 0.090", g, "0.090")
+    m, _ = gs_mean("fecrv", "X2_extrap", "ref_mlp_renorm_mae")
+    check("tex:remedy renorm V-X2-extrap 0.046", m, "0.046")
+    a, _ = gs_mean("fecrni", "T_extrap", "macro_auprc")
+    check("tex:remedy gated T-extrap AUPRC collapse ~0.63", a, "0.63")
+    a, _ = gs_mean("fecrv", "T_extrap", "macro_auprc")
+    check("tex:remedy gated V-T-extrap AUPRC ~0.59", a, "0.59")
+    a, _ = gs_mean("fecrni", "X2_band", "macro_auprc")
+    check("tex:remedy gated band AUPRC holds ~0.99", a, "0.99")
     ah = J(os.path.join(PAPER, "screen_data",
                         "validate_all_hits_fecrni_T1000K_step0.001.json"))
     check_exact("tex:screen all-hits n=10525 confirmed",

@@ -1,0 +1,848 @@
+{
+  "config": {
+    "arch": "GatedMLP 3x192 (train_remedy recipe)",
+    "epochs": 300,
+    "seeds": [
+      42,
+      123,
+      2024
+    ],
+    "systems": [
+      "fecrni",
+      "fecrv"
+    ],
+    "modes": [
+      "band",
+      "extrap"
+    ],
+    "projection": "clip-renorm at evaluation",
+    "splits": "holdout_eval blocks (train/val minus excluded, test = held rows)"
+  },
+  "runs": {
+    "gated_fecrni_band_T_band_s42": {
+      "system": "fecrni",
+      "mode": "band",
+      "block": "T_band",
+      "seed": 42,
+      "n_train": 4855,
+      "n_test": 1275,
+      "mae": 0.01201548520475626,
+      "macro_auprc": 0.9650987507978765,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9949365380372751,
+        "FCC_A1": 0.9998928337627782,
+        "SIGMA": 0.9004668805935766
+      },
+      "ref_mlp_renorm_mae": 0.011969508603215218,
+      "ref_rf_renorm_mae": 0.02484617053967972,
+      "epochs_run": 300,
+      "time_s": 103.4
+    },
+    "gated_fecrni_band_X2_band_s42": {
+      "system": "fecrni",
+      "mode": "band",
+      "block": "X2_band",
+      "seed": 42,
+      "n_train": 4605,
+      "n_test": 1676,
+      "mae": 0.012914134189486504,
+      "macro_auprc": 0.9943544811488454,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9885674596705384,
+        "FCC_A1": 0.9998894491396955,
+        "LIQUID": 0.9997261280827697,
+        "SIGMA": 0.989234887702378
+      },
+      "ref_mlp_renorm_mae": 0.01713848114013672,
+      "ref_rf_renorm_mae": 0.06824232705703848,
+      "epochs_run": 254,
+      "time_s": 82.0
+    },
+    "gated_fecrni_band_random_ctrl_s42": {
+      "system": "fecrni",
+      "mode": "band",
+      "block": "random_ctrl",
+      "seed": 42,
+      "n_train": 4603,
+      "n_test": 1676,
+      "mae": 0.01036801841109991,
+      "macro_auprc": 0.9895943888588186,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9885264806311387,
+        "FCC_A1": 0.9986658118147277,
+        "LIQUID": 0.9990626564708402,
+        "SIGMA": 0.9721226065185673
+      },
+      "ref_mlp_renorm_mae": 0.010848592966794968,
+      "ref_rf_renorm_mae": 0.020796581709522442,
+      "epochs_run": 300,
+      "time_s": 96.1
+    },
+    "gated_fecrni_band_T_band_s123": {
+      "system": "fecrni",
+      "mode": "band",
+      "block": "T_band",
+      "seed": 123,
+      "n_train": 4890,
+      "n_test": 1275,
+      "mae": 0.013181688264012337,
+      "macro_auprc": 0.9560729683629591,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9905116864368615,
+        "FCC_A1": 0.9999214031946988,
+        "SIGMA": 0.8777858154573168
+      },
+      "ref_mlp_renorm_mae": 0.014016946777701378,
+      "ref_rf_renorm_mae": 0.02720744427737061,
+      "epochs_run": 300,
+      "time_s": 103.7
+    },
+    "gated_fecrni_band_X2_band_s123": {
+      "system": "fecrni",
+      "mode": "band",
+      "block": "X2_band",
+      "seed": 123,
+      "n_train": 4621,
+      "n_test": 1676,
+      "mae": 0.015446853823959827,
+      "macro_auprc": 0.9920134434629805,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9811440489723892,
+        "FCC_A1": 0.9996221986826306,
+        "LIQUID": 0.9990068429520776,
+        "SIGMA": 0.9882806832448247
+      },
+      "ref_mlp_renorm_mae": 0.016052331775426865,
+      "ref_rf_renorm_mae": 0.06475984442133297,
+      "epochs_run": 300,
+      "time_s": 89.3
+    },
+    "gated_fecrni_band_random_ctrl_s123": {
+      "system": "fecrni",
+      "mode": "band",
+      "block": "random_ctrl",
+      "seed": 123,
+      "n_train": 4602,
+      "n_test": 1676,
+      "mae": 0.009312134236097336,
+      "macro_auprc": 0.992122682199571,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9941166744138644,
+        "FCC_A1": 0.9977145668659269,
+        "LIQUID": 0.9999156371796409,
+        "SIGMA": 0.9767438503388517
+      },
+      "ref_mlp_renorm_mae": 0.010411493480205536,
+      "ref_rf_renorm_mae": 0.020334075583418897,
+      "epochs_run": 295,
+      "time_s": 87.3
+    },
+    "gated_fecrni_band_T_band_s2024": {
+      "system": "fecrni",
+      "mode": "band",
+      "block": "T_band",
+      "seed": 2024,
+      "n_train": 4853,
+      "n_test": 1275,
+      "mae": 0.012849508784711361,
+      "macro_auprc": 0.9584156013731718,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9936502706778796,
+        "FCC_A1": 0.9998881830330465,
+        "SIGMA": 0.8817083504085894
+      },
+      "ref_mlp_renorm_mae": 0.013715583831071854,
+      "ref_rf_renorm_mae": 0.02546306666221363,
+      "epochs_run": 300,
+      "time_s": 99.7
+    },
+    "gated_fecrni_band_X2_band_s2024": {
+      "system": "fecrni",
+      "mode": "band",
+      "block": "X2_band",
+      "seed": 2024,
+      "n_train": 4584,
+      "n_test": 1676,
+      "mae": 0.011716553941369057,
+      "macro_auprc": 0.9939956868667726,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9875251311816294,
+        "FCC_A1": 0.9998392483049714,
+        "LIQUID": 0.9996979796844137,
+        "SIGMA": 0.9889203882960759
+      },
+      "ref_mlp_renorm_mae": 0.015479400753974915,
+      "ref_rf_renorm_mae": 0.05138598299206831,
+      "epochs_run": 300,
+      "time_s": 94.4
+    },
+    "gated_fecrni_band_random_ctrl_s2024": {
+      "system": "fecrni",
+      "mode": "band",
+      "block": "random_ctrl",
+      "seed": 2024,
+      "n_train": 4573,
+      "n_test": 1676,
+      "mae": 0.009029900655150414,
+      "macro_auprc": 0.9947215525742469,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9975617603664331,
+        "FCC_A1": 0.9978263332455614,
+        "LIQUID": 0.9998327183597644,
+        "SIGMA": 0.9836653983252286
+      },
+      "ref_mlp_renorm_mae": 0.008979542180895805,
+      "ref_rf_renorm_mae": 0.018185582051112165,
+      "epochs_run": 253,
+      "time_s": 80.9
+    },
+    "gated_fecrni_extrap_X2_extrap_s42": {
+      "system": "fecrni",
+      "mode": "extrap",
+      "block": "X2_extrap",
+      "seed": 42,
+      "n_train": 2904,
+      "n_test": 2679,
+      "mae": 0.1505599021911621,
+      "macro_auprc": 0.8917464215789559,
+      "per_phase_auprc": {
+        "BCC_A2": 0.7714099587415635,
+        "FCC_A1": 0.9879206968023975,
+        "LIQUID": 0.9633313589433276,
+        "SIGMA": 0.8443236718285353
+      },
+      "ref_mlp_renorm_mae": 0.1612352728843689,
+      "ref_rf_renorm_mae": 0.2157354515981943,
+      "epochs_run": 242,
+      "time_s": 49.3
+    },
+    "gated_fecrni_extrap_X2_extrap_ctrl_s42": {
+      "system": "fecrni",
+      "mode": "extrap",
+      "block": "X2_extrap_ctrl",
+      "seed": 42,
+      "n_train": 2909,
+      "n_test": 2679,
+      "mae": 0.013647538609802723,
+      "macro_auprc": 0.9897542737302251,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9833401510703048,
+        "FCC_A1": 0.9983618470600814,
+        "LIQUID": 0.997268669859446,
+        "SIGMA": 0.9800464269310684
+      },
+      "ref_mlp_renorm_mae": 0.012566942721605301,
+      "ref_rf_renorm_mae": 0.024383241580926113,
+      "epochs_run": 271,
+      "time_s": 55.6
+    },
+    "gated_fecrni_extrap_T_extrap_s42": {
+      "system": "fecrni",
+      "mode": "extrap",
+      "block": "T_extrap",
+      "seed": 42,
+      "n_train": 2802,
+      "n_test": 3219,
+      "mae": 0.2298717051744461,
+      "macro_auprc": 0.5957679394571341,
+      "per_phase_auprc": {
+        "BCC_A2": 0.8111821928562906,
+        "FCC_A1": 0.5816088908849929,
+        "LIQUID": 0.39451273463011877
+      },
+      "ref_mlp_renorm_mae": 0.23180513083934784,
+      "ref_rf_renorm_mae": 0.23502021718020097,
+      "epochs_run": 300,
+      "time_s": 60.1
+    },
+    "gated_fecrni_extrap_T_extrap_ctrl_s42": {
+      "system": "fecrni",
+      "mode": "extrap",
+      "block": "T_extrap_ctrl",
+      "seed": 42,
+      "n_train": 2825,
+      "n_test": 3219,
+      "mae": 0.01164087001234293,
+      "macro_auprc": 0.9910109138178709,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9911430618257728,
+        "FCC_A1": 0.9981899990313035,
+        "LIQUID": 0.9980496095690476,
+        "SIGMA": 0.97666098484536
+      },
+      "ref_mlp_renorm_mae": 0.012618817389011383,
+      "ref_rf_renorm_mae": 0.02398611999623517,
+      "epochs_run": 300,
+      "time_s": 60.7
+    },
+    "gated_fecrni_extrap_X2_extrap_s123": {
+      "system": "fecrni",
+      "mode": "extrap",
+      "block": "X2_extrap",
+      "seed": 123,
+      "n_train": 2902,
+      "n_test": 2679,
+      "mae": 0.1565462052822113,
+      "macro_auprc": 0.9148561164910739,
+      "per_phase_auprc": {
+        "BCC_A2": 0.7641193011339251,
+        "FCC_A1": 0.98876060761961,
+        "LIQUID": 0.9649681489996786,
+        "SIGMA": 0.9415764082110819
+      },
+      "ref_mlp_renorm_mae": 0.176448255777359,
+      "ref_rf_renorm_mae": 0.215921762606764,
+      "epochs_run": 283,
+      "time_s": 57.3
+    },
+    "gated_fecrni_extrap_X2_extrap_ctrl_s123": {
+      "system": "fecrni",
+      "mode": "extrap",
+      "block": "X2_extrap_ctrl",
+      "seed": 123,
+      "n_train": 2871,
+      "n_test": 2679,
+      "mae": 0.01112543698400259,
+      "macro_auprc": 0.993378719759888,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9895142658500468,
+        "FCC_A1": 0.9985583560301333,
+        "LIQUID": 0.997758573388915,
+        "SIGMA": 0.9876836837704566
+      },
+      "ref_mlp_renorm_mae": 0.012453090399503708,
+      "ref_rf_renorm_mae": 0.023751875765139204,
+      "epochs_run": 298,
+      "time_s": 60.3
+    },
+    "gated_fecrni_extrap_T_extrap_s123": {
+      "system": "fecrni",
+      "mode": "extrap",
+      "block": "T_extrap",
+      "seed": 123,
+      "n_train": 2812,
+      "n_test": 3219,
+      "mae": 0.22897973656654358,
+      "macro_auprc": 0.6950829395579109,
+      "per_phase_auprc": {
+        "BCC_A2": 0.8286166108631986,
+        "FCC_A1": 0.7335668007389143,
+        "LIQUID": 0.5230654070716197
+      },
+      "ref_mlp_renorm_mae": 0.21639303863048553,
+      "ref_rf_renorm_mae": 0.2341611713107123,
+      "epochs_run": 300,
+      "time_s": 58.6
+    },
+    "gated_fecrni_extrap_T_extrap_ctrl_s123": {
+      "system": "fecrni",
+      "mode": "extrap",
+      "block": "T_extrap_ctrl",
+      "seed": 123,
+      "n_train": 2778,
+      "n_test": 3219,
+      "mae": 0.01203850656747818,
+      "macro_auprc": 0.9909527942710612,
+      "per_phase_auprc": {
+        "BCC_A2": 0.990853528561943,
+        "FCC_A1": 0.9981293116812956,
+        "LIQUID": 0.9990759513528569,
+        "SIGMA": 0.9757523854881491
+      },
+      "ref_mlp_renorm_mae": 0.012372876517474651,
+      "ref_rf_renorm_mae": 0.02597480993626917,
+      "epochs_run": 293,
+      "time_s": 57.0
+    },
+    "gated_fecrni_extrap_X2_extrap_s2024": {
+      "system": "fecrni",
+      "mode": "extrap",
+      "block": "X2_extrap",
+      "seed": 2024,
+      "n_train": 2871,
+      "n_test": 2679,
+      "mae": 0.13262617588043213,
+      "macro_auprc": 0.9016646643157873,
+      "per_phase_auprc": {
+        "BCC_A2": 0.806834215922534,
+        "FCC_A1": 0.9759356003383066,
+        "LIQUID": 0.9467534681451557,
+        "SIGMA": 0.8771353728571528
+      },
+      "ref_mlp_renorm_mae": 0.17850026488304138,
+      "ref_rf_renorm_mae": 0.21390299031109233,
+      "epochs_run": 300,
+      "time_s": 60.8
+    },
+    "gated_fecrni_extrap_X2_extrap_ctrl_s2024": {
+      "system": "fecrni",
+      "mode": "extrap",
+      "block": "X2_extrap_ctrl",
+      "seed": 2024,
+      "n_train": 2883,
+      "n_test": 2679,
+      "mae": 0.011504437774419785,
+      "macro_auprc": 0.9921555600866092,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9932972508949521,
+        "FCC_A1": 0.9967592348281684,
+        "LIQUID": 0.9983172286288883,
+        "SIGMA": 0.9802485259944282
+      },
+      "ref_mlp_renorm_mae": 0.011907554231584072,
+      "ref_rf_renorm_mae": 0.022683929323996925,
+      "epochs_run": 289,
+      "time_s": 58.4
+    },
+    "gated_fecrni_extrap_T_extrap_s2024": {
+      "system": "fecrni",
+      "mode": "extrap",
+      "block": "T_extrap",
+      "seed": 2024,
+      "n_train": 2802,
+      "n_test": 3219,
+      "mae": 0.22047817707061768,
+      "macro_auprc": 0.5987128331458181,
+      "per_phase_auprc": {
+        "BCC_A2": 0.7998690082373032,
+        "FCC_A1": 0.6264223700431514,
+        "LIQUID": 0.3698471211570001
+      },
+      "ref_mlp_renorm_mae": 0.2199169546365738,
+      "ref_rf_renorm_mae": 0.23460327356835076,
+      "epochs_run": 295,
+      "time_s": 57.6
+    },
+    "gated_fecrni_extrap_T_extrap_ctrl_s2024": {
+      "system": "fecrni",
+      "mode": "extrap",
+      "block": "T_extrap_ctrl",
+      "seed": 2024,
+      "n_train": 2811,
+      "n_test": 3219,
+      "mae": 0.012079628184437752,
+      "macro_auprc": 0.992154125823526,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9902603583916462,
+        "FCC_A1": 0.9970497845615482,
+        "LIQUID": 0.9984949450259175,
+        "SIGMA": 0.982811415314992
+      },
+      "ref_mlp_renorm_mae": 0.012978028506040573,
+      "ref_rf_renorm_mae": 0.023668859305036156,
+      "epochs_run": 300,
+      "time_s": 58.1
+    },
+    "gated_fecrv_band_T_band_s42": {
+      "system": "fecrv",
+      "mode": "band",
+      "block": "T_band",
+      "seed": 42,
+      "n_train": 4855,
+      "n_test": 1275,
+      "mae": 0.019214803352952003,
+      "macro_auprc": 0.9886514196583477,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9952215769170322,
+        "FCC_A1": 0.9744662443035406,
+        "SIGMA": 0.9962664377544705
+      },
+      "ref_mlp_renorm_mae": 0.03534579277038574,
+      "ref_rf_renorm_mae": 0.0651210623393906,
+      "epochs_run": 297,
+      "time_s": 98.8
+    },
+    "gated_fecrv_band_X2_band_s42": {
+      "system": "fecrv",
+      "mode": "band",
+      "block": "X2_band",
+      "seed": 42,
+      "n_train": 4605,
+      "n_test": 1676,
+      "mae": 0.009727969765663147,
+      "macro_auprc": 0.9990660177673457,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9997265371042284,
+        "LIQUID": 0.9979892016256693,
+        "SIGMA": 0.9994823145721394
+      },
+      "ref_mlp_renorm_mae": 0.007117351517081261,
+      "ref_rf_renorm_mae": 0.02895928744963437,
+      "epochs_run": 272,
+      "time_s": 85.3
+    },
+    "gated_fecrv_band_random_ctrl_s42": {
+      "system": "fecrv",
+      "mode": "band",
+      "block": "random_ctrl",
+      "seed": 42,
+      "n_train": 4603,
+      "n_test": 1676,
+      "mae": 0.016079571098089218,
+      "macro_auprc": 0.9865865911918608,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9937372037254182,
+        "FCC_A1": 0.9582021864865222,
+        "LIQUID": 0.9974246875068181,
+        "SIGMA": 0.9969822870486842
+      },
+      "ref_mlp_renorm_mae": 0.028624918311834335,
+      "ref_rf_renorm_mae": 0.015964852280585383,
+      "epochs_run": 135,
+      "time_s": 42.3
+    },
+    "gated_fecrv_band_T_band_s123": {
+      "system": "fecrv",
+      "mode": "band",
+      "block": "T_band",
+      "seed": 123,
+      "n_train": 4890,
+      "n_test": 1275,
+      "mae": 0.022547496482729912,
+      "macro_auprc": 0.9851819242274688,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9922478321197459,
+        "FCC_A1": 0.9657667996314079,
+        "SIGMA": 0.9975311409312526
+      },
+      "ref_mlp_renorm_mae": 0.036178216338157654,
+      "ref_rf_renorm_mae": 0.08870965760512631,
+      "epochs_run": 300,
+      "time_s": 102.0
+    },
+    "gated_fecrv_band_X2_band_s123": {
+      "system": "fecrv",
+      "mode": "band",
+      "block": "X2_band",
+      "seed": 123,
+      "n_train": 4621,
+      "n_test": 1676,
+      "mae": 0.011303585022687912,
+      "macro_auprc": 0.998944868272968,
+      "per_phase_auprc": {
+        "BCC_A2": 0.999645396043115,
+        "LIQUID": 0.9983020601564905,
+        "SIGMA": 0.9988871486192983
+      },
+      "ref_mlp_renorm_mae": 0.007744487840682268,
+      "ref_rf_renorm_mae": 0.029329011212454997,
+      "epochs_run": 300,
+      "time_s": 97.2
+    },
+    "gated_fecrv_band_random_ctrl_s123": {
+      "system": "fecrv",
+      "mode": "band",
+      "block": "random_ctrl",
+      "seed": 123,
+      "n_train": 4602,
+      "n_test": 1676,
+      "mae": 0.009301173500716686,
+      "macro_auprc": 0.9976877488870235,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9973877848342692,
+        "FCC_A1": 0.9966096955716333,
+        "LIQUID": 0.9985748152226698,
+        "SIGMA": 0.9981786999195218
+      },
+      "ref_mlp_renorm_mae": 0.013534421101212502,
+      "ref_rf_renorm_mae": 0.016643696950776738,
+      "epochs_run": 300,
+      "time_s": 94.1
+    },
+    "gated_fecrv_band_T_band_s2024": {
+      "system": "fecrv",
+      "mode": "band",
+      "block": "T_band",
+      "seed": 2024,
+      "n_train": 4853,
+      "n_test": 1275,
+      "mae": 0.026711737737059593,
+      "macro_auprc": 0.9640082898058259,
+      "per_phase_auprc": {
+        "BCC_A2": 0.990030062453644,
+        "FCC_A1": 0.9078002710380145,
+        "SIGMA": 0.9941945359258191
+      },
+      "ref_mlp_renorm_mae": 0.035900283604860306,
+      "ref_rf_renorm_mae": 0.07467069867202522,
+      "epochs_run": 274,
+      "time_s": 90.6
+    },
+    "gated_fecrv_band_X2_band_s2024": {
+      "system": "fecrv",
+      "mode": "band",
+      "block": "X2_band",
+      "seed": 2024,
+      "n_train": 4584,
+      "n_test": 1676,
+      "mae": 0.00975123606622219,
+      "macro_auprc": 0.9994548095942187,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9994511150244877,
+        "LIQUID": 0.9995077277630675,
+        "SIGMA": 0.9994055859951007
+      },
+      "ref_mlp_renorm_mae": 0.01855306141078472,
+      "ref_rf_renorm_mae": 0.02805383429723813,
+      "epochs_run": 291,
+      "time_s": 91.2
+    },
+    "gated_fecrv_band_random_ctrl_s2024": {
+      "system": "fecrv",
+      "mode": "band",
+      "block": "random_ctrl",
+      "seed": 2024,
+      "n_train": 4573,
+      "n_test": 1676,
+      "mae": 0.00863462220877409,
+      "macro_auprc": 0.9985348206015372,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9981700940602665,
+        "FCC_A1": 0.9992063492063492,
+        "LIQUID": 0.9989073960884155,
+        "SIGMA": 0.9978554430511175
+      },
+      "ref_mlp_renorm_mae": 0.02810872532427311,
+      "ref_rf_renorm_mae": 0.013861428887697494,
+      "epochs_run": 277,
+      "time_s": 87.0
+    },
+    "gated_fecrv_extrap_X2_extrap_s42": {
+      "system": "fecrv",
+      "mode": "extrap",
+      "block": "X2_extrap",
+      "seed": 42,
+      "n_train": 2904,
+      "n_test": 2679,
+      "mae": 0.10234242677688599,
+      "macro_auprc": 0.95606115917001,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9932413005988927,
+        "LIQUID": 0.8936417704390636,
+        "SIGMA": 0.9813004064720738
+      },
+      "ref_mlp_renorm_mae": 0.052420444786548615,
+      "ref_rf_renorm_mae": 0.07833793199488794,
+      "epochs_run": 268,
+      "time_s": 54.1
+    },
+    "gated_fecrv_extrap_X2_extrap_ctrl_s42": {
+      "system": "fecrv",
+      "mode": "extrap",
+      "block": "X2_extrap_ctrl",
+      "seed": 42,
+      "n_train": 2909,
+      "n_test": 2679,
+      "mae": 0.010826672427356243,
+      "macro_auprc": 0.9893391098440205,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9967603293817059,
+        "FCC_A1": 0.9652470776167463,
+        "LIQUID": 0.9977374965087658,
+        "SIGMA": 0.9976115358688638
+      },
+      "ref_mlp_renorm_mae": 0.027238760143518448,
+      "ref_rf_renorm_mae": 0.01870553552858944,
+      "epochs_run": 300,
+      "time_s": 60.4
+    },
+    "gated_fecrv_extrap_T_extrap_s42": {
+      "system": "fecrv",
+      "mode": "extrap",
+      "block": "T_extrap",
+      "seed": 42,
+      "n_train": 2802,
+      "n_test": 3219,
+      "mae": 0.10604187846183777,
+      "macro_auprc": 0.5631642028173778,
+      "per_phase_auprc": {
+        "BCC_A2": 0.8790793338457649,
+        "FCC_A1": 0.19934404307072978,
+        "LIQUID": 0.31693144083389047,
+        "SIGMA": 0.857301993519126
+      },
+      "ref_mlp_renorm_mae": 0.09874268621206284,
+      "ref_rf_renorm_mae": 0.19312295325977707,
+      "epochs_run": 211,
+      "time_s": 41.0
+    },
+    "gated_fecrv_extrap_T_extrap_ctrl_s42": {
+      "system": "fecrv",
+      "mode": "extrap",
+      "block": "T_extrap_ctrl",
+      "seed": 42,
+      "n_train": 2825,
+      "n_test": 3219,
+      "mae": 0.010839165188372135,
+      "macro_auprc": 0.9870218584184313,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9968614243104064,
+        "FCC_A1": 0.9538553363234674,
+        "LIQUID": 0.9986013017511381,
+        "SIGMA": 0.9987693712887133
+      },
+      "ref_mlp_renorm_mae": 0.02742649056017399,
+      "ref_rf_renorm_mae": 0.017193142246848623,
+      "epochs_run": 277,
+      "time_s": 55.7
+    },
+    "gated_fecrv_extrap_X2_extrap_s123": {
+      "system": "fecrv",
+      "mode": "extrap",
+      "block": "X2_extrap",
+      "seed": 123,
+      "n_train": 2902,
+      "n_test": 2679,
+      "mae": 0.10005714744329453,
+      "macro_auprc": 0.980085012474953,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9891573626176766,
+        "LIQUID": 0.9874953435994184,
+        "SIGMA": 0.9636023312077643
+      },
+      "ref_mlp_renorm_mae": 0.04959814250469208,
+      "ref_rf_renorm_mae": 0.06914373370639375,
+      "epochs_run": 281,
+      "time_s": 56.9
+    },
+    "gated_fecrv_extrap_X2_extrap_ctrl_s123": {
+      "system": "fecrv",
+      "mode": "extrap",
+      "block": "X2_extrap_ctrl",
+      "seed": 123,
+      "n_train": 2871,
+      "n_test": 2679,
+      "mae": 0.01139009092003107,
+      "macro_auprc": 0.994535189391099,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9964907586176498,
+        "FCC_A1": 0.9877793683659349,
+        "LIQUID": 0.9977994411084783,
+        "SIGMA": 0.9960711894723325
+      },
+      "ref_mlp_renorm_mae": 0.014170198701322079,
+      "ref_rf_renorm_mae": 0.02054943883802605,
+      "epochs_run": 300,
+      "time_s": 60.6
+    },
+    "gated_fecrv_extrap_T_extrap_s123": {
+      "system": "fecrv",
+      "mode": "extrap",
+      "block": "T_extrap",
+      "seed": 123,
+      "n_train": 2812,
+      "n_test": 3219,
+      "mae": 0.10426221787929535,
+      "macro_auprc": 0.5935157616529314,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9481636172649033,
+        "FCC_A1": 0.04821055168216047,
+        "LIQUID": 0.5418060955372652,
+        "SIGMA": 0.8358827821273969
+      },
+      "ref_mlp_renorm_mae": 0.09943585097789764,
+      "ref_rf_renorm_mae": 0.1951200130818348,
+      "epochs_run": 262,
+      "time_s": 50.6
+    },
+    "gated_fecrv_extrap_T_extrap_ctrl_s123": {
+      "system": "fecrv",
+      "mode": "extrap",
+      "block": "T_extrap_ctrl",
+      "seed": 123,
+      "n_train": 2778,
+      "n_test": 3219,
+      "mae": 0.01205563172698021,
+      "macro_auprc": 0.995789456857244,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9965895385036934,
+        "FCC_A1": 0.9917542371087973,
+        "LIQUID": 0.9993554004318832,
+        "SIGMA": 0.995458651384602
+      },
+      "ref_mlp_renorm_mae": 0.027477208524942398,
+      "ref_rf_renorm_mae": 0.021150392861727242,
+      "epochs_run": 237,
+      "time_s": 45.7
+    },
+    "gated_fecrv_extrap_X2_extrap_s2024": {
+      "system": "fecrv",
+      "mode": "extrap",
+      "block": "X2_extrap",
+      "seed": 2024,
+      "n_train": 2871,
+      "n_test": 2679,
+      "mae": 0.06805858761072159,
+      "macro_auprc": 0.9877625134052609,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9923318804960407,
+        "LIQUID": 0.9955527123316656,
+        "SIGMA": 0.9754029473880764
+      },
+      "ref_mlp_renorm_mae": 0.03716051205992699,
+      "ref_rf_renorm_mae": 0.08085306397440115,
+      "epochs_run": 223,
+      "time_s": 45.1
+    },
+    "gated_fecrv_extrap_X2_extrap_ctrl_s2024": {
+      "system": "fecrv",
+      "mode": "extrap",
+      "block": "X2_extrap_ctrl",
+      "seed": 2024,
+      "n_train": 2883,
+      "n_test": 2679,
+      "mae": 0.012120537459850311,
+      "macro_auprc": 0.9912494339858178,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9960402934020239,
+        "FCC_A1": 0.9736921243152713,
+        "LIQUID": 0.9995551273218678,
+        "SIGMA": 0.9957101909041078
+      },
+      "ref_mlp_renorm_mae": 0.03112972527742386,
+      "ref_rf_renorm_mae": 0.01801297620574008,
+      "epochs_run": 278,
+      "time_s": 56.1
+    },
+    "gated_fecrv_extrap_T_extrap_s2024": {
+      "system": "fecrv",
+      "mode": "extrap",
+      "block": "T_extrap",
+      "seed": 2024,
+      "n_train": 2802,
+      "n_test": 3219,
+      "mae": 0.10492872446775436,
+      "macro_auprc": 0.6019537739120843,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9517274319226866,
+        "FCC_A1": 0.041134708564293646,
+        "LIQUID": 0.6115447546333693,
+        "SIGMA": 0.8034082005279874
+      },
+      "ref_mlp_renorm_mae": 0.10013607144355774,
+      "ref_rf_renorm_mae": 0.1928509387369137,
+      "epochs_run": 276,
+      "time_s": 53.2
+    },
+    "gated_fecrv_extrap_T_extrap_ctrl_s2024": {
+      "system": "fecrv",
+      "mode": "extrap",
+      "block": "T_extrap_ctrl",
+      "seed": 2024,
+      "n_train": 2811,
+      "n_test": 3219,
+      "mae": 0.012089632451534271,
+      "macro_auprc": 0.9934240558282622,
+      "per_phase_auprc": {
+        "BCC_A2": 0.9967627733560569,
+        "FCC_A1": 0.9837588983285452,
+        "LIQUID": 0.9976069050621482,
+        "SIGMA": 0.9955676465662987
+      },
+      "ref_mlp_renorm_mae": 0.028220858424901962,
+      "ref_rf_renorm_mae": 0.019953287463665263,
+      "epochs_run": 270,
+      "time_s": 52.0
+    }
+  }
+}

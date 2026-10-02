@@ -904,9 +904,8 @@ and 0.0041 and 0.0047 on the two extension systems, again ahead of the
 forest (0.0075 and 0.0055) though behind the best fraction-only head on
 those systems. Two caveats bound this result. The remedy was designed
 \emph{after} seeing the bare regressor fail on these same test sets, so
-its test numbers are post-hoc by construction; and the gated head was not
-evaluated under the spatial protocols of Section~\ref{sec:extrapolation},
-which is where the regressor--detector gap is worst. The presence
+its test numbers are post-hoc by construction; and the shift evaluation
+below covers two systems only. The presence
 supervision, not the architecture, should therefore be read as the finding:
 fraction-only rankings do not survive giving the MLP the labels the task
 actually needs. The per-phase picture is where the remedy matters: on Fe--Cr--Mn
@@ -935,6 +934,39 @@ consequential question --- will this carbide precipitate --- is exactly
 what the bare regressor answers worst. Both extension systems are re-run
 through the full protocol --- heads, spatial holdouts, and phase-set
 validation --- in Section~\ref{sec:extensions}.
+
+\paragraph{Under shift the remedy mostly holds --- except where detection
+itself collapses.}
+We retrained the exact gated recipe on the band-holdout and
+strict-extrapolation splits of Fe--Cr--Ni and Fe--Cr--V
+(Section~\ref{sec:extrapolation} protocols; Table~\ref{tab:gatedshift}).
+On contiguous bands the gated head matches or beats the fraction-only
+MLP everywhere (Fe--Cr--Ni $x_2$ band 0.013 against 0.016; Fe--Cr--V
+temperature band 0.023 against 0.036) while crushing the forest (0.062
+and 0.076 against), and macro-AUPRC stays at 0.96--1.00 against 0.99 in
+distribution: presence supervision transfers to missing-region shift.
+Under composition extrapolation the picture splits: on Fe--Cr--Ni the
+gated head is best (0.147 against 0.172 for renorm and 0.215 for the
+forest), but on Fe--Cr--V the fraction-only head wins back (0.046
+against 0.090) --- the presence head misfires out of distribution and
+drags the fractions with it. Under temperature extrapolation all
+families fail together ($\sim$0.22 on Fe--Cr--Ni, $\sim$0.10 on
+Fe--Cr--V) and gated AUPRC collapses to 0.59--0.63, the same detection
+collapse the bare models show: the closed phase basis, not the head, is
+the binding constraint there.
+
+\begin{table}[htbp]
+\centering
+\caption{Gated head under the spatial protocols (Fe--Cr--Ni, Fe--Cr--V).
+Test MAE (mean over three seeds) with the stored same-seed, same-block
+renorm-MLP and random-forest values alongside, plus gated macro-AUPRC.
+Presence supervision transfers to missing-region shift and (on one
+system) composition extrapolation, but not to temperature extrapolation,
+where detection collapses for every model.}
+\label{tab:gatedshift}
+\small
+\input{tab/gatedshift.tex}
+\end{table}
 
 % ======================================================================
 \section{Spatial generalisation: contiguous holdout and strict
@@ -1727,7 +1759,8 @@ wrong Fe--Cr--C target rows mean part of the boundary-concentrated error
 may be solver disagreement rather than model error, and no second-solver
 cross-check is performed. Physical admissibility stops at the simplex: no
 lever-rule mass-balance or phase-rule check is applied to predictions, the
-gated head is absent from the shift protocols, and the ensemble gain is not
+gated head is tested under shift on two systems only (with one
+composition-extrapolation reversal on Fe--Cr--V), and the ensemble gain is not
 re-estimated on a fixed split. All conclusions are furthermore scoped to systems of at
 most four inputs: the MLP/tree crossover, the band-holdout behaviour, and
 the regressor--detector gap are tested up to the quaternary system, and
@@ -1792,7 +1825,10 @@ shift, and the best regressor is not necessarily the best detector --- but
 the gap closes: the presence-gated head raises macro-AUPRC to 0.91--0.99
 on all seven systems (best classical detector beaten on six) while
 reducing MAE on the five ternaries (12--47\% cost on the two extension
-systems); presence supervision, not reweighting, is what works.
+systems); presence supervision, not reweighting, is what works --- and the
+remedy survives missing-region shift and composition extrapolation on the
+two tested systems, failing only where detection collapses for all models
+(Section~\ref{sec:remedy}).
 
 Two further results complete the operational picture. A three-seed
 disagreement score ranks per-row error (mean AUROC 0.70) and gates MAE by

@@ -971,4 +971,48 @@ else:
       "screen_validate.py")
 emit("screen")
 
+# ---------------------------------------------------------------- Table 18
+W("% Table 18: gated head under the spatial protocols (Fe-Cr-Ni, Fe-Cr-V)")
+GS = jload(os.path.join(M, "gated_shift.json"))
+if GS and GS.get("runs"):
+    from collections import defaultdict
+    agg = defaultdict(list)
+    for r in GS["runs"].values():
+        agg[(r["system"], r["block"])].append(r)
+    W("\\scriptsize")
+    W("\\setlength{\\tabcolsep}{3pt}")
+    W("\\resizebox{\\textwidth}{!}{")
+    W("\\begin{tabular}{llcccc}")
+    W("\\toprule")
+    W("System & Protocol & gated & renorm MLP & random forest & "
+      "gated AUPRC \\\\")
+    W("\\midrule")
+    for s in ["fecrni", "fecrv"]:
+        for blk, blab in [("T_band", "$T$ band"),
+                          ("X2_band", "$x_2$ band"),
+                          ("X2_extrap", "$x_2$ extrap."),
+                          ("T_extrap", "$T$ extrap.")]:
+            rs = agg.get((s, blk), [])
+            if not rs:
+                cells = ["---"] * 4
+            else:
+                gm = float(np.mean([r["mae"] for r in rs]))
+                mm = float(np.mean([r["ref_mlp_renorm_mae"] for r in rs]))
+                fm = float(np.mean([r["ref_rf_renorm_mae"] for r in rs]))
+                au = float(np.mean([r["macro_auprc"] for r in rs]))
+                cells = [f"{gm:.4f}", f"{mm:.4f}", f"{fm:.4f}", f"{au:.3f}"]
+            tag = ELBL[s] if blk == "T_band" else ""
+            W(f"{tag} & {blab} & " + " & ".join(cells) + " \\\\")
+        W("\\addlinespace")
+    W("\\midrule")
+    W("\\multicolumn{6}{l}{\\scriptsize Test MAE (mean over three seeds) "
+      "and gated macro-AUPRC; renorm/RF columns are the stored "
+      "same-seed, same-block benchmark values.} \\\\")
+    W("\\bottomrule")
+    W("\\end{tabular}}")
+else:
+    W("% models/gated_shift.json not present -- run "
+      "analysis_revision/gated_shift.py")
+emit("gatedshift")
+
 print(f"tables -> {TAB}")

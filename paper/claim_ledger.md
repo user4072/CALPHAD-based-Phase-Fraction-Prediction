@@ -326,3 +326,14 @@ remaining 10,525 shortlist points with the full 28-phase set:
 10,936/10,936 = 1.00. Text updated in abstract/contributions/Section 14/
 conclusions (+ docx); table precision row now computed over all three
 validation files. Audit +2 (404 total). Audit: 404/0/7.
+
+## ADDENDUM -- M2 gated head under shift (2026-10-01)
+
+analysis_revision/gated_shift.py retrains the exact GatedMLP recipe on
+the holdout band + strict-extrapolation splits (fecrni, fecrv; 42 runs,
+3 seeds each): band holds (gated <= renorm everywhere, AUPRC 0.96--1.00),
+Ni X2-extrap gated best (0.147 vs 0.172/0.215), V X2-extrap renorm wins
+back (0.046 vs 0.090), T-extrap all fail with AUPRC collapse 0.59--0.63.
+Table tab/gatedshift.tex + remedy paragraph + conclusions/limitations
+updates; docx Table 14 + finding mirrored; 9 new audit checks.
+Audit: 413/0/7.
