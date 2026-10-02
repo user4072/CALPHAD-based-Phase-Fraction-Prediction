@@ -969,7 +969,8 @@ def build() -> None:
     # 5. Simplex closure
     doc.add_heading("5. Simplex closure", level=1)
     body(doc,
-         f"Table 5 reports the mean closure violation. All structurally "
+         f"Supplement Table S3 reports the per-model mean closure violation "
+         f"in full. All structurally "
          f"constrained heads satisfy {SIG}{sub('k')} \u0177{sub('k')} = 1 to "
          f"{LEQ} 5{TIMES}10{sup('-8')} \u2014 float32 round-off over K terms. "
          f"The unconstrained sigmoid violates closure by 6\u20138% on average. "
@@ -982,26 +983,6 @@ def build() -> None:
          "0.0\u20131.2% of cells depending on the system (Section 10), so it "
          "is closure-valid but not simplex-valid. All other constrained "
          "heads and the renormalised baselines satisfy both conditions.")
-    CONS = [("none", "mlp_sigmoid", "sigmoid"),
-            ("none", "rf_raw", "random forest, raw"),
-            ("none", "xgb_raw", "XGBoost, raw"),
-            ("structural", "mlp_softmax", "softmax"),
-            ("structural", "mlp_sig_norm", f"sigmoid/{SIG}"),
-            ("structural", "mlp_sparsemax", "sparsemax"),
-            ("structural", "mlp_residue", "residue"),
-            ("post hoc", "mlp_renorm", "sigmoid + renorm"),
-            ("post hoc", "rf_renorm", "random forest + renorm")]
-    rows = [[grp, lab] + [sci(agg(RES[s], key, "consistency")[0]) for s in SYS]
-            for grp, key, lab in CONS]
-    table(doc, ["Closure", "Model"] + [LBL[s] for s in SYS], rows,
-          f"Table 5. Mean closure violation mean |{SIG}{sub('k')} "
-          f"\u0177{sub('k')} {MINUS} 1| on the test set (mean over three "
-          f"seeds). Structural constraints achieve closure to float32 "
-          f"precision; post-hoc renormalisation achieves machine precision; "
-          f"unconstrained outputs violate closure by orders of magnitude. "
-          f"Closure is the equality constraint only; see the text for "
-          f"non-negativity.",
-          left_cols=(0, 1))
     finding(doc, "The projection is where the accuracy comes from",
             f"The renorm head is, by construction, the sigmoid head plus a "
             f"test-time projection (Section 3). Projecting the stored raw "
@@ -1009,7 +990,7 @@ def build() -> None:
             f"head's test MAE to within 1.3{TIMES}10{sup('-4')} in every "
             f"system (7{TIMES}10{sup('-4')} per seed): 0.0107 against 0.0106 "
             f"on {LBL['fecrni']}, 0.0081 against 0.0081 on {LBL['fecrmn']}, "
-            f"and so on (Table 6, panel C). The entire "
+            f"and so on (Table 5, panel C). The entire "
             f"sigmoid\u2013renorm gap in Table 3 \u2014 0.0232 raw against "
             f"0.0106 renorm on {LBL['fecrni']} \u2014 is therefore a scoring "
             f"and constraint effect, not an optimisation effect: evaluating "
@@ -1030,7 +1011,7 @@ def build() -> None:
              f"(Section 4).")
     finding(doc, "A family taxonomy of closure and membership",
             f"The baseline families occupy distinct positions relative to "
-            f"Eq. (1) (Table 6). Ridge regression is a linear combination "
+            f"Eq. (1) (Table 5). Ridge regression is a linear combination "
             f"of target vectors that each sum to one, so its raw outputs "
             f"close the sum to 1.2\u20134.4{TIMES}10{sup('-10')} \u2014 "
             f"machine precision \u2014 but a linear combination does not "
@@ -1086,7 +1067,7 @@ def build() -> None:
     ]
     table(doc, ["Family/quantity"] + [LBL[s] for s in SYS] + ["min cell"],
           rows,
-          "Table 6. Output-space geometry of the evaluated families. (A) "
+          "Table 5. Output-space geometry of the evaluated families. (A) "
           "Fraction of test cells with negative predicted fraction (mean "
           "over three seeds); min cell gives the most negative prediction. "
           "(B) Raw row-sum closure for the linear and local baselines. "
@@ -1112,7 +1093,7 @@ def build() -> None:
     # 6. Regression versus detection
     doc.add_heading("6. Regression versus detection", level=1)
     body(doc,
-         "Table 7 and Figure 4 reveal a gap between regression accuracy and "
+          "Table 6 and Figure 4 reveal a gap between regression accuracy and "
          "phase-presence detection. The two are distinct tasks: the model "
          "that best estimates continuous phase fractions need not be the "
          "model that best identifies phase presence, and the model with the "
@@ -1134,7 +1115,7 @@ def build() -> None:
                          f"{f1:.3f}", f"{ba:.3f}", f"{en:.4f}"])
     table(doc, ["System", "Model", "MAE", "F\u2081", "Bal. acc.",
                 "Entropy-w. MAE"], rows,
-          "Table 7. Regression versus detection. For each system the best "
+          "Table 6. Regression versus detection. For each system the best "
           "fraction-only constrained MLP head and the random forest are compared on MAE, "
           "mean F\u2081, balanced accuracy, and entropy-weighted MAE. The MLP "
           "is the better regressor on two systems (with a near-tie on "
@@ -1253,7 +1234,7 @@ def build() -> None:
     ]
     table(doc, ["System", "MLP renorm", "RF", "XGB", "k-NN", "weighted",
                 "gated", "gated/MLP MAE ratio"], rows,
-          "Table 8. Presence-gated remedy. Macro-AUPRC (mean over three "
+          "Table 7. Presence-gated remedy. Macro-AUPRC (mean over three "
           "seeds; zero-positive phases excluded) for the renorm MLP, the "
           "three tree/k-NN baselines, the phase-weighted ablation, and the "
           "gated two-stage head; the final column is the gated-head test "
@@ -1270,7 +1251,7 @@ def build() -> None:
            "regression ranking on the rare-phase systems.")
     finding(doc, "The gated head closes most of the gap, at no regression "
             "cost on the ternaries",
-            f"Table 9 and Figure 5 summarise the result. Across the five "
+            f"Table 7 and Figure 5 summarise the result. Across the five "
             f"ternaries the bare renorm MLP's macro-AUPRC spans "
             f"0.36\u20130.99 and the gated head's 0.91\u20130.99; the gated "
             f"head beats the best of the random forest, XGBoost, and k-NN on "
@@ -1378,8 +1359,8 @@ def build() -> None:
          "present in training. This ratio isolates the regional shift on "
          "identical rows; its residual confound is a training-set size "
          "difference of roughly 15%, since removing a band also removes "
-           "those rows from training. Table 9 "
-           "reports the band results and Table 10 the extrapolation results; "
+           "those rows from training. Table 8 "
+           "reports the band results and Table 9 the extrapolation results; "
          "Figure 6 panel (a) shows the band penalty ratios and Figure 7 the "
          "extrapolation ones.")
 
@@ -1406,7 +1387,7 @@ def build() -> None:
                          f"{t / c:.2f} / {x / c:.2f}")
         rows.append(cells)
     table(doc, ["Held-out region", "Model"] + [LBL[s] for s in SYS], rows,
-          "Table 9. Contiguous interior-band holdout. Top: test MAE on the "
+          "Table 8. Contiguous interior-band holdout. Top: test MAE on the "
           "random control, the held-out temperature band, and the held-out "
           "composition band (mean over three seeds; uncertainty in units of "
           "the last digit). Bottom: penalty ratios (band MAE / control MAE) "
@@ -1456,7 +1437,7 @@ def build() -> None:
                              f"{x / cx:.2f} / {t / ct:.2f}")
             rows.append(cells)
         table(doc, ["Region", "Model"] + [LBL[s] for s in SYS], rows,
-              "Table 10. Strict one-sided out-of-range extrapolation: "
+              "Table 9. Strict one-sided out-of-range extrapolation: "
               "training keeps only the near side of one coordinate, the "
               "test set is the far side, and the interior gap is in neither "
               "split. Top: "
@@ -1496,11 +1477,11 @@ def build() -> None:
     doc.add_heading("7.2 Findings: contiguous interior-band holdout", level=2)
     finding(doc, "Two complementary references are needed for the band "
             "results",
-            "Results for the missing-region generalisation test (Table 9, "
+            "Results for the missing-region generalisation test (Table 8, "
             "Figure 6a) rest on two complementary references \u2014 the "
             "size-matched random controls and the region-matched reanalysis, "
             "both defined in Section 7.1. Under the region-matched measure "
-            "(Table 13) the "
+            "(Table 12) the "
             "in-distribution-to-holdout penalty is smaller for the "
             "constrained MLP than for the tree ensembles in nine of the "
             f"ten band\u2013system combinations. On the composition bands, "
@@ -1512,7 +1493,7 @@ def build() -> None:
             f"{LBL['fecrni']} the single exception, where the random-forest "
             f"ratio is lower (2.1 versus 2.8) although the forest's "
             f"absolute holdout error there remains twice the MLP's (0.0258 "
-            f"against 0.0132). The per-seed ratios in Table 13 show one "
+            f"against 0.0132). The per-seed ratios in Table 12 show one "
             f"instability behind the headline: on {LBL['femnni']} the MLP "
             f"temperature ratios spread 0.9, 20.3 and 0.6 across seeds "
             f"from a near-zero denominator on one seed, which the "
@@ -1712,7 +1693,7 @@ def build() -> None:
     # 9. Ablations
     doc.add_heading("9. Ablations", level=1)
     body(doc,
-         f"Table 12 reports three ablations on {LBL['fecrni']}; the loss "
+            f"Table 10 reports three ablations on {LBL['fecrni']}; the loss "
          f"and width ablations appear in Figure 6 panels (b) and (c), and "
             f"the closure-penalty ablation also appears in Supplement Figure "
             f"S1 panel b.")
@@ -1751,7 +1732,7 @@ def build() -> None:
         rows.append(["closure penalty", lab,
                      f"{mae_cell(m, sd)[0]}, closure {sci(c)}", ""])
     table(doc, ["Ablation", "Setting", "renorm", f"sigmoid/{SIG}"], rows,
-          f"Table 11. Ablations on {LBL['fecrni']} (mean over three seeds; "
+          f"Table 10. Ablations on {LBL['fecrni']} (mean over three seeds; "
           f"uncertainty in units of the last digit). Loss function, "
           f"hidden-layer width, and closure penalty are varied for the renorm "
           f"and sigmoid/{SIG} heads.", left_cols=(0, 1))
@@ -1823,7 +1804,7 @@ def build() -> None:
     finding(doc, "Sum-to-one penalty: redundant and harmful",
             f"The targets already sum to one, so a soft sum-to-one penalty "
             f"competes with the data fit: MAE rises to 0.0804 at "
-            f"{LAMBDA} = 1 and 0.1693 at {LAMBDA} = 10 (Table 11) while "
+            f"{LAMBDA} = 1 and 0.1693 at {LAMBDA} = 10 (Table 10) while "
             f"closure improves only to 1.3{TIMES}10{sup('-3')}. Full curves "
             f"are in Supplement Figure S1.")
     finding(doc, "Residue closure: closure without non-negativity",
@@ -1865,7 +1846,7 @@ def build() -> None:
          "inputs, with interstitial carbon) and a change of chemistry "
          "(carbide-dominated phase diagrams).")
     body(doc,
-         "Table 13 reports the results in full. Three findings stand out.")
+          "Table 11 reports the results in full. Three findings stand out.")
     finding(doc, "The smooth-coexistence ranking survives four inputs",
             "On quaternary Fe\u2013Cr\u2013Ni\u2013C the renorm head "
              f"achieves 0.0037 MAE against 0.0075 for the random forest "
@@ -1894,14 +1875,14 @@ def build() -> None:
             "remedy transfers with no retuning, at the regression cost "
             "quantified there. The phase-set pre-screen passes at solver "
             "precision on the quaternary system and shows the nine "
-            "documented Fe\u2013Cr\u2013C deviations (Table 13 panel D; "
+            "documented Fe\u2013Cr\u2013C deviations (Table 11 panel D; "
             "Section 2); neither "
             "the accuracy nor the detection results depend on repairing "
             "them, and none were repaired.")
     finding(doc, "The spatial protocols give the same qualitative answers",
             "Composition-band holdout costs 2.1\u20133.5 times the random "
             "control and strict extrapolation fails on every tested axis, "
-            "worst in temperature (Table 12 panel C); the absolute-error "
+            "worst in temperature (Table 11 panel C); the absolute-error "
             "ordering of Section 7 \u2014 no architecture extrapolates "
             "reliably \u2014 does not depend on being ternary.")
     rows = [
@@ -1949,7 +1930,7 @@ def build() -> None:
     ]
     table(doc, ["Quantity", "Fe\u2013Cr\u2013Ni\u2013C", "Fe\u2013Cr\u2013C"],
           rows,
-          "Table 12. Scope-extension systems. (A) System and dataset "
+          "Table 11. Scope-extension systems. (A) System and dataset "
           "statistics. (B) Test MAE (mean over three seeds; uncertainty in "
           "units of the last digit), best per system in bold. (C) "
           "Contiguous-band and strict-extrapolation holdouts against "
@@ -1989,11 +1970,11 @@ def build() -> None:
             rrows.append(row)
     table(doc, ["Band", "System", "MLP renorm", "random forest", "XGBoost"],
           rrows,
-          "Table 13. Region-matched band reanalysis: holdout mean MAE on "
+          "Table 12. Region-matched band reanalysis: holdout mean MAE on "
           "band rows divided by in-distribution mean MAE on the identical "
           "rows (ratio of means; per-seed ratios in parentheses), for the "
           "renorm MLP, the random forest and XGBoost. Complements the "
-          "random-control penalties of Table 9; see Section 7.1 for the "
+          "random-control penalties of Table 8; see Section 7.1 for the "
           "two references. The Fe\u2013Cr\u2013Ni temperature ordering "
           "reverses relative to the random-control picture; the "
           "Fe\u2013Mn\u2013Ni temperature per-seed spread (0.86/20.28/0.62) "
@@ -2062,7 +2043,7 @@ def build() -> None:
             f"split, under the identical protocol, gives test MAE 0.0231 "
             f"at 10% (568 equilibria), 0.0173 at 25% (1,420), 0.0121 at 50% "
             f"(2,840) and 0.0091 at 100% (5,681), seed-means over the same "
-            f"three seeds (Figure 8, panel c; Table 14). Half the "
+            f"three seeds (Figure 8, panel c; Table 13). Half the "
             f"data-generation bill reaches within a factor of 1.3 of "
             f"full-data accuracy, which halves the optimistic break-even "
             f"above; even 568 solves train a 0.023-MAE surrogate, roughly "
@@ -2110,7 +2091,7 @@ def build() -> None:
          "0.0231 / 0.0173 / 0.0121 / 0.0091"],
     ]
     table(doc, ["Quantity", "Value"], srows,
-          "Table 14. Application case: lean-Ni austenitic screen at 1000 K "
+          "Table 13. Application case: lean-Ni austenitic screen at 1000 K "
           f"on {LBL['fecrni']}. Break-even is the one-time cost (data "
           "generation at measured versus prose per-point cost, plus probe "
           "and 268 s training) divided by the measured 0.41 s per-point "

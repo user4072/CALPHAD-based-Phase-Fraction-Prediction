@@ -265,6 +265,29 @@ is reproduced to high accuracy.}
 \end{figure}
 
 % ======================================================================
+\section{Per-model closure violations in full}
+\label{sec:si-closure}
+
+Table~S3 reports the mean closure violation
+$\mathrm{mean}\,|\sum_k \hat y_k - 1|$ on the test set (mean over three
+seeds) for every evaluated head and baseline. Structural constraints
+achieve closure to float32 precision; post-hoc renormalisation achieves
+machine precision; unconstrained outputs violate closure by orders of
+magnitude. Closure is the equality constraint only; non-negativity is
+discussed in the main text.
+
+\begin{table}[htbp]
+\centering
+\caption{Table S3. Mean closure violation on the test set (mean over three
+seeds). Structural constraints achieve closure to float32 precision;
+post-hoc renormalisation achieves machine precision; unconstrained
+outputs violate closure by orders of magnitude.}
+\label{tab:si-closure}
+\small
+\input{tab/closure.tex}
+\end{table}
+
+% ======================================================================
 \begin{thebibliography}{99}
 
 \bibitem[Drozdov\'a et al.(2017)]{drozdovs2017}

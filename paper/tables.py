@@ -599,7 +599,7 @@ if PJ:
     W("\\multicolumn{7}{l}{\\scriptsize Sigmoid/RF/$k$-NN emit no negative "
       f"cells; sigmoid closure {100 * scl[0]:.1f}--{100 * scl[1]:.1f}\\%, "
       f"RF {100 * rfcl[0]:.1f}--{100 * rfcl[1]:.1f}\\% "
-      "(Table~\\ref{tab:closure}).} \\\\")
+      "(Table~S3 of the Supplement).} \\\\")
     W("\\multicolumn{7}{l}{\\scriptsize Ridge closes to "
       f"$\\sim\\!10^{{{e}}}$ yet {100 * rn[0]:.1f}--{100 * rn[1]:.1f}\\% "
       f"of cells are negative; XGBoost {100 * xn[0]:.1f}--"

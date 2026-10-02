@@ -666,7 +666,8 @@ protocols.
 \section{Simplex closure}
 \label{sec:closure}
 
-Table~\ref{tab:closure} reports the mean closure violation. All
+Table~S3 of the Supplement reports the per-model mean closure violation
+in full. All
 structurally constrained heads satisfy $\sum_k \hat y_k = 1$ to
 $\le 5\times10^{-8}$ --- float32 round-off over $K$ terms. The unconstrained
 sigmoid violates closure by 6--8\% on average. Raw tree outputs violate it by
@@ -678,19 +679,6 @@ closes the sum by construction yet still emits negative fractions on
 0.0--1.2\% of cells depending on the system (Section~\ref{sec:negative}),
 so it is closure-valid but not simplex-valid. All other constrained heads
 and the renormalised baselines satisfy both conditions.
-
-\begin{table}[htbp]
-\centering
-\caption{Mean closure violation $\mathrm{mean}\,|\sum_k \hat y_k - 1|$ on
-the test set (mean over three seeds). Structural constraints achieve
-closure to float32 precision; post-hoc renormalisation achieves machine
-precision; unconstrained outputs violate closure by orders of magnitude.
-Closure is the equality constraint only; see the text for
-non-negativity.}
-\label{tab:closure}
-\small
-\input{tab/closure.tex}
-\end{table}
 
 \paragraph{The projection is where the accuracy comes from.}
 The renorm head is, by construction, the sigmoid head plus a test-time

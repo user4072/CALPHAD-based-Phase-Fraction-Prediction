@@ -296,3 +296,12 @@ screen). Conclusions scope/closure/spatial/detector paragraphs
 compressed; U2 clause trimmed. All numbers retained verbatim; audit
 value checks recompute from artifacts. Docx mirrors all. Main 51pp,
 SI 6pp. Audit: 392/0/7.
+
+## ADDENDUM -- main/supplement split, step 4 (2026-10-01)
+
+Closure Table 4 -> SI Section S5 (Table S3); headline ranges stay in
+main text; projection-table footnote repointed at source (tables.py) and
+regenerated idempotently (1-line diff). Docx mirrors all: closure table
+dropped, tables renumbered 1--13 and every in-text ref realigned
+(verified: captions sequential, zero stale refs). Main 50pp, SI 7pp.
+Audit: 392/0/7.
