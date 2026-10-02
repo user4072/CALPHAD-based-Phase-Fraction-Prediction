@@ -1491,6 +1491,44 @@ in-scope background miss rate (4 of 76) as representative, recall in scope
 is $\sim$0.8: the filter finds most qualifying alloys and certifies the
 ones it returns.
 
+\paragraph{Disagreement flags the worst miss.}
+The screen records ensemble spread (U1) per point. All four in-scope
+misses sit above the shortlist median spread ($2.5\times10^{-5}$), and
+the clear model failure carries $1.0\times10^{-2}$ --- ten times the
+shortlist 95th percentile --- for an AUROC of 0.86 separating misses
+from hits (Figure~\ref{fig:operating}, panel~a; $n = 4$ misses, so this
+is suggestive, not conclusive). A gate at the shortlist 99th percentile
+would have excluded that failure while retaining 99.0\% of the
+shortlist. The uncertainty score of Section~\ref{sec:uncertainty} thus
+earns a screening role: not a universal error ranker, but a shortlist
+triage gate.
+
+\paragraph{The query choice is characterized, not asserted; the worst
+miss sits in a coverage hole.}
+Varying the FCC cutoff (0.97/0.99/0.995) against the sigma cutoff
+($10^{-4}$/$10^{-3}$/$10^{-2}$) on the 811-point validation pool gives
+precision 1.00 at all nine combinations, with pool recall from 0.80
+(strictest) to 1.00 (loosest); the deployed query sits at precision 1.00
+and recall 0.99 (Figure~\ref{fig:operating}, panel~b;
+Table~\ref{tab:screen}). Training-set density around the misses completes
+the picture: the clear failure sits 1.6 times farther from its nearest
+training row than the validated-hit median (0.166 against 0.102 in
+standardized coordinates), while the three boundary flips sit at or
+below the median --- a coverage hole behind the one real error,
+threshold edges behind the rest.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/fig11_operating}
+\caption{Screen operating characteristics. (a) Shortlist spread
+distribution (10,936 points) with the four in-scope misses (red) and the
+90/95/99th-percentile gates: the clear model failure sits an order of
+magnitude above the shortlist bulk. (b) Pool precision and recall across
+the FCC--sigma threshold grid: precision is 1.00 at all nine
+combinations; recall is controlled by the cutoffs.}
+\label{fig:operating}
+\end{figure}
+
 \paragraph{One screen amortises the pipeline several times over.}
 Measured on this workload, a full-set single-point solve costs 0.41~s
 wall (3.30~s CPU over 8 workers) and a probe-set solve 0.33~s wall;

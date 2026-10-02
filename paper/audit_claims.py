@@ -1557,6 +1557,30 @@ def g_screen():
                 sorted({lc[f"frac{f:g}_s{s}"]["n_train"]
                         for f in (0.1, 0.25, 0.5, 1.0) for s in SEEDS}),
                 [568, 1420, 2840, 2841, 5679, 5681, 5682])
+    an = J(os.path.join(PAPER, "screen_data", "screen_analysis.json"))
+    check("tex:screen U1 AUROC miss-vs-hits 0.861",
+          an["A3_u1_gate"]["auroc_miss_vs_hits"], "0.861")
+    g99 = an["A3_u1_gate"]["gates"]["q99"]
+    check_exact("tex:screen q99 gate excludes 1 of 4 misses",
+                (g99["miss_excluded"], g99["miss_total"]), (1, 4))
+    check_exact("tex:screen q99 gate retains 99.0% of hits",
+                round(100 * g99["hits_retained_frac"], 1), 99.0)
+    sw = an["A5_threshold_sweep"]["pool_811"]
+    check_exact("tex:screen threshold precision 1.00 all 9 combos",
+                sorted({d["precision_pool"] for d in sw.values()}), [1.0])
+    check("tex:screen threshold recall range 0.80--1.00",
+          min(d["recall_pool"] for d in sw.values()), "0.80")
+    check("tex:screen threshold recall range upper",
+          max(d["recall_pool"] for d in sw.values()), "1.00")
+    check("tex:screen deployed query pool P=1.00 R=0.99",
+          sw["F0.99_S0.001"]["precision_pool"], "1.00")
+    check("tex:screen deployed query pool recall",
+          sw["F0.99_S0.001"]["recall_pool"], "0.99")
+    ms = an["A6_miss_autopsy"]
+    check("tex:screen worst miss d1 0.166 vs hit median 0.102",
+          max(a["d1_train"] for a in ms["misses"]), "0.166")
+    check_exact("tex:screen hits median d1",
+                round(ms["hits_median_d1_train"], 4), 0.1023)
 
 
 # ================================================================== main

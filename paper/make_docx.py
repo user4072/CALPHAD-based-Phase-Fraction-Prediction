@@ -2055,6 +2055,32 @@ def build() -> None:
             f"0.0106: retrain-to-retrain variation from early stopping, of "
             f"the same order as the seed spread, and one more reason the "
             f"headline comparisons use three seeds.")
+    finding(doc, "Disagreement flags the worst miss",
+            f"The screen records ensemble spread (U1) per point. All four "
+            f"in-scope misses sit above the shortlist median spread "
+            f"(2.5{TIMES}10{sup('-5')}), and the clear model failure "
+            f"carries 1.0{TIMES}10{sup('-2')} \u2014 ten times the "
+            f"shortlist 95th percentile \u2014 for an AUROC of 0.86 "
+            f"separating misses from hits (Figure 9, panel a; n = 4 "
+            f"misses, so this is suggestive, not conclusive). A gate at "
+            f"the shortlist 99th percentile would have excluded that "
+            f"failure while retaining 99.0% of the shortlist. The "
+            f"uncertainty score of Section 8 thus earns a screening role: "
+            f"not a universal error ranker, but a shortlist triage gate.")
+    finding(doc, "The query choice is characterized, not asserted; the "
+            "worst miss sits in a coverage hole",
+            f"Varying the FCC cutoff (0.97/0.99/0.995) against the sigma "
+            f"cutoff (10{sup('-4')}/10{sup('-3')}/10{sup('-2')}) on the "
+            f"811-point validation pool gives precision 1.00 at all nine "
+            f"combinations, with pool recall from 0.80 (strictest) to 1.00 "
+            f"(loosest); the deployed query sits at precision 1.00 and "
+            f"recall 0.99 (Figure 9, panel b; Table 13). Training-set "
+            f"density around the misses completes the picture: the clear "
+            f"failure sits 1.6 times farther from its nearest training row "
+            f"than the validated-hit median (0.166 against 0.102 in "
+            f"standardised coordinates), while the three boundary flips "
+            f"sit at or below the median \u2014 a coverage hole behind the "
+            f"one real error, threshold edges behind the rest.")
     SC = json.load(open(os.path.join(ROOT, "paper", "screen_data",
                                      "screen_fecrni_T1000K_step0.001.json")))
     SV = json.load(open(os.path.join(ROOT, "paper", "screen_data",
@@ -2068,6 +2094,12 @@ def build() -> None:
     _bgm = (_kinds == "bg") & (_ni <= 0.12)
     _bgc, _bgn = int(_v["confirmed"][_bgm].sum()), int(_bgm.sum())
     _nshort = SV["frontier"]["n"] + SV["hit"]["n"]
+    AN = json.load(open(os.path.join(ROOT, "paper", "screen_data",
+                                     "screen_analysis.json")))
+    _g99 = AN["A3_u1_gate"]["gates"]["q99"]
+    _sw = AN["A5_threshold_sweep"]["pool_811"]
+    _precs = sorted({d["precision_pool"] for d in _sw.values()})
+    _recs = sorted({d["recall_pool"] for d in _sw.values()})
     srows = [
         ["Compositions screened", f"{SC['n_points']:,}"],
         ["Screen wall time, 3-seed ensemble (cuda)", "0.4 s"],
@@ -2089,6 +2121,12 @@ def build() -> None:
          "see text)"],
         ["renorm test MAE at 10 / 25 / 50 / 100% of training data",
          "0.0231 / 0.0173 / 0.0121 / 0.0091"],
+        ["U1 gate at shortlist p99",
+         f"excludes {_g99['miss_excluded']} of {_g99['miss_total']} misses; "
+         f"retains {100 * _g99['hits_retained_frac']:.1f}% of shortlist"],
+        ["Threshold sweep, 9 combos (811-pt pool)",
+         f"precision {_precs[0]:.2f} everywhere; recall "
+         f"{_recs[0]:.2f}\u2013{_recs[-1]:.2f}"],
     ]
     table(doc, ["Quantity", "Value"], srows,
           "Table 13. Application case: lean-Ni austenitic screen at 1000 K "
@@ -2109,6 +2147,14 @@ def build() -> None:
            "sit above the line. (c) Data efficiency: test MAE versus "
            "training-set size for retrains under the identical protocol "
            "(3-seed mean \u00b1 s.d.; the 25% bar shows one stalled seed).")
+    figure(doc, "fig11_operating",
+           "Figure 9. Screen operating characteristics. (a) Shortlist "
+           "spread distribution (10,936 points) with the four in-scope "
+           "misses (red) and the 90/95/99th-percentile gates: the clear "
+           "model failure sits an order of magnitude above the shortlist "
+           "bulk. (b) Pool precision and recall across the FCC\u2013sigma "
+           "threshold grid: precision is 1.00 at all nine combinations; "
+           "recall is controlled by the cutoffs.")
 
     # 15. Discussion
     doc.add_heading("15. Discussion", level=1)

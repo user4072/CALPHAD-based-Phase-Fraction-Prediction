@@ -305,3 +305,14 @@ regenerated idempotently (1-line diff). Docx mirrors all: closure table
 dropped, tables renumbered 1--13 and every in-text ref realigned
 (verified: captions sequential, zero stale refs). Main 50pp, SI 7pp.
 Audit: 392/0/7.
+
+## ADDENDUM -- screen operating characteristics (2026-10-01)
+
+A3/A5/A6 from stored data only (paper/screen_analyze.py ->
+screen_analysis.json): U1 AUROC 0.861 miss-vs-hits, q99 gate excludes
+1/4 misses retaining 99.0 % of shortlist, threshold sweep precision
+1.00 at all 9 combos with pool recall 0.80--1.00 (deployed query 1.00 /
+0.99), worst miss in sparsest training neighborhood (d1 0.166 vs hit
+median 0.102). New Figure 11 (both panels) + 2 paragraphs + 2 computed
+table rows in main; docx Figure 9 + findings + rows mirrored; fig11
+added to figure audit (clean). Audit: 402/0/7.

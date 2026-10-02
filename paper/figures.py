@@ -853,6 +853,61 @@ def fig10_screen():
     mpl.rcParams["figure.constrained_layout.use"] = _clu
 
 
+# --------------------------------------------------------------------------
+def fig11_operating():
+    """Screen operating characteristics: U1 gate (a) and query-threshold
+    sensitivity (b)."""
+    SD = os.path.join(ROOT, "paper", "screen_data")
+    tag = "fecrni_T1000K_step0.001"
+    scr = np.load(os.path.join(SD, f"screen_{tag}.npz"))
+    an = json.load(open(os.path.join(SD, "screen_analysis.json")))
+    sp_hits = scr["spread"][scr["hit_idx"]]
+    misses = sorted(an["A3_u1_gate"]["miss_spreads"])
+    gates = an["A3_u1_gate"]["gates"]
+
+    fig = plt.figure(figsize=(FULLW, 0.44 * FULLW))
+    gs = fig.add_gridspec(1, 2)
+
+    ax = fig.add_subplot(gs[0, 0])
+    lo = float(np.floor(np.log10(sp_hits.min())))
+    hi = float(np.ceil(np.log10(sp_hits.max())))
+    bins = np.logspace(lo, hi, 40)
+    ax.hist(sp_hits, bins=bins, color="#9db9d5", edgecolor="none",
+            label="shortlist spread (10,936)")
+    for k, v in enumerate(misses):
+        guide(ax.axvline(v, c="#c44e52", lw=1.4, ls=(0, (3, 1)),
+                         label="misses (4)" if k == 0 else None))
+    for lab, g in (("q90 gate", "q90"), ("q95 gate", "q95"),
+                   ("q99 gate", "q99")):
+        guide(ax.axvline(gates[g]["thr"], c="k", lw=1.0, ls="--",
+                         label=lab))
+    ax.set_xscale("log")
+    ax.set_xlabel("ensemble spread U1 (mean over phases)")
+    ax.set_ylabel("shortlist points")
+    legend_below(ax, 3, y=-0.24)
+    panel(ax, "a", "U1 separates misses from hits")
+
+    ax = fig.add_subplot(gs[0, 1])
+    xs = [0, 1, 2]
+    sw = an["A5_threshold_sweep"]["pool_811"]
+    for smax, col, mk in (("0.0001", "#4c72b0", "o"), ("0.001", "#2a6f3f", "s"),
+                          ("0.01", "#d9a03c", "^")):
+        r = [sw[f"F{f}_S{smax}"]["recall_pool"]
+             for f in ("0.97", "0.99", "0.995")]
+        ax.plot(xs, r, c=col, lw=1.2, marker=mk, ms=4, mfc="white",
+                mec=col, mew=1.0, label=f"sigma {smax}")
+    guide(ax.axhline(1.0, c="k", lw=1.0, ls="--",
+                     label="precision (=1.0 all combos)"))
+    ax.set_xticks(xs)
+    ax.set_xticklabels(["0.97", "0.99", "0.995"])
+    ax.set_xlabel("FCC cutoff")
+    ax.set_ylabel("pool recall")
+    ax.set_ylim(0.75, 1.02)
+    legend_below(ax, 2, y=-0.24)
+    panel(ax, "b", "threshold operating curve (811-point pool)")
+    save(fig, "fig11_operating")
+
+
 if __name__ == "__main__":
     print("figures ->", FIG)
     fig1_dataset()
@@ -865,3 +920,4 @@ if __name__ == "__main__":
     fig8_remedy()
     fig9_anchor()
     fig10_screen()
+    fig11_operating()

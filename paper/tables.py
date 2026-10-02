@@ -946,6 +946,19 @@ if SC and SV:
             cells.append(f"{float(np.mean(v)):.4f}")
         W("renorm test MAE at 10 / 25 / 50 / 100\\% of training data & "
           + " / ".join(cells) + " \\\\")
+    AN = jload(os.path.join(ROOT, "paper", "screen_data",
+                            "screen_analysis.json"))
+    if AN:
+        g99 = AN["A3_u1_gate"]["gates"]["q99"]
+        W(f"U1 gate at shortlist p99 & excludes {g99['miss_excluded']} of "
+          f"{g99['miss_total']} misses; retains "
+          f"{100 * g99['hits_retained_frac']:.1f}\\% of shortlist \\\\")
+        sw = AN["A5_threshold_sweep"]["pool_811"]
+        prec = [sw[k]["precision_pool"] for k in sw]
+        rec = [sw[k]["recall_pool"] for k in sw]
+        W(f"Threshold sweep, 9 combos (811-pt pool) & precision "
+          f"{min(prec):.2f} everywhere; recall "
+          f"{min(rec):.2f}--{max(rec):.2f} \\\\")
     W("\\bottomrule")
     W("\\end{tabular}}")
 else:
