@@ -476,8 +476,15 @@ reproducible protocol rather than to identify globally optimal
 hyperparameters for any model family. No model is tuned, and the tuning
 lever is large: the width ablation (Section~\ref{sec:ablations}) moves
 renorm MAE by 28\% from $3\times64$ to $3\times256$ (0.0137 to 0.0099),
-against a 5\% gap between the best heads (0.0112 for sigmoid/$\Sigma$,
-0.0106 for renorm), so head rankings sit within tuning noise. No
+and a learning-rate sweep moves every head by a similar fraction ---
+renorm 0.0131 at $10^{-4}$ to 0.0084 at $10^{-3}$ (default 0.0106),
+softmax 0.0165 to 0.0099 (default 0.0130) --- so absolute levels sit
+well within tuning range. The ordering is stabler than the levels: the
+renorm-vs-softmax ranking persists at the tuned learning rate, and the
+forest is insensitive to its grid (trees 200--500, depth 20--unlimited
+all give 0.0180 within $6\times10^{-5}$ on Fe--Cr--Ni), so the default
+$3\times10^{-4}$ understates rather than creates the MLP lead on smooth
+systems. The sigmoid/$\Sigma$ head was not re-tuned. No
 Gaussian-process or radial-basis baseline is evaluated, although
 three-dimensional inputs with $\sim$9{,}000 rows per system make that
 family an obvious omitted comparator. Hybrid tree--neural comparisons for
@@ -595,7 +602,9 @@ FCC$\leftrightarrow$LIQUID in Fe--Mn--Ni) with rare phases.
 Axis-aligned tree splits can represent such sharp transitions efficiently;
 on Fe--Cr--V, however, the margin is statistically indistinguishable from
 a tie, formally confirmed via paired bootstrap resampling over 10{,}000
-iterations (Table~\ref{tab:bootstrap}). This family ranking is conditional
+iterations (Table~\ref{tab:bootstrap}) and unchanged with two further
+seeds (five-seed means 0.0143 for renorm against 0.0140 for the forest).
+This family ranking is conditional
 on fraction-only supervision: the presence-supervised gated head of
 Section~\ref{sec:remedy} leads the forest on all five ternaries
 (Table~\ref{tab:main}, $\ddagger$ row: 0.0100, 0.0075, 0.0110, 0.0110 and
@@ -606,7 +615,9 @@ intrinsic family ordering.
 \paragraph{Fe--Cr--Mo is a statistical tie.}
 The random forest ($0.0123 \pm 0.0002$) and sigmoid/$\Sigma$
 ($0.0126 \pm 0.0002$) differ by 0.0003, comparable to the seed standard
-deviation. The system's nine-phase target vector, with its intermetallic
+deviation. Two further seeds (7, 99) leave the tie intact: the five-seed
+means are 0.0129 for the head and 0.0125 for the forest, a 0.0004 gap
+against $\sim$0.0005 seed spread. The system's nine-phase target vector, with its intermetallic
 family, provides enough smooth structure for the MLP to compete but enough
 sharp boundaries for the forest to match it.
 
@@ -1783,7 +1794,7 @@ a fixed-protocol benchmark, not an exhaustive hyperparameter search, and
 the reported MLP is not architecture-optimal. The mean $\pm$ standard
 deviation over three seeds quantifies seed-to-seed training stochasticity
 only, not total predictive uncertainty. Per-experiment seed counts are
-small; the sparsemax variance claim in particular rests on three runs. The
+small (five for the two tied systems, three elsewhere); the sparsemax variance claim in particular rests on three runs. The
 phase-boundary analysis uses an
 empirical boundary proxy, not the exact thermodynamic distance to a phase
 boundary, and the proxy inherits the sampling density of the design;

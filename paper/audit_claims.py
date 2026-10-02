@@ -1677,6 +1677,48 @@ def g_screen():
           gs_phase("fecrv", "T_extrap", "FCC_A1"), "0.096")
     check("tex:remedy V-T LIQUID 0.490",
           gs_phase("fecrv", "T_extrap", "LIQUID"), "0.490")
+    tu = J(os.path.join(MODELS, "tuning_sensitivity.json"))["runs"]
+
+    def tu_mean(prefix):
+        v = [tu[f"{prefix}_s{s}"]["mean_mae"] for s in SEEDS]
+        return sum(v) / len(v)
+
+    check("tex:models renorm lr1e-4 0.0131", tu_mean("mlp_sigmoid_lr0.0001"),
+          "0.0131")
+    check("tex:models renorm lr1e-3 0.0084", tu_mean("mlp_sigmoid_lr0.001"),
+          "0.0084")
+    check("tex:models softmax lr1e-4 0.0165",
+          tu_mean("mlp_softmax_lr0.0001"), "0.0165")
+    check("tex:models softmax lr1e-3 0.0099",
+          tu_mean("mlp_softmax_lr0.001"), "0.0099")
+    check("tex:models RF grid insensitive (both 0.0180)",
+          tu_mean("rf_t500_dNone"), "0.0180")
+    check("tex:models RF grid second config",
+          tu_mean("rf_t200_d20"), "0.0180")
+    ex = J(os.path.join(MODELS, "extra_seeds.json"))["runs"]
+
+    def ex_mean(model, system):
+        v = [ex[f"{model}_{system}_s{s}"]["mean_mae"] for s in (7, 99)]
+        return sum(v) / len(v)
+
+    h = J(os.path.join(MODELS, "results_heads_fecrmo.json"))
+    b = J(os.path.join(MODELS, "results_baselines_fecrmo.json"))
+    mo_sig = ([h["mlp_sig_norm_s%d" % s]["mean_mae"] for s in SEEDS]
+              + [ex["mlp_sig_norm_fecrmo_s%d" % s]["mean_mae"]
+                 for s in (7, 99)])
+    mo_rf = ([b["rf_renorm_s%d" % s]["mean_mae"] for s in SEEDS]
+             + [ex["rf_renorm_fecrmo_s%d" % s]["mean_mae"]
+                for s in (7, 99)])
+    check("tex:results Mo 5-seed sig 0.0129", sum(mo_sig) / 5, "0.0129")
+    check("tex:results Mo 5-seed RF 0.0125", sum(mo_rf) / 5, "0.0125")
+    h = J(os.path.join(MODELS, "results_heads_fecrv.json"))
+    b = J(os.path.join(MODELS, "results_baselines_fecrv.json"))
+    v_re = ([h["mlp_renorm_s%d" % s]["mean_mae"] for s in SEEDS]
+            + [ex["mlp_renorm_fecrv_s%d" % s]["mean_mae"] for s in (7, 99)])
+    v_rf = ([b["rf_renorm_s%d" % s]["mean_mae"] for s in SEEDS]
+            + [ex["rf_renorm_fecrv_s%d" % s]["mean_mae"] for s in (7, 99)])
+    check("tex:results V 5-seed renorm 0.0143", sum(v_re) / 5, "0.0143")
+    check("tex:results V 5-seed RF 0.0140", sum(v_rf) / 5, "0.0140")
 
 
 # ================================================================== main

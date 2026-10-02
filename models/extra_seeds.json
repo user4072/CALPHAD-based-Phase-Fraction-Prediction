@@ -1,0 +1,67 @@
+{
+  "config": {
+    "seeds": [
+      7,
+      99
+    ],
+    "note": "contended cells only"
+  },
+  "runs": {
+    "mlp_sig_norm_fecrmo_s7": {
+      "system": "fecrmo",
+      "model": "mlp_sig_norm",
+      "seed": 7,
+      "mean_mae": 0.013004232197999954,
+      "time_s": 165.1
+    },
+    "mlp_sig_norm_fecrmo_s99": {
+      "system": "fecrmo",
+      "model": "mlp_sig_norm",
+      "seed": 99,
+      "mean_mae": 0.013865582644939423,
+      "time_s": 163.9
+    },
+    "rf_renorm_fecrmo_s7": {
+      "system": "fecrmo",
+      "model": "rf_renorm",
+      "seed": 7,
+      "mean_mae": 0.013495605055847558,
+      "time_s": 13.7
+    },
+    "rf_renorm_fecrmo_s99": {
+      "system": "fecrmo",
+      "model": "rf_renorm",
+      "seed": 99,
+      "mean_mae": 0.012347810856746067,
+      "time_s": 13.8
+    },
+    "mlp_renorm_fecrv_s7": {
+      "system": "fecrv",
+      "model": "mlp_renorm",
+      "seed": 7,
+      "mean_mae": 0.013164219446480274,
+      "time_s": 96.0
+    },
+    "mlp_renorm_fecrv_s99": {
+      "system": "fecrv",
+      "model": "mlp_renorm",
+      "seed": 99,
+      "mean_mae": 0.013947326689958572,
+      "time_s": 104.3
+    },
+    "rf_renorm_fecrv_s7": {
+      "system": "fecrv",
+      "model": "rf_renorm",
+      "seed": 7,
+      "mean_mae": 0.014821845189173302,
+      "time_s": 6.0
+    },
+    "rf_renorm_fecrv_s99": {
+      "system": "fecrv",
+      "model": "rf_renorm",
+      "seed": 99,
+      "mean_mae": 0.01409975553665262,
+      "time_s": 5.9
+    }
+  }
+}

@@ -372,3 +372,19 @@ optimistic flips, unlike the ternary's conservative misses). Combined
 shortlist precision 14,143/14,475 = 0.98 (recall arithmetic unchanged,
 ~0.8). Text/table updated in tex + docx (precision row now computed
 over all three validation files). Audit +4. Audit: 430/0/7.
+
+## ADDENDUM -- M6 tuning sensitivity + extra seeds (2026-10-01)
+
+paper/tuning_extra.py: lr sweep (renorm 0.0131 @1e-4 -> 0.0084 @1e-3;
+softmax 0.0165 -> 0.0099; ranking persists, default 3e-4 undertuned) and
+RF grid (both configs 0.0180 within 6e-5: plateau). Extra seeds 7, 99:
+Mo 5-seed sig 0.01294 vs RF 0.01254, V 5-seed renorm 0.01432 vs RF
+0.01400 (RF ahead by <=0.0004, within noise: ties hold). CAUGHT + FIXED
+mid-task: name-shadowing bug (`from train_mlp import train_mlp` made
+`train_mlp.LR=` a function attribute; all 12 first-pass MLP runs
+silently reused 3e-4, caught by bitwise-identical softmax); reran via
+sys.modules. New files models/tuning_sensitivity.json,
+models/extra_seeds.json, models/extra_*.npz (in release globs). Methods
+tuning paragraph rewritten (levels move, ordering stable), Mo/V tie
+paragraphs + limitations updated; docx mirrored. Audit +14. Audit:
+440/0/7.
