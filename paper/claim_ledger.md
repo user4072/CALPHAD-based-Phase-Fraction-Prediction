@@ -286,3 +286,13 @@ numbers stay via Table 14, kept whole in main). Docx mirrors all:
 Section 11 slimmed, fields Figure 8 removed, screen Figure 9 -> 8;
 docx tables 1--14 and figures 1--8 sequential. Main 52pp, SI 6pp.
 Audit: 392/0/7.
+
+## ADDENDUM -- discussion/conclusions slim (2026-10-01)
+
+15.2 cut to relative-vs-reliable paragraph (41 % / 3.11-1.61 /
+nine-of-ten / 4.1 % recap stays in Section 7 with tables); 15.3 stale
+"no break-even" fixed to Section 14 accounting (was contradicting the
+screen). Conclusions scope/closure/spatial/detector paragraphs
+compressed; U2 clause trimmed. All numbers retained verbatim; audit
+value checks recompute from artifacts. Docx mirrors all. Main 51pp,
+SI 6pp. Audit: 392/0/7.
