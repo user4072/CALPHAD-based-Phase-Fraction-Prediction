@@ -953,7 +953,13 @@ drags the fractions with it. Under temperature extrapolation all
 families fail together ($\sim$0.22 on Fe--Cr--Ni, $\sim$0.10 on
 Fe--Cr--V) and gated AUPRC collapses to 0.59--0.63, the same detection
 collapse the bare models show: the closed phase basis, not the head, is
-the binding constraint there.
+the binding constraint there. Per-phase scores locate the two failures
+precisely: on V-$x_2$ the gated head still ranks BCC/LIQUID/SIGMA at
+0.96--0.99 (FCC has no active rows on that far side), so ranking
+survives while MAE doubles --- a calibration failure, not a detection
+failure. On V-$T$ the collapse concentrates exactly on the unseen
+physics (FCC 0.096, LIQUID 0.490; BCC 0.926, SIGMA 0.832), confirming
+the closed-basis account at phase resolution.
 
 \begin{table}[htbp]
 \centering
@@ -1637,7 +1643,11 @@ predicted 0.90--0.91: the screen over-smooths a two-phase pocket at its
 own decision edge. The 400-point hit subset validates at 392/400, and
 all 8 misses sit within $\sim$0.05 of a cutoff --- boundary flips, none
 catastrophic. Background in-scope misses (5 of 131) put recall at
-$\sim$0.8, as on the ternary. Full-set solves cost 1.36~s here (35
+$\sim$0.8, as on the ternary. Disagreement gates transfer too:
+quaternary misses carry above-median spread (AUROC 0.856), with the worst
+at 3.6 times the shortlist p99; the threshold sweep gives precision
+0.97--0.98 with recall 0.92--0.99 across FCC/carbide cutoffs (deployed
+query 0.969/0.988). Full-set solves cost 1.36~s here (35
 phases) against 0.94~s probe-set; training the three screened seeds
 cost $\sim$660~s, for a break-even of $\sim$10$^4$ points optimistic
 ($\sim$3$\times$10$^4$ conservative) --- the 330{,}000-point screen pays

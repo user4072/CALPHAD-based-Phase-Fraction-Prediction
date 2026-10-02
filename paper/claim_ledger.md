@@ -350,3 +350,14 @@ Costs 1.36 s full / 0.94 s probe; training ~660 s; break-even ~1e4--3e4
 (330k screen pays back ~10--30x). Figure 12 + Table tab/screenq.tex +
 Section 14 block; docx Table 15 + Figure 10 mirrored; fig12 in figure
 audit (clean). Audit: 419/0/7.
+
+## ADDENDUM -- round-3 free items (2026-10-01)
+
+screen_analysis_q.json (from stored arrays): Q U1 AUROC 0.856, q99
+excludes 1/5 retaining 99.0 %; Q threshold sweep (4 combos, 820-pt
+pool) precision 0.969--0.984, recall 0.924--0.988. V-X2 per-phase gated
+AUPRC (BCC 0.992 / LIQUID 0.959 / SIGMA 0.973, FCC absent far-side) and
+V-T collapse (FCC 0.096 / LIQUID 0.490) locate both M2 failures:
+calibration failure on X2, closed-basis failure on T. Tex paragraphs +
+2 computed screenq table rows; docx findings + rows mirrored; 12 new
+audit checks. Audit: 426/0/7.

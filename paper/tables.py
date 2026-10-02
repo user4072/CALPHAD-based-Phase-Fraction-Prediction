@@ -1018,6 +1018,21 @@ if SCQ and SVQ:
     W("Break-even screen size (one-time $\\div$ per-point saving) & "
       "$\\sim$10$^4$ (optimistic) -- $\\sim$3$\\times$10$^4$ "
       "(conservative; see text) \\\\")
+    ANQ = jload(os.path.join(ROOT, "paper", "screen_data",
+                             "screen_analysis_q.json"))
+    if ANQ:
+        gq = ANQ["Q_u1_gate"]["gates"]["q99"]
+        W(f"U1 gate at shortlist p99 & excludes {gq['miss_excluded']} of "
+          f"{gq['miss_total']} misses; retains "
+          f"{100 * gq['hits_retained_frac']:.1f}\\% of shortlist \\\\")
+        swq = ANQ["Q_threshold_sweep"] if "Q_threshold_sweep" in ANQ else None
+        if swq is None:
+            swq = {k: v for k, v in ANQ.items() if k.startswith("F")}
+        prec = [swq[k]["precision_pool"] for k in swq]
+        rec = [swq[k]["recall_pool"] for k in swq]
+        W(f"Threshold sweep, 4 combos (820-pt pool) & precision "
+          f"{min(prec):.2f}--{max(prec):.2f}; recall "
+          f"{min(rec):.2f}--{max(rec):.2f} \\\\")
     W("\\bottomrule")
     W("\\end{tabular}}")
 else:

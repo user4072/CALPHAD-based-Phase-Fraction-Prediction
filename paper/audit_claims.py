@@ -1638,6 +1638,32 @@ def g_screen():
           float(sqq["X"][vq["order"][(_kk == "frontier")
                                      & (vq["confirmed"] == 1)], 2].min()),
           "0.029")
+    aq = J(os.path.join(PAPER, "screen_data", "screen_analysis_q.json"))
+    check("tex:screenq U1 AUROC 0.856",
+          aq["Q_u1_gate"]["auroc_miss_vs_hits"], "0.856")
+    gq = aq["Q_u1_gate"]["gates"]["q99"]
+    check_exact("tex:screenq q99 excludes 1 of 5",
+                (gq["miss_excluded"], gq["miss_total"]), (1, 5))
+    swq = aq["Q_threshold_sweep"]
+    check_exact("tex:screenq sweep deployed P/R",
+                (swq["F0.9_C0.05"]["precision_pool"],
+                 swq["F0.9_C0.05"]["recall_pool"]), (0.969, 0.9879))
+    check("tex:screenq sweep recall min 0.92",
+          min(d["recall_pool"] for d in swq.values()), "0.92")
+    gs = J(os.path.join(MODELS, "gated_shift.json"))["runs"]
+
+    def gs_phase(sys, blk, phase):
+        v = [r["per_phase_auprc"][phase] for r in gs.values()
+             if r["system"] == sys and r["block"] == blk
+             and phase in r["per_phase_auprc"]]
+        return sum(v) / len(v)
+
+    check("tex:remedy V-X2 BCC/LIQ/SIG 0.96--0.99",
+          gs_phase("fecrv", "X2_extrap", "BCC_A2"), "0.992")
+    check("tex:remedy V-T FCC collapse 0.096",
+          gs_phase("fecrv", "T_extrap", "FCC_A1"), "0.096")
+    check("tex:remedy V-T LIQUID 0.490",
+          gs_phase("fecrv", "T_extrap", "LIQUID"), "0.490")
 
 
 # ================================================================== main

@@ -1305,7 +1305,15 @@ def build() -> None:
             f"on {LBL['fecrni']}, ~0.10 on {LBL['fecrv']}) and gated "
             f"AUPRC collapses to 0.59\u20130.63, the same detection "
             f"collapse the bare models show: the closed phase basis, not "
-            f"the head, is the binding constraint there.")
+            f"the head, is the binding constraint there. Per-phase scores "
+            f"locate the two failures precisely: on V-x2 the gated head "
+            f"still ranks BCC/LIQUID/SIGMA at 0.96\u20130.99 (FCC has no "
+            f"active rows on that far side), so ranking survives while MAE "
+            f"doubles \u2014 a calibration failure, not a detection "
+            f"failure. On V-T the collapse concentrates exactly on the "
+            f"unseen physics (FCC 0.096, LIQUID 0.490; BCC 0.926, SIGMA "
+            f"0.832), confirming the closed-basis account at phase "
+            f"resolution.")
     _gs = json.load(open(os.path.join(ROOT, "models", "gated_shift.json")))
     _BLAB = {"T_band": "T band", "X2_band": "x2 band",
              "X2_extrap": "x2 extrap.", "T_extrap": "T extrap."}
@@ -2247,7 +2255,12 @@ def build() -> None:
             f"The 400-point hit subset validates at 392/400, and all 8 "
             f"misses sit within ~0.05 of a cutoff --- boundary flips, none "
             f"catastrophic. Background in-scope misses (5 of 131) put "
-            f"recall at ~0.8, as on the ternary. Full-set solves cost 1.36 "
+            f"recall at ~0.8, as on the ternary. Disagreement gates transfer "
+            f"too: quaternary misses carry above-median spread (AUROC "
+            f"0.856), with the worst at 3.6 times the shortlist p99; the "
+            f"threshold sweep gives precision 0.97\u20130.98 with recall "
+            f"0.92\u20130.99 across FCC/carbide cutoffs (deployed query "
+            f"0.969/0.988). Full-set solves cost 1.36 "
             f"s here (35 phases) against 0.94 s probe-set; training the "
             f"three screened seeds cost ~660 s, for a break-even of ~10 "
             f"thousand points optimistic (~30 thousand conservative) "
@@ -2277,6 +2290,10 @@ def build() -> None:
         ["Break-even screen size (one-time \u00f7 per-point saving)",
          "~10\u2074 (optimistic) \u2013 ~3\u00d710\u2074 (conservative; "
          "see text)"],
+        ["U1 gate at shortlist p99",
+         "excludes 1 of 5 misses; retains 99.0% of shortlist"],
+        ["Threshold sweep, 4 combos (820-pt pool)",
+         "precision 0.97\u20130.98; recall 0.92\u20130.99"],
     ]
     table(doc, ["Quantity", "Value"], qrows,
           "Table 15. Application case: quaternary lean-Ni screen with "
