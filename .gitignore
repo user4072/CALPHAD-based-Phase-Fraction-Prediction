@@ -52,6 +52,9 @@ paper/docx_edit.py
 # --- Anchor-evaluation checkpoints (retrainable via paper/anchor_eval.py) ---
 paper/anchor_data/anchor_ckpts/
 
+# --- Screen checkpoints (retrainable via paper/train_fecrnic_screen.py) ---
+paper/screen_data/ckpts_fecrnic/
+
 # --- Audit / latex scratch captures ---
 paper/audit_out*.txt
 paper/pdflatex_run*.log

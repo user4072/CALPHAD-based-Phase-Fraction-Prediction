@@ -337,3 +337,16 @@ back (0.046 vs 0.090), T-extrap all fail with AUPRC collapse 0.59--0.63.
 Table tab/gatedshift.tex + remedy paragraph + conclusions/limitations
 updates; docx Table 14 + finding mirrored; 9 new audit checks.
 Audit: 413/0/7.
+
+## ADDENDUM -- A4 quaternary screen with carbon (2026-10-01)
+
+Retrained fecrnic renorm x3 (test 0.0035--0.0038, reproduces published
+0.0037; new ckpts only, results files untouched). Box-grid screen
+330,000 pts in 0.5 s, 14,475 hits (4.39 %); frontier min Ni 0.029.
+Validation (same protocol): frontier 15/20 (failures one contiguous
+Cr pocket, surr 0.90--0.91 vs CAL 0.79--0.89), subset 392/400 (all
+8 misses within ~0.05 of a cutoff), bg in scope 5/131 (recall ~0.8).
+Costs 1.36 s full / 0.94 s probe; training ~660 s; break-even ~1e4--3e4
+(330k screen pays back ~10--30x). Figure 12 + Table tab/screenq.tex +
+Section 14 block; docx Table 15 + Figure 10 mirrored; fig12 in figure
+audit (clean). Audit: 419/0/7.

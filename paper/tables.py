@@ -971,6 +971,60 @@ else:
       "screen_validate.py")
 emit("screen")
 
+# ---------------------------------------------------------------- Table 19
+W("% Table 19: application case -- quaternary lean-Ni screen with carbon")
+SCQ = jload(os.path.join(ROOT, "paper", "screen_data",
+                         "screen_fecrnic_T1000K_box.json"))
+SVQ = jload(os.path.join(ROOT, "paper", "screen_data",
+                         "validate_fecrnic_T1000K_box.json"))
+if SCQ and SVQ:
+    _vq = np.load(os.path.join(ROOT, "paper", "screen_data",
+                               "validate_fecrnic_T1000K_box.npz"))
+    _sq = np.load(os.path.join(ROOT, "paper", "screen_data",
+                               "screen_fecrnic_T1000K_box.npz"))
+    _qk = np.array([k for k in _vq["kinds"]])
+    _qni = _sq["X"][_vq["order"], 2]
+    _qbg = (_qk == "bg") & (_qni <= 0.12)
+    _qbgc, _qbgn = (int(_vq["confirmed"][_qbg].sum()), int(_qbg.sum()))
+    W("\\scriptsize")
+    W("\\setlength{\\tabcolsep}{3pt}")
+    W("\\resizebox{\\textwidth}{!}{")
+    W("\\begin{tabular}{lr}")
+    W("\\toprule")
+    W("Quantity & Value \\\\")
+    W("\\midrule")
+    W(f"Compositions screened (design box) & {SCQ['n_points']:,} \\\\")
+    W(f"Screen wall time, 3-seed ensemble ({SCQ['device']}) & "
+      f"{SCQ['inference_s']:.1f}~s \\\\")
+    W(f"Query hits (FCC$\\ge$0.90, carbides$\\le$0.05, "
+      f"SIGMA/LIQUID$\\le$10$^{{-3}}$, Ni$\\le$0.12) & "
+      f"{SCQ['n_hits']:,} "
+      f"({100 * SCQ['n_hits'] / SCQ['n_points']:.2f}\\%) \\\\")
+    W(f"Pareto-frontier points (minimal Ni per Cr bin) & "
+      f"{SVQ['frontier']['n']} \\\\")
+    W(f"Full-CALPHAD validated: frontier / hit subset / bg in scope & "
+      f"{SVQ['frontier']['n_confirmed']}/{SVQ['frontier']['n']}~~/~~"
+      f"{SVQ['hit']['n_confirmed']}/{SVQ['hit']['n']}~~/~~"
+      f"{_qbgc}/{_qbgn} \\\\")
+    nq = (SVQ['frontier']['n_confirmed'] + SVQ['hit']['n_confirmed'])
+    nqt = SVQ['frontier']['n'] + SVQ['hit']['n']
+    W(f"Shortlist precision ({nqt} validated shortlist points) & "
+      f"{nq / nqt:.2f} \\\\")
+    W("In-scope recall estimate (Ni$\\le$0.12, see text) & $\\sim$0.8 \\\\")
+    W(f"Full-set CALPHAD cost per point, this workload (wall) & "
+      f"{SVQ['calphad_s_per_point_wall']:.2f}~s \\\\")
+    W(f"Probe-set cost per point, this workload (wall) & "
+      f"{SVQ['probe_set']['s_per_point_wall']:.2f}~s \\\\")
+    W("Break-even screen size (one-time $\\div$ per-point saving) & "
+      "$\\sim$10$^4$ (optimistic) -- $\\sim$3$\\times$10$^4$ "
+      "(conservative; see text) \\\\")
+    W("\\bottomrule")
+    W("\\end{tabular}}")
+else:
+    W("% quaternary screen_data JSONs not present -- run screen_demo_q.py + "
+      "screen_validate_q.py")
+emit("screenq")
+
 # ---------------------------------------------------------------- Table 18
 W("% Table 18: gated head under the spatial protocols (Fe-Cr-Ni, Fe-Cr-V)")
 GS = jload(os.path.join(M, "gated_shift.json"))

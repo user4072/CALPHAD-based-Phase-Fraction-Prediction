@@ -1612,6 +1612,32 @@ def g_screen():
                 (10525, 10525, 10525))
     check_exact("tex:screen full shortlist 10936/10936",
                 ah["n_confirmed"] + 411, 10936)
+    sq = J(os.path.join(PAPER, "screen_data",
+                        "screen_fecrnic_T1000K_box.json"))
+    svq = J(os.path.join(PAPER, "screen_data",
+                         "validate_fecrnic_T1000K_box.json"))
+    check_exact("tex:screenq 330,000 screened, 14,475 hits",
+                (sq["n_points"], sq["n_hits"]), (330000, 14475))
+    check_exact("tex:screenq frontier 15/20",
+                (svq["frontier"]["n_confirmed"], svq["frontier"]["n"]),
+                (15, 20))
+    check_exact("tex:screenq hit subset 392/400",
+                (svq["hit"]["n_confirmed"], svq["hit"]["n"]), (392, 400))
+    vq = np.load(os.path.join(PAPER, "screen_data",
+                              "validate_fecrnic_T1000K_box.npz"))
+    sqq = np.load(os.path.join(PAPER, "screen_data",
+                               "screen_fecrnic_T1000K_box.npz"))
+    _kk = np.array([k for k in vq["kinds"]])
+    _qni = sqq["X"][vq["order"], 2]
+    _qb = (_kk == "bg") & (_qni <= 0.12)
+    check_exact("tex:screenq bg in scope 5/131",
+                (int(vq["confirmed"][_qb].sum()), int(_qb.sum())), (5, 131))
+    check("tex:screenq full-set 1.36 s/point",
+          svq["calphad_s_per_point_wall"], "1.36")
+    check("tex:screenq min Ni 0.029",
+          float(sqq["X"][vq["order"][(_kk == "frontier")
+                                     & (vq["confirmed"] == 1)], 2].min()),
+          "0.029")
 
 
 # ================================================================== main

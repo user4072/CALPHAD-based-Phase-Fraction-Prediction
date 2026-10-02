@@ -179,7 +179,7 @@ def audit(stem, fig):
 def main():
     for name in ["fig1_dataset", "fig2_heads", "fig3_fields",
                  "fig4_perphase", "fig5_holdout", "fig6_failures",
-                 "fig7_extrap", "fig11_operating"]:
+                 "fig7_extrap", "fig11_operating", "fig12_screenq"]:
         getattr(F, name)()
     for stem, fig in open_figs:
         fig.canvas.draw()

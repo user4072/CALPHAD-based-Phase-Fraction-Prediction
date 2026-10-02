@@ -52,6 +52,7 @@ GLOBS = [
     "analysis_revision/detection_*.json",
     "models/pred_*.npz",
     "paper/anchor_data/anchor_ckpts/*.pt",
+    "paper/screen_data/ckpts_fecrnic/*.pt",
     "paper/anchor_data/anchors.csv",
     "paper/anchor_data/anchors.md",
     "paper/anchor_data/anchor_eval.json",

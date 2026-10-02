@@ -1572,8 +1572,8 @@ measured 0.33~s per probe-set point the break-even screen size is
 $\sim$10$^4$ points, against the 2.5~s prose full-set figure
 $\sim$7$\times$10$^4$ points. The demonstration screen ran 501{,}501
 points --- a payback of roughly 7 to 50 times in a single query, before
-counting reuse. The honest boundary of this claim: one temperature, one
-system, and validation itself spent 11{,}336 full-set solves ($\sim$80~min wall,
+counting reuse. The honest boundary of this claim: one temperature each
+on two systems, and validation itself spent 11{,}336 full-set solves ($\sim$80~min wall,
 0.23--0.82~s per point across chunks: boundary points cost more).
 Screening is cheap; trusting the screen still requires spot
 CALPHAD, and the numbers above say how much spot-checking suffices.
@@ -1619,6 +1619,53 @@ the measured 0.41~s per-point full-set saving.}
 \label{tab:screen}
 \small
 \input{tab/screen.tex}
+\end{table}
+
+\paragraph{With carbon in the query, the screen still works --- and its
+failures mark the model's edge.}
+The same design task on quaternary Fe--Cr--Ni--C at 1000~K, now with
+carbon in the box (Cr $\le$ 0.35, Ni $\le$ 0.30, C $\le$ 0.05) and in
+the query (FCC $\ge$ 0.90, total carbides $\le$ 0.05, sigma/melt-free,
+Ni $\le$ 0.12): 330{,}000 compositions screened in 0.5~s
+(0.45~$\mu$s per point per seed), 14{,}475 hits (4.39\%), with retrained
+renorm heads (test MAE 0.0035--0.0038, reproducing the published 0.0037).
+The Pareto frontier reaches 2.9\% Ni at near-zero Cr --- carbon
+substitutes for both Ni and Cr as the austenite stabiliser. Of 20
+frontier points 15 confirm; the 5 rejections form one contiguous Cr
+pocket (0.033--0.073) where CALPHAD FCC runs 0.79--0.89 against
+predicted 0.90--0.91: the screen over-smooths a two-phase pocket at its
+own decision edge. The 400-point hit subset validates at 392/400, and
+all 8 misses sit within $\sim$0.05 of a cutoff --- boundary flips, none
+catastrophic. Background in-scope misses (5 of 131) put recall at
+$\sim$0.8, as on the ternary. Full-set solves cost 1.36~s here (35
+phases) against 0.94~s probe-set; training the three screened seeds
+cost $\sim$660~s, for a break-even of $\sim$10$^4$ points optimistic
+($\sim$3$\times$10$^4$ conservative) --- the 330{,}000-point screen pays
+back roughly 10 to 30 times (Figure~\ref{fig:screenq},
+Table~\ref{tab:screenq}).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/fig12_screenq}
+\caption{Quaternary screen with carbon at 1000~K. (a) Pareto frontier of
+minimal Ni versus Cr: 15 of 20 frontier points confirm (gold); the 5
+rejections (red crosses) form one contiguous pocket where the surrogate
+over-smooths a two-phase region at its decision edge. (b)
+Surrogate-versus-CALPHAD FCC parity on the validated shortlist, with the
+0.90 cutoffs dashed: errors hug the boundary, none catastrophic.}
+\label{fig:screenq}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Application case: quaternary lean-Ni screen with carbon at
+1000~K on Fe--Cr--Ni--C. Break-even is the one-time cost (data
+generation at measured versus prose per-point cost, plus probe and
+$\sim$660~s training) divided by the measured 1.36~s per-point full-set
+saving.}
+\label{tab:screenq}
+\small
+\input{tab/screenq.tex}
 \end{table}
 
 % ======================================================================

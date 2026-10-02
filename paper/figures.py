@@ -908,6 +908,59 @@ def fig11_operating():
     save(fig, "fig11_operating")
 
 
+# --------------------------------------------------------------------------
+def fig12_screenq():
+    """Quaternary screen: Ni-minimum frontier with validation (a) and
+    surrogate-vs-CALPHAD FCC parity on validated shortlist points (b)."""
+    SD = os.path.join(ROOT, "paper", "screen_data")
+    tag = "fecrnic_T1000K_box"
+    scr = np.load(os.path.join(SD, f"screen_{tag}.npz"))
+    val = np.load(os.path.join(SD, f"validate_{tag}.npz"))
+    X = scr["X"]
+    ens = scr["ensemble"]
+    names = list(scr["phases"])
+    i_fcc = names.index("FCC_A1")
+    order = np.array(val["order"])
+    kinds = np.array([k for k in val["kinds"]])
+    F, ok, conf = val["FCC"], val["ok"], val["confirmed"]
+    m_fr = kinds == "frontier"
+    fr = order[m_fr]
+    o = np.argsort(X[fr, 1])
+
+    fig = plt.figure(figsize=(FULLW, 0.44 * FULLW))
+    gs = fig.add_gridspec(1, 2)
+
+    ax = fig.add_subplot(gs[0, 0])
+    good = conf[m_fr][o]
+    ax.plot(X[fr[o][good], 1], X[fr[o][good], 2], c="k", lw=1.2,
+            marker="o", ms=4, mfc="gold", mec="k", mew=0.6,
+            label="frontier confirmed (15)")
+    bad = ~good
+    if bad.any():
+        ax.scatter(X[fr[o][bad], 1], X[fr[o][bad], 2], s=36, c="#c44e52",
+                   lw=1.4, marker="x", label="frontier rejected (5)")
+    ax.set_xlabel("Cr mole fraction")
+    ax.set_ylabel("minimal Ni mole fraction")
+    legend_below(ax, 2, y=-0.24)
+    panel(ax, "a", "quaternary frontier: Ni minimum vs Cr")
+
+    ax = fig.add_subplot(gs[0, 1])
+    m_ok = ok & ((kinds == "hit") | m_fr)
+    ax.scatter(ens[order[m_ok], i_fcc], F[m_ok], s=8, c="#4c72b0",
+               alpha=0.6, rasterized=True, label="validated shortlist")
+    lims = (0.78, 1.005)
+    guide(ax.plot(lims, lims, c="k", lw=1.0)[0])
+    guide(ax.axvline(0.90, c="k", lw=1.0, ls="--"))
+    guide(ax.axhline(0.90, c="k", lw=1.0, ls="--"))
+    ax.set_xlim((0.895, 1.005))
+    ax.set_ylim(lims)
+    ax.set_xlabel("surrogate FCC")
+    ax.set_ylabel("CALPHAD FCC")
+    legend_below(ax, 1, y=-0.24)
+    panel(ax, "b", "parity on validated shortlist (cutoffs dashed)")
+    save(fig, "fig12_screenq")
+
+
 if __name__ == "__main__":
     print("figures ->", FIG)
     fig1_dataset()
@@ -921,3 +974,4 @@ if __name__ == "__main__":
     fig9_anchor()
     fig10_screen()
     fig11_operating()
+    fig12_screenq()

@@ -2083,7 +2083,8 @@ def build() -> None:
             f"figure ~7{TIMES}10{sup('4')} points. The demonstration "
             f"screen ran 501,501 points \u2014 a payback of roughly 7 to 50 "
             f"times in a single query, before counting reuse. The honest "
-            f"boundary of this claim: one temperature, one system, and "
+            f"boundary of this claim: one temperature each on two systems, "
+            f"and "
             f"validation itself spent 11,336 full-set solves (~80 min "
             f"wall, 0.23\u20130.82 s per point across chunks: boundary "
             f"points cost more). "
@@ -2212,6 +2213,86 @@ def build() -> None:
            "bulk. (b) Pool precision and recall across the FCC\u2013sigma "
            "threshold grid: precision is 1.00 at all nine combinations; "
            "recall is controlled by the cutoffs.")
+
+    SCQ = json.load(open(os.path.join(ROOT, "paper", "screen_data",
+                                      "screen_fecrnic_T1000K_box.json")))
+    SVQ = json.load(open(os.path.join(ROOT, "paper", "screen_data",
+                                      "validate_fecrnic_T1000K_box.json")))
+    _vq = np.load(os.path.join(ROOT, "paper", "screen_data",
+                               "validate_fecrnic_T1000K_box.npz"))
+    _sq = np.load(os.path.join(ROOT, "paper", "screen_data",
+                               "screen_fecrnic_T1000K_box.npz"))
+    _qk = np.array([k for k in _vq["kinds"]])
+    _qni = _sq["X"][_vq["order"], 2]
+    _qbg = (_qk == "bg") & (_qni <= 0.12)
+    _qbgc, _qbgn = int(_vq["confirmed"][_qbg].sum()), int(_qbg.sum())
+    _nq = SVQ["frontier"]["n_confirmed"] + SVQ["hit"]["n_confirmed"]
+    _nqt = SVQ["frontier"]["n"] + SVQ["hit"]["n"]
+    finding(doc, "With carbon in the query, the screen still works --- "
+            "and its failures mark the model's edge",
+            f"The same design task on quaternary Fe\u2013Cr\u2013Ni\u2013C "
+            f"at 1000 K, now with carbon in the box (Cr \u2264 0.35, Ni "
+            f"\u2264 0.30, C \u2264 0.05) and in the query (FCC \u2265 "
+            f"0.90, total carbides \u2264 0.05, sigma/melt-free, Ni \u2264 "
+            f"0.12): 330,000 compositions screened in 0.5 s "
+            f"(0.45 \u00b5s per point per seed), 14,475 hits (4.39%), with "
+            f"retrained renorm heads (test MAE 0.0035\u20130.0038, "
+            f"reproducing the published 0.0037). The Pareto frontier "
+            f"reaches 2.9% Ni at near-zero Cr --- carbon substitutes for "
+            f"both Ni and Cr as the austenite stabiliser. Of 20 frontier "
+            f"points 15 confirm; the 5 rejections form one contiguous Cr "
+            f"pocket (0.033\u20130.073) where CALPHAD FCC runs "
+            f"0.79\u20130.89 against predicted 0.90\u20130.91: the screen "
+            f"over-smooths a two-phase pocket at its own decision edge. "
+            f"The 400-point hit subset validates at 392/400, and all 8 "
+            f"misses sit within ~0.05 of a cutoff --- boundary flips, none "
+            f"catastrophic. Background in-scope misses (5 of 131) put "
+            f"recall at ~0.8, as on the ternary. Full-set solves cost 1.36 "
+            f"s here (35 phases) against 0.94 s probe-set; training the "
+            f"three screened seeds cost ~660 s, for a break-even of ~10 "
+            f"thousand points optimistic (~30 thousand conservative) "
+            f"\u2014 the 330,000-point screen pays back roughly 10 to 30 "
+            f"times (Figure 10, Table 15).")
+    qrows = [
+        ["Compositions screened (design box)", f"{SCQ['n_points']:,}"],
+        ["Screen wall time, 3-seed ensemble (cuda)",
+         f"{SCQ['inference_s']:.1f} s"],
+        ["Query hits (FCC\u22650.90, carbides\u22640.05, "
+         "SIGMA/LIQUID\u226410\u207b\u00b3, Ni\u22640.12)",
+         f"{SCQ['n_hits']:,} "
+         f"({100 * SCQ['n_hits'] / SCQ['n_points']:.2f}%)"],
+        ["Pareto-frontier points (minimal Ni per Cr bin)",
+         f"{SVQ['frontier']['n']}"],
+        ["Full-CALPHAD validated: frontier / hit subset / bg in scope",
+         f"{SVQ['frontier']['n_confirmed']}/{SVQ['frontier']['n']} / "
+         f"{SVQ['hit']['n_confirmed']}/{SVQ['hit']['n']} / "
+         f"{_qbgc}/{_qbgn}"],
+        [f"Shortlist precision ({_nqt} validated shortlist points)",
+         f"{_nq / _nqt:.2f}"],
+        ["In-scope recall estimate (Ni\u22640.12, see text)", "~0.8"],
+        ["Full-set CALPHAD cost per point, this workload (wall)",
+         f"{SVQ['calphad_s_per_point_wall']:.2f} s"],
+        ["Probe-set cost per point, this workload (wall)",
+         f"{SVQ['probe_set']['s_per_point_wall']:.2f} s"],
+        ["Break-even screen size (one-time \u00f7 per-point saving)",
+         "~10\u2074 (optimistic) \u2013 ~3\u00d710\u2074 (conservative; "
+         "see text)"],
+    ]
+    table(doc, ["Quantity", "Value"], qrows,
+          "Table 15. Application case: quaternary lean-Ni screen with "
+          "carbon at 1000 K on Fe\u2013Cr\u2013Ni\u2013C. Break-even is the "
+          "one-time cost (data generation at measured versus prose "
+          "per-point cost, plus probe and ~660 s training) divided by the "
+          "measured 1.36 s per-point full-set saving.",
+          left_cols=(0,))
+    figure(doc, "fig12_screenq",
+           "Figure 10. Quaternary screen with carbon at 1000 K. (a) Pareto "
+           "frontier of minimal Ni versus Cr: 15 of 20 frontier points "
+           "confirm (gold); the 5 rejections (red crosses) form one "
+           "contiguous pocket where the surrogate over-smooths a two-phase "
+           "region at its decision edge. (b) Surrogate-versus-CALPHAD FCC "
+           "parity on the validated shortlist, with the 0.90 cutoffs "
+           "dashed: errors hug the boundary, none catastrophic.")
 
     # 15. Discussion
     doc.add_heading("15. Discussion", level=1)
