@@ -272,8 +272,8 @@ def build() -> None:
          f"Against four DTA transitions the surrogate matches CALPHAD "
          f"within 21 K (mean 17.75 K), the same order as the database's "
          f"19 K deviation from experiment. A 501,501-composition screen "
-         f"shortlists 10,936 candidates in 0.4 s; all 411 validated points "
-         f"confirm.")
+         f"shortlists 10,936 candidates in 0.4 s; all 10,936 shortlist "
+         f"points confirm.")
     para(doc, "Keywords: CALPHAD; surrogate model; phase fraction; simplex "
               "constraint; spatial generalisation; iron alloys",
          size=10, italic=True, space_after=12)
@@ -393,7 +393,7 @@ def build() -> None:
         "data-volume reductions, complemented by a cheap "
         "ensemble-disagreement triage where validated (Section 8).",
         "Why it matters: a validated high-throughput application \u2014 a "
-        "501,501-composition lean-nickel screen with 411 of 411 shortlist "
+        "501,501-composition lean-nickel screen with all 10,936 shortlist "
         "points confirming under full CALPHAD, plus learning curves "
         "pricing adoption (Section 14) \u2014 on top of a protocol re-run "
         "on two extension systems and a four-point experimental anchor as "
@@ -2007,8 +2007,11 @@ def build() -> None:
             f"\u2014 Cr substitutes for Ni as the austenite stabiliser up "
             f"to ~12%. All 11 frontier points validate under the full "
             f"28-phase set at CALPHAD FCC = 1.0000, as do all 400 points of "
-            f"a uniform random hit subset: 411 of 411 shortlisted alloys "
-            f"confirm, so the filter wastes no validation run. A 400-point "
+            f"a uniform random hit subset \u2014 and a follow-up run "
+            f"validated the remaining 10,525 shortlist points with zero "
+            f"misses and zero solver failures: 10,936 of 10,936 "
+            f"shortlisted alloys confirm, so the filter wastes no "
+            f"validation run. A 400-point "
             f"uniform background sample bounds the other side: 76 fall in "
             f"the design scope (Ni \u2264 0.12), of which 4 CALPHAD-qualify "
             f"while the screen rejected them. Three sit within 0.01 of a "
@@ -2034,7 +2037,9 @@ def build() -> None:
             f"screen ran 501,501 points \u2014 a payback of roughly 7 to 50 "
             f"times in a single query, before counting reuse. The honest "
             f"boundary of this claim: one temperature, one system, and "
-            f"validation itself spent 811 full-set solves (~6 min wall). "
+            f"validation itself spent 11,336 full-set solves (~80 min "
+            f"wall, 0.23\u20130.82 s per point across chunks: boundary "
+            f"points cost more). "
             f"Screening is cheap; trusting the screen still requires spot "
             f"CALPHAD, and the numbers above say how much spot-checking "
             f"suffices.")
@@ -2094,6 +2099,11 @@ def build() -> None:
     _bgm = (_kinds == "bg") & (_ni <= 0.12)
     _bgc, _bgn = int(_v["confirmed"][_bgm].sum()), int(_bgm.sum())
     _nshort = SV["frontier"]["n"] + SV["hit"]["n"]
+    SVA = json.load(open(os.path.join(ROOT, "paper", "screen_data",
+                                      "validate_all_hits_fecrni_T1000K_step0.001.json")))
+    _nshort_c = (SV["frontier"]["n_confirmed"] + SV["hit"]["n_confirmed"]
+                 + SVA["n_confirmed"])
+    _nshort_t = _nshort + SVA["n"]
     AN = json.load(open(os.path.join(ROOT, "paper", "screen_data",
                                      "screen_analysis.json")))
     _g99 = AN["A3_u1_gate"]["gates"]["q99"]
@@ -2111,8 +2121,8 @@ def build() -> None:
         ["Full-CALPHAD validated: frontier / hit subset / bg in scope",
          f"{SV['frontier']['n_confirmed']}/{SV['frontier']['n']} / "
          f"{SV['hit']['n_confirmed']}/{SV['hit']['n']} / {_bgc}/{_bgn}"],
-        [f"Shortlist precision ({_nshort} validated shortlist points)",
-         "1.00"],
+        [f"Shortlist precision ({_nshort_t:,} validated shortlist points)",
+         f"{_nshort_c / _nshort_t:.2f}"],
         ["In-scope recall estimate (Ni\u22640.12, see text)", "~0.8"],
         ["Full-set CALPHAD cost per point, this workload (wall)", "0.41 s"],
         ["Probe-set cost per point, this workload (wall)", "0.33 s"],
@@ -2411,8 +2421,8 @@ def build() -> None:
          f"database's own 19 K mean deviation from experiment, with the "
          f"surrogate term larger on three of the four points. Finally, the "
          f"surrogate screens: a 501,501-composition lean-nickel query at "
-         f"1000 K shortlists 10,936 candidates in 0.4 s with 411 of 411 "
-         f"validated shortlist points confirming under full-set CALPHAD "
+         f"1000 K shortlists 10,936 candidates in 0.4 s with all 10,936 "
+         f"shortlist points confirming under full-set CALPHAD "
          f"(Section 14) \u2014 the screening-filter claim, demonstrated "
          f"rather than asserted.")
     body(doc,

@@ -927,7 +927,12 @@ if SC and SV:
       f"{_bg_c}/{_bg_n} \\\\")
     n_short = SV['frontier']['n_confirmed'] + SV['hit']['n_confirmed']
     n_short_tot = SV['frontier']['n'] + SV['hit']['n']
-    W(f"Shortlist precision ({n_short_tot} validated shortlist points) & "
+    SVA = jload(os.path.join(ROOT, "paper", "screen_data",
+                             "validate_all_hits_fecrni_T1000K_step0.001.json"))
+    if SVA:
+        n_short += SVA['n_confirmed']
+        n_short_tot += SVA['n']
+    W(f"Shortlist precision ({n_short_tot:,} validated shortlist points) & "
       f"{n_short / n_short_tot:.2f} \\\\")
     W("In-scope recall estimate (Ni$\\le$0.12, see text) & $\\sim$0.8 \\\\")
     W(f"Full-set CALPHAD cost per point, this workload (wall) & "

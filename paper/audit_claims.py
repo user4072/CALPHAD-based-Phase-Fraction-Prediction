@@ -1581,6 +1581,13 @@ def g_screen():
           max(a["d1_train"] for a in ms["misses"]), "0.166")
     check_exact("tex:screen hits median d1",
                 round(ms["hits_median_d1_train"], 4), 0.1023)
+    ah = J(os.path.join(PAPER, "screen_data",
+                        "validate_all_hits_fecrni_T1000K_step0.001.json"))
+    check_exact("tex:screen all-hits n=10525 confirmed",
+                (ah["n"], ah["n_ok"], ah["n_confirmed"]),
+                (10525, 10525, 10525))
+    check_exact("tex:screen full shortlist 10936/10936",
+                ah["n_confirmed"] + 411, 10936)
 
 
 # ================================================================== main

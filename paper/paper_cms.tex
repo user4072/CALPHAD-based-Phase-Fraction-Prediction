@@ -47,7 +47,7 @@ sum-to-one penalty degrades MAE; the residue head is 1.4--2.5 times worse),
 complete the benchmark. Against four DTA transitions the surrogate matches
 CALPHAD within 21~K (mean 17.75~K), the same order as the database's 19~K
 deviation from experiment. A 501{,}501-composition screen shortlists
-10{,}936 candidates in 0.4~s; all 411 validated points confirm.
+10{,}936 candidates in 0.4~s; all 10{,}936 shortlist points confirm.
 \end{abstract}
 
 \begin{keyword}
@@ -175,7 +175,7 @@ extrapolation --- separating spatial penalties from data-volume
 reductions, complemented by a cheap ensemble-disagreement triage where
 validated (Section~\ref{sec:uncertainty}).
 \item \textbf{Why it matters}: a validated high-throughput application ---
-a 501{,}501-composition lean-nickel screen with 411 of 411 shortlist
+a 501{,}501-composition lean-nickel screen with all 10{,}936 shortlist
 points confirming under full CALPHAD, plus learning curves pricing
 adoption (Section~\ref{sec:screen}) --- on top of a protocol re-run on
 two extension systems and a four-point experimental anchor as supporting
@@ -1476,8 +1476,10 @@ frontier falling from 7.5\% Ni at 1.5\% Cr to 4.8\% Ni near 12--13\% Cr
 before rising again as sigma encroaches --- Cr substitutes for Ni as the
 austenite stabiliser up to $\sim$12\%. All 11 frontier points validate
 under the full 28-phase set at CALPHAD FCC $= 1.0000$, as do all 400
-points of a uniform random hit subset: 411 of 411 shortlisted alloys
-confirm, so the filter wastes no validation run. A 400-point uniform
+points of a uniform random hit subset --- and a follow-up run validated
+the remaining 10{,}525 shortlist points with zero misses and zero solver
+failures: 10{,}936 of 10{,}936 shortlisted alloys confirm, so the filter
+wastes no validation run. A 400-point uniform
 background sample bounds the other side: 76 fall in the design scope
 (Ni $\le$ 0.12), of which 4 CALPHAD-qualify while the screen rejected
 them. Three sit within 0.01 of a decision cutoff (two rejected on
@@ -1539,8 +1541,9 @@ $\sim$10$^4$ points, against the 2.5~s prose full-set figure
 $\sim$7$\times$10$^4$ points. The demonstration screen ran 501{,}501
 points --- a payback of roughly 7 to 50 times in a single query, before
 counting reuse. The honest boundary of this claim: one temperature, one
-system, and validation itself spent 811 full-set solves ($\sim$6~min
-wall). Screening is cheap; trusting the screen still requires spot
+system, and validation itself spent 11{,}336 full-set solves ($\sim$80~min wall,
+0.23--0.82~s per point across chunks: boundary points cost more).
+Screening is cheap; trusting the screen still requires spot
 CALPHAD, and the numbers above say how much spot-checking suffices.
 
 \paragraph{Half the data buys most of the accuracy.}
@@ -1806,7 +1809,7 @@ $10^{-4}$ threshold) --- the same order as the database's own 19~K mean
 deviation from experiment, with the surrogate term larger on three of the
 four points. Finally, the surrogate screens: a 501{,}501-composition
 lean-nickel query at 1000~K shortlists 10{,}936 candidates in 0.4~s with
-411 of 411 validated shortlist points confirming under full-set CALPHAD
+all 10{,}936 shortlist points confirming under full-set CALPHAD
 (Section~\ref{sec:screen}) --- the screening-filter claim, demonstrated
 rather than asserted.
 

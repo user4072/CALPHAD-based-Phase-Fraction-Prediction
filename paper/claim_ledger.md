@@ -316,3 +316,13 @@ screen_analysis.json): U1 AUROC 0.861 miss-vs-hits, q99 gate excludes
 median 0.102). New Figure 11 (both panels) + 2 paragraphs + 2 computed
 table rows in main; docx Figure 9 + findings + rows mirrored; fig11
 added to figure audit (clean). Audit: 402/0/7.
+
+## ADDENDUM -- A2 full-shortlist validation (2026-10-01)
+
+paper/screen_validate_all.py (chunked, resumable) validated the
+remaining 10,525 shortlist points with the full 28-phase set:
+10,525/10,525 ok and confirmed, zero solver failures (75 min wall;
+0.23--0.82 s/pt across chunks). Combined shortlist precision
+10,936/10,936 = 1.00. Text updated in abstract/contributions/Section 14/
+conclusions (+ docx); table precision row now computed over all three
+validation files. Audit +2 (404 total). Audit: 404/0/7.
