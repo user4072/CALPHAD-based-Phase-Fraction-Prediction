@@ -1,0 +1,18 @@
+{
+  "title": "Simplex-constrained machine-learning surrogates for CALPHAD phase-fraction prediction: datasets, predictions, and application artifacts (Fe-based ternaries, Fe-Cr-Ni-C, Fe-Cr-C)",
+  "description": "Data and result release for a systematic benchmark of simplex-constraint mechanisms (six neural output heads, four classical baselines) for ML surrogates mapping composition and temperature to CALPHAD equilibrium phase fractions. Contains: 7 mass-balance-validated equilibrium datasets (five Fe-based ternaries, 44,397 rows; quaternary Fe-Cr-Ni-C, 13,192 rows; carbide-rich Fe-Cr-C, 13,199 rows; 70,788 total) with probe-active phase sets; per-seed model predictions (NPZ tensors backing the published audit); aggregated result JSONs (heads, baselines, holdout/extrapolation, remedy, ensemble, bootstrap, detection, ablations); trained MLP checkpoints for the application screen; lean-Ni screening and learning-curve artifacts; literature-anchor extraction and evaluation; and the claim-audit ledger. Code: https://github.com/user4072/CALPHAD-based-Phase-Fraction-Prediction. NOTE: the MatCalc mc_fe_v2.062 source database is licensed and NOT redistributed; scripts regenerate the extraction from a local copy.",
+  "creators": [
+    {"name": "Mousavi, Sina", "affiliation": "Allameh Tabataba'i University", "orcid": ""},
+    {"name": "Sawaran Singh, Narinderjit Singh", "affiliation": "INTI International University", "orcid": ""},
+    {"name": "Ahmadova, Darya", "affiliation": "Azerbaijan State Oil and Industry University", "orcid": ""},
+    {"name": "Sharma, Sandeep", "affiliation": "Chitkara University", "orcid": ""},
+    {"name": "Singh, Sanjeev", "affiliation": "Noida Institute of Engineering and Technology", "orcid": ""},
+    {"name": "Kharmah, Qasem", "affiliation": "Al-Ahliyya Amman University", "orcid": ""}
+  ],
+  "license": "cc-by-4.0",
+  "keywords": ["CALPHAD", "surrogate model", "phase fraction", "simplex constraint", "machine learning", "iron alloys", "high-throughput screening"],
+  "version": "v1.0.0",
+  "language": "eng",
+  "_comment_author_list": "TODO (uploader): verify full author list against the manuscript (affiliation keys run a-h); fill ORCIDs.",
+  "_comment_license": "TODO (uploader): confirm data license. Code in the repo is MIT; cc-by-4.0 is the suggested dataset license."
+}

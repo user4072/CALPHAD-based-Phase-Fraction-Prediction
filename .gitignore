@@ -56,6 +56,9 @@ paper/anchor_data/anchor_ckpts/
 paper/audit_out*.txt
 paper/pdflatex_run*.log
 
+# --- Zenodo release archives (built by paper/make_release.py; uploaded, not committed) ---
+fe_surrogate_release_*.zip
+
 # --- OS / editor ---
 Thumbs.db
 .DS_Store
