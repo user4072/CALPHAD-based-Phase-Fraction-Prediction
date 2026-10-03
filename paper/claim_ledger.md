@@ -427,3 +427,18 @@ grades.json): 304 refused-correctly (CALPHAD sigma 3.7 %, surr agrees
 to 0.005), 430 ferritic-reject, duplex control rejected; paragraph in
 Section 14 + 5 audit checks. Tex + docx mirrored. Audit +5.
 Audit: 449/0/7.
+
+## ADDENDUM -- coverage-robustness vs sampling confound (2026-10-01)
+
+CORRECTION first: raw-coverage matching is vacuous here (all five
+ternaries share the identical seed-42 template, so design-space coverage
+is already identical). analysis_revision/coverage_robust.py instead
+tests metallurgical coverage from stored predictions: region cells
+(box/nonbox/boundary/bulk, boundary = H >= thr ln K) + boundary-matched
+comparison at the common min share (3.3 %, no upsampling). Findings:
+MLP-win systems hold every region cell (one n=16 exception flips at the
+looser definition); Mo tie splits by region; V/MnNi RF wins live in
+box+bulk while MLP takes nonbox 3/3; matched ranking reproduces Table 3
+on all five. Paragraph in Discussion 15.1 + 11 audit checks; docx
+mirrored; fixed a fatal bare-underscore crash in the new paragraph.
+Re-templating stays future work. Audit: 460/0/7.

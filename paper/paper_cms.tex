@@ -1762,7 +1762,24 @@ and all five ternaries share the same seed-42 sampling template
 (Section~\ref{sec:data}), so coverage is confounded with system
 identity too. No quantitative sharpness metric is evaluated, so the
 topology story is a hypothesis consistent with the results, not a measured
-result. Crucially, the ranking above is conditional on fraction-only
+result. It was stress-tested against the confound directly: because the
+shared template makes raw design-space coverage identical across systems,
+the test varied \emph{metallurgical} coverage instead --- per-region
+(in-box, out-of-box, boundary, bulk) best-MLP vs forest MAE from stored
+predictions, plus a boundary-matched comparison at a common 3.3\%
+boundary share with no upsampling
+(\texttt{analysis\_revision/coverage\_robust.py}).
+On the two MLP-win systems the ranking holds in every region cell except
+one thinly populated boundary cell on Fe--Cr--Mn (16 rows at the strict
+definition, flipped under the looser one); the Mo tie splits by region,
+as a tie should; on the two forest-win systems the forest takes box and
+bulk rows while the MLP takes out-of-box rows unanimously. And at
+matched boundary density the published ranking reproduces on all five
+systems (0.0106 vs 0.0180, 0.0074 vs 0.0133, 0.0126 vs 0.0123, 0.0149
+vs 0.0137, 0.0140 vs 0.0058). Boundary-row share itself varies 3--39\%
+across systems --- a topology fingerprint, not a sampling one. The
+topology hypothesis survives the confound it was most exposed to, short
+of re-templating, which remains future work. Crucially, the ranking above is conditional on fraction-only
 supervision: the presence-supervised gated head leads the forest on all
 five ternaries (Table~\ref{tab:main}). A surrogate pipeline should
 therefore evaluate both families \emph{and} the presence-supervised variant

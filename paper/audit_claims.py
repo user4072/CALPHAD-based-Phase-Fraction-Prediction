@@ -1638,6 +1638,20 @@ def g_screen():
           float(sqq["X"][vq["order"][(_kk == "frontier")
                                      & (vq["confirmed"] == 1)], 2].min()),
           "0.029")
+    cov = J(os.path.join(MODELS, "coverage_robustness.json"))
+    T = cov["by_thr"]["0.25"]
+    check_exact("tex:coverage matched frac = min share (MnNi)",
+                T["matched_frac"], round(min(
+                    sum(v) / len(v) for v in
+                    T["boundary_fracs"].values()), 4))
+    for _s, _m, _f in [("fecrni", 0.0106, 0.0180),
+                       ("fecrmn", 0.0074, 0.0133),
+                       ("fecrmo", 0.0126, 0.0123),
+                       ("fecrv", 0.0149, 0.0137),
+                       ("femnni", 0.0140, 0.0058)]:
+        _mm = T["matched"][_s]
+        check(f"tex:coverage matched {_s} MLP", _mm["mlp"]["mean"], _m)
+        check(f"tex:coverage matched {_s} RF", _mm["rf"]["mean"], _f)
     ahq = J(os.path.join(PAPER, "screen_data",
                          "validate_all_hits_fecrnic_T1000K_box.json"))
     check_exact("tex:screenq all-hits n=14055 confirmed",
