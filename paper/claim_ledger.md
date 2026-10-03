@@ -400,3 +400,17 @@ questions. Discussion 15.1-15.3 retitled as Answers 1-3; Conclusions
 gets Answer 1/2/3 markers. No numbers touched. Docx mirrored
 (title/abstract/contributions/roadmap/headings/markers, verified).
 Audit: 440/0/7 (unchanged).
+
+## ADDENDUM -- TDB inventory + sig_norm tuning + validation scale
+(2026-10-01)
+
+TDB audit: databases/ holds 7 pruned system TDBs + mc_fe_v2.062 (Fe-only
+assessed source; raw file unparsable, pruned copies fine); pycalphad
+0.11.2 ships ~40 toy test TDBs (incl. alcocrni, mc_fecocrnbti)
+unsuitable for publication claims. Conclusion: no accessible assessed
+non-Fe source; single-database scope reframed as controlled-design
+strength in Limitations. sig_norm LR sweep closes the M6 gap (0.0135 to
+0.0089; ordering preserved across all heads). Validation-at-scale:
+25,411 shortlist + 14,000 probe + 10,500 phase-set = 49,911 full-set
+solves, stated as "almost 50,000" (anchor sweep grids unarchived,
+excluded). Tex + docx mirrored. Audit +4. Audit: 444/0/7.

@@ -1691,6 +1691,10 @@ def g_screen():
           tu_mean("mlp_softmax_lr0.0001"), "0.0165")
     check("tex:models softmax lr1e-3 0.0099",
           tu_mean("mlp_softmax_lr0.001"), "0.0099")
+    check("tex:models signorm lr1e-4 0.0135",
+          tu_mean("mlp_sig_norm_lr0.0001"), "0.0135")
+    check("tex:models signorm lr1e-3 0.0089",
+          tu_mean("mlp_sig_norm_lr0.001"), "0.0089")
     check("tex:models RF grid insensitive (both 0.0180)",
           tu_mean("rf_t500_dNone"), "0.0180")
     check("tex:models RF grid second config",
@@ -1719,6 +1723,33 @@ def g_screen():
             + [ex["rf_renorm_fecrv_s%d" % s]["mean_mae"] for s in (7, 99)])
     check("tex:results V 5-seed renorm 0.0143", sum(v_re) / 5, "0.0143")
     check("tex:results V 5-seed RF 0.0140", sum(v_rf) / 5, "0.0140")
+    sq = J(os.path.join(PAPER, "screen_data",
+                        "screen_fecrni_T1000K_step0.001.json"))
+    sv = J(os.path.join(PAPER, "screen_data",
+                        "validate_fecrni_T1000K_step0.001.json"))
+    ah = J(os.path.join(PAPER, "screen_data",
+                        "validate_all_hits_fecrni_T1000K_step0.001.json"))
+    sqq = J(os.path.join(PAPER, "screen_data",
+                         "screen_fecrnic_T1000K_box.json"))
+    svq = J(os.path.join(PAPER, "screen_data",
+                         "validate_fecrnic_T1000K_box.json"))
+    ahq = J(os.path.join(PAPER, "screen_data",
+                         "validate_all_hits_fecrnic_T1000K_box.json"))
+    shortlist_total = (sv["frontier"]["n"] + sv["hit"]["n"] + ah["n"]
+                       + svq["frontier"]["n"] + svq["hit"]["n"]
+                       + ahq["n"])
+    check_exact("tex:conclusions 25,411 shortlist validations",
+                shortlist_total, 25411)
+    probe_total, probe_n = 0, 0
+    for s in ("fecrni", "fecrmn", "fecrmo", "fecrv", "femnni",
+              "fecrnic", "fecrc"):
+        p = J(os.path.join(RAW, f"{s}_probe.json"))
+        probe_total += p.get("n_points", 2000)
+        probe_n += 1
+    grand = shortlist_total + probe_total + 7 * 1500
+    check_exact("tex:conclusions 49911 full-set solves "
+                "(shortlist+probe+phaseset)",
+                grand, 25411 + 14000 + 10500)
 
 
 # ================================================================== main

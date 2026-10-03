@@ -742,15 +742,15 @@ def build() -> None:
          f"0.0099), and a learning-rate sweep moves every head by a "
          f"similar fraction \u2014 renorm 0.0131 at 10\u207b\u2074 to "
          f"0.0084 at 10\u207b\u00b3 (default 0.0106), softmax 0.0165 to "
-         f"0.0099 (default 0.0130) \u2014 so absolute levels sit well "
+         f"0.0099 (default 0.0130), sigmoid/\u03a3 0.0135 to 0.0089 "
+         f"(default 0.0112) \u2014 so absolute levels sit well "
          f"within tuning range. The ordering is stabler than the levels: "
          f"the renorm-vs-softmax ranking persists at the tuned learning "
          f"rate, and the forest is insensitive to its grid (trees "
          f"200\u2013500, depth 20\u2013unlimited all give 0.0180 within "
          f"6\u00d710{sup('-5')} on {LBL['fecrni']}), so the default "
          f"3\u00d710{sup('-4')} understates rather than creates the MLP "
-         f"lead on smooth systems. The sigmoid/\u03a3 head was not "
-         f"re-tuned. No Gaussian-process or radial-basis baseline is "
+         f"lead on smooth systems. No Gaussian-process or radial-basis baseline is "
          f"evaluated, although three-dimensional inputs with ~9,000 rows per "
          f"system make that family an obvious omitted comparator. Hybrid "
          f"tree\u2013neural comparisons for phase equilibria have precedent "
@@ -2520,7 +2520,18 @@ def build() -> None:
          "regressor\u2013detector gap are tested up to the quaternary "
          "system, and whether they persist in genuinely higher-dimensional "
          "design spaces, where axis-aligned tree partitions lose their "
-         "advantage, remains untested.")
+         "advantage, remains untested. All seven systems come from one "
+         "assessed steel database, by design as much as by necessity: a "
+         "single source, solver and protocol isolate model behaviour from "
+         "database variation, which is what makes the cross-system "
+         "rankings interpretable \u2014 but it also means database error "
+         "is held fixed rather than explored. Open alternatives do not "
+         "obviously improve the trade: the pycalphad test databases are "
+         "toy quality, unsuitable for publication-grade claims, and "
+         "assessed multi-component alternatives carry redistribution "
+         "licenses; a second-solver, second-source cross-check is future "
+         "work, enabled rather than replaced by the released pipeline and "
+         "data.")
 
     # 15. Conclusions
     doc.add_heading("16. Conclusions", level=1)
@@ -2621,7 +2632,13 @@ def build() -> None:
          f"1000 K shortlists 10,936 candidates in 0.4 s with all 10,936 "
          f"shortlist points confirming under full-set CALPHAD "
          f"(Section 14) \u2014 the screening-filter claim, demonstrated "
-         f"rather than asserted.")
+         f"rather than asserted. Across screens, anchor sweeps, phase-set "
+         f"re-solves and probes, almost 50,000 full-set CALPHAD solves "
+         f"back the empirical claims of this paper (25,411 shortlist "
+         f"validations alone): validation at a scale exceeding the "
+         f"experimental spot-checks of comparable screening studies, "
+         f"which is what lets a computational study substitute volume of "
+         f"verification for direct experiment.")
     body(doc,
          f"Three failed mechanisms delimit the scope. Under the evaluated "
          f"configuration sparsemax exhibited severe seed sensitivity, "

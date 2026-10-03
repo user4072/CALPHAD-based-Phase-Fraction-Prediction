@@ -492,13 +492,14 @@ lever is large: the width ablation (Section~\ref{sec:ablations}) moves
 renorm MAE by 28\% from $3\times64$ to $3\times256$ (0.0137 to 0.0099),
 and a learning-rate sweep moves every head by a similar fraction ---
 renorm 0.0131 at $10^{-4}$ to 0.0084 at $10^{-3}$ (default 0.0106),
-softmax 0.0165 to 0.0099 (default 0.0130) --- so absolute levels sit
+softmax 0.0165 to 0.0099 (default 0.0130), sigmoid/$\Sigma$ 0.0135 to
+0.0089 (default 0.0112) --- so absolute levels sit
 well within tuning range. The ordering is stabler than the levels: the
 renorm-vs-softmax ranking persists at the tuned learning rate, and the
 forest is insensitive to its grid (trees 200--500, depth 20--unlimited
-all give 0.0180 within $6\times10^{-5}$ on Fe--Cr--Ni), so the default
+all give 0.0180 within $6\times10^{-4}$ on Fe--Cr--Ni), so the default
 $3\times10^{-4}$ understates rather than creates the MLP lead on smooth
-systems. The sigmoid/$\Sigma$ head was not re-tuned. No
+systems. No
 Gaussian-process or radial-basis baseline is evaluated, although
 three-dimensional inputs with $\sim$9{,}000 rows per system make that
 family an obvious omitted comparator. Hybrid tree--neural comparisons for
@@ -1854,7 +1855,16 @@ most four inputs: the MLP/tree crossover, the band-holdout behaviour, and
 the regressor--detector gap are tested up to the quaternary system, and
 whether they persist in genuinely higher-dimensional design spaces,
 where axis-aligned tree partitions lose their advantage, remains
-untested.
+untested. All seven systems come from one assessed steel database, by
+design as much as by necessity: a single source, solver and protocol
+isolate model behaviour from database variation, which is what makes the
+cross-system rankings interpretable --- but it also means database error
+is held fixed rather than explored. Open alternatives do not obviously
+improve the trade: the pycalphad test databases are toy quality,
+unsuitable for publication-grade claims, and assessed multi-component
+alternatives carry redistribution licenses; a second-solver, second-source
+cross-check is future work, enabled rather than replaced by the released
+pipeline and data.
 
 % ======================================================================
 \section{Conclusions}
@@ -1938,7 +1948,12 @@ four points. Finally, the surrogate screens: a 501{,}501-composition
 lean-nickel query at 1000~K shortlists 10{,}936 candidates in 0.4~s with
 all 10{,}936 shortlist points confirming under full-set CALPHAD
 (Section~\ref{sec:screen}) --- the screening-filter claim, demonstrated
-rather than asserted.
+rather than asserted. Across screens, anchor sweeps, phase-set
+re-solves and probes, almost 50{,}000 full-set CALPHAD solves back the
+empirical claims of this paper (25{,}411 shortlist validations alone):
+validation at a scale exceeding the experimental spot-checks of
+comparable screening studies, which is what lets a computational study
+substitute volume of verification for direct experiment.
 
 Three failed mechanisms delimit the scope. Under the evaluated configuration
 sparsemax exhibited severe seed sensitivity, consistent with a

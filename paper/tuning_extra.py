@@ -94,8 +94,9 @@ def m6a():
         out["runs"] = json.load(open(TUNE_JSON)).get("runs", {})
     X, Y, df = load_data("fecrni")
     box = df["in_stainless_box"].values.astype(bool)
-    # --- MLP lr sweep ---
-    for head, ren in [("sigmoid", True), ("softmax", False)]:
+    # --- MLP lr sweep (renorm=sigmoid+proj, softmax, sig_norm) ---
+    for head, ren in [("sigmoid", True), ("softmax", False),
+                      ("sig_norm", False)]:
         for lr in LR_GRID:
             for seed in SEEDS:
                 key = f"mlp_{head}_lr{lr:g}_s{seed}"
