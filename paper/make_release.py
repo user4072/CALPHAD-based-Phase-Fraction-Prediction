@@ -38,6 +38,7 @@ EXPECTED_TOTAL = 70788
 GLOBS = [
     "data/raw/dataset_*.csv",
     "data/raw/*_probe.json",
+    "data/raw/*_active.json",
     "models/results_*.json",
     "models/tuning_sensitivity.json",
     "models/extra_seeds.json",

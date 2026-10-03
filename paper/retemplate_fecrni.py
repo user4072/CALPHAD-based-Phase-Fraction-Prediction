@@ -20,6 +20,7 @@ Outputs (NEW files only; fecrni artifacts untouched):
   data/raw/fecrni_rt_active.json
 
 Usage: py -3.12 paper/retemplate_fecrni.py [--limit N]  (smoke test)
+       py -3.12 paper/retemplate_fecrni.py --base femnni  (second system)
 """
 from __future__ import annotations
 
@@ -51,32 +52,43 @@ logger = logging.getLogger("retemplate")
 SYSID = "fecrni_rt"
 SEED = 1007
 BASE = "fecrni"
+FOCUS_LOW = [0.10, 0.45, 700.0]
+FOCUS_HIGH = [0.05, 0.30, 1250.0]
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--base", type=str, default=BASE,
+                    help="base system id in SYSTEMS (same TDB/probe basis)")
+    ap.add_argument("--seed", type=int, default=SEED)
+    ap.add_argument("--suffix", type=str, default="rt")
+    ap.add_argument("--focus-low", type=float, nargs=3,
+                    default=FOCUS_LOW)
+    ap.add_argument("--focus-high", type=float, nargs=3,
+                    default=FOCUS_HIGH)
     args = ap.parse_args()
+    sysid, base, seed = f"{args.base}_{args.suffix}", args.base, args.seed
 
-    cfg = dict(SYSTEMS[BASE])
+    cfg = dict(SYSTEMS[base])
     cfg["dataset"] = os.path.join(
-        HERE, "..", "data", "raw", f"dataset_{SYSID}.csv")
+        HERE, "..", "data", "raw", f"dataset_{sysid}.csv")
     cfg["dataset"] = os.path.normpath(cfg["dataset"])
     cfg["checkpoint"] = os.path.join(
-        os.path.dirname(cfg["dataset"]), f"checkpoint_{SYSID}.csv")
-    cfg["sigma_focus"] = {"low": [0.10, 0.45, 700.0],
-                          "high": [0.05, 0.30, 1250.0]}
+        os.path.dirname(cfg["dataset"]), f"checkpoint_{sysid}.csv")
+    cfg["sigma_focus"] = {"low": list(args.focus_low),
+                          "high": list(args.focus_high)}
     # box tag definition intentionally UNCHANGED (comparability)
     probe = json.load(open(os.path.join(os.path.dirname(cfg["dataset"]),
-                                        f"{BASE}_probe.json")))
+                                        f"{base}_probe.json")))
     phases = sorted(probe["active_counts"].keys())
     phase_cols = [f"NP_{p}" for p in phases]
-    logger.info(f"system {SYSID}: {len(phases)} probe-active phases "
-                f"(reused {BASE} basis)")
+    logger.info(f"system {sysid}: {len(phases)} probe-active phases "
+                f"(reused {base} basis)")
 
-    tasks = G.generate_tasks(cfg, seed=SEED)
+    tasks = G.generate_tasks(cfg, seed=seed)
     logger.info(f"Total tasks: {len(tasks)}")
-    rng = np.random.default_rng(SEED)
+    rng = np.random.default_rng(seed)
     rng.shuffle(tasks)
     if args.limit:
         tasks = tasks[:args.limit]
@@ -138,13 +150,13 @@ def main():
 
     occ = {c: float((df[c] > NONZERO_LEVEL).mean()) for c in phase_cols}
     active_cols = [c for c in phase_cols if occ[c] >= ACTIVE_THRESHOLD]
-    sidecar = {"system": SYSID, "n_rows": int(len(df)),
-               "template": {"seed": SEED, "sigma_focus": cfg["sigma_focus"],
+    sidecar = {"system": sysid, "n_rows": int(len(df)),
+               "template": {"seed": seed, "sigma_focus": cfg["sigma_focus"],
                             "box_unchanged": True},
                "eligible_phases": phase_cols,
                "active_phases": active_cols}
     with open(os.path.join(os.path.dirname(cfg["dataset"]),
-                           f"{SYSID}_active.json"), "w") as f:
+                           f"{sysid}_active.json"), "w") as f:
         json.dump(sidecar, f, indent=2)
     df.to_csv(cfg["dataset"], index=False)
     logger.info(f"Saved {len(df)} samples to {cfg['dataset']}")

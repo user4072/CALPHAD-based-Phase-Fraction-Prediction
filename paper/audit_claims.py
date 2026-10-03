@@ -1655,6 +1655,20 @@ def g_screen():
                 sum(1 for _ in
                     open(os.path.join(RAW, "dataset_fecrni_rt.csv"),
                          encoding="utf-8")) - 1, 8901)
+    rt2 = J(os.path.join(MODELS, "results_retemplate_femnni.json"))["runs"]
+
+    def rt2_mean(head):
+        v = [rt2[f"{head}_s{s}"]["mean_mae"] for s in SEEDS]
+        return sum(v) / len(v)
+
+    check("tex:coverage retemplate MnNi renorm 0.0135",
+          rt2_mean("renorm"), "0.0135")
+    check("tex:coverage retemplate MnNi RF 0.0060",
+          rt2_mean("rf"), "0.0060")
+    check_exact("tex:coverage retemplate MnNi 8,900 rows",
+                sum(1 for _ in
+                    open(os.path.join(RAW, "dataset_femnni_rt.csv"),
+                         encoding="utf-8")) - 1, 8900)
     b5 = J(os.path.join(MODELS, "paired_bootstrap_5seed.json"))
     check("tex:bootstrap Mo 5-seed diff +0.00037",
           b5["fecrmo"]["mean_diff_mlp_minus_rf"], "0.00037")

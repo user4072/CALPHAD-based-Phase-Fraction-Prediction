@@ -456,3 +456,11 @@ RF 0.0179, sig_norm seed-sensitive (0.0162/0.0120/0.0097), softmax
 V diff shrinks 3.5x. New files: results_retemplate.json,
 pred_fecrni_rt_*.npz, dataset/checkpoint fecrni_rt (in release globs).
 Tex + docx mirrored. Audit +7. Audit: 467/0/7.
+
+## ADDENDUM -- second re-template on the forest-win side (2026-10-01)
+
+Fe--Mn--Ni under the same template delta (seed 1007, shifted focus):
+8,900 rows, 40.4 % in-box. renorm 0.0135 vs RF 0.0060, forest ahead on
+all three seeds (56 % reduction): the RF side of 2-1-2 is template-robust
+too. Scripts generalized via CLI (no duplication); release globs cover
+the new artifacts. Tex + docx mirrored. Audit +3. Audit: 470/0/7.
