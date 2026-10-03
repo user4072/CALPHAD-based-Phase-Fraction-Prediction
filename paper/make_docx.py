@@ -327,7 +327,15 @@ def build() -> None:
          "typically softmax or post-hoc renormalisation \u2014 but to our "
          "knowledge no study has systematically compared simplex-constraint "
          "mechanisms across multiple alloy systems; the present benchmark "
-         "addresses that gap.")
+         "addresses that gap. The closest adjacent work predicts "
+         "single-temperature phase labels rather than fraction vectors: "
+         "Stoco et al. (2026) classify single-phase FCC/BCC against "
+         "multiphase states in a ten-element space, with lever-rule data "
+         "augmentation for the minority class, while this work regresses "
+         "full fraction vectors across temperature with the simplex "
+         "enforced structurally; augmentation (theirs) and "
+         "evaluation-under-shift (ours) are complementary answers to "
+         "adjacent problems.")
     body(doc,
          "One distinction frames everything that follows. A surrogate learns "
          "the map (x, T) \u2192 y(CALPHAD): it reproduces what the database's "
@@ -589,7 +597,12 @@ def build() -> None:
          f"non-converged points in Fe\u2013Cr\u2013Mo. The 11,220 to 8,880 "
          f"reduction is therefore a design-space filter rather than a "
          f"convergence filter, and the datasets contain no solver-driven "
-         f"holes. Table 2 summarises the datasets (Figure 2 visualises the "
+         f"holes. This contrasts with blind gridding over infeasible "
+         f"corners, where non-convergence concentrates systematically "
+         f"\u2014 e.g., 21.5% failures in Stoco et al. (2026), concentrated "
+         f"where the balance element vanishes. Pre-validating inputs "
+         f"eliminates that failure mode by construction, at the price of "
+         f"the sampling-coverage confound noted in Section 15.4. Table 2 summarises the datasets (Figure 2 visualises the "
          f"{LBL['fecrni']} case). The scope-extension datasets below follow "
          f"the same acceptance rule inside their own design boxes.")
     body(doc,
@@ -750,7 +763,15 @@ def build() -> None:
          f"200\u2013500, depth 20\u2013unlimited all give 0.0180 within "
          f"6\u00d710{sup('-5')} on {LBL['fecrni']}), so the default "
          f"3\u00d710{sup('-4')} understates rather than creates the MLP "
-         f"lead on smooth systems. No Gaussian-process or radial-basis baseline is "
+         f"lead on smooth systems. This fixed-protocol-plus-sensitivity "
+         f"design is deliberate methodology, not an unfinished tuning job: "
+         f"per-configuration optimizers report the best luck observed "
+         f"rather than the expected behaviour of a stated recipe, while "
+         f"every number here is reproducible from the released code, "
+         f"seeds, and data at exactly the stated settings \u2014 which is "
+         f"what the accompanying claim audit re-derives, check by check. "
+         f"Tuning headroom is reported where measured (above) rather than "
+         f"exploited silently. No Gaussian-process or radial-basis baseline is "
          f"evaluated, although three-dimensional inputs with ~9,000 rows per "
          f"system make that family an obvious omitted comparator. Hybrid "
          f"tree\u2013neural comparisons for phase equilibria have precedent "
@@ -2142,6 +2163,19 @@ def build() -> None:
             f"0.0106: retrain-to-retrain variation from early stopping, of "
             f"the same order as the seed spread, and one more reason the "
             f"headline comparisons use three seeds.")
+    finding(doc, "Named grades confront the query honestly",
+            "Projecting commercial grades onto Fe\u2013Cr\u2013Ni (minors "
+            "folded into Fe, stated) at 1000 K: AISI 304 (Fe-19Cr-9Ni wt%) "
+            "is refused by the screen \u2014 correctly, since CALPHAD "
+            "itself gives 3.7% sigma at this temperature and the surrogate "
+            "agrees to 0.005 (0.9676/0.0322 against 0.9630/0.0370); "
+            "sigma-freedom is a stricter query than grade membership, and "
+            "the filter shows no grade-name bias. AISI 430 (ferritic) is "
+            "refused with surrogate and CALPHAD agreeing at FCC 0.00\u2013"
+            "0.01 against BCC 1.0. The Mo-bearing duplex projection is "
+            "refused with agreement to 0.04 (0.7574/0.1616 against "
+            "0.7981/0.2019), under the stated Mo-drop caveat that makes the "
+            "projection itself unfaithful.")
     finding(doc, "Disagreement flags the worst miss",
             f"The screen records ensemble spread (U1) per point. All four "
             f"in-scope misses sit above the shortlist median spread "
@@ -2737,6 +2771,10 @@ def build() -> None:
         "T., 2026. Accelerated discovery of Cr-based A2+B2 superalloys "
         "across 11 elements with a deep-learning CALPHAD surrogate. npj "
         "Comput. Mater. https://doi.org/10.1038/s41524-026-02113-x.",
+        "Stoco, C.B., Deffrennes, G., Champion, Y., Coury, F.G., 2026. "
+        "Accelerating phase prediction via CALPHAD-informed machine "
+        "learning and data augmentation. Comput. Mater. Sci. 272, 114834. "
+        "https://doi.org/10.1016/j.commatsci.2026.114834.",
         "Wang, X., Xiong, W., 2020. Uncertainty quantification and "
         "composition optimization for alloy additive manufacturing through "
         "a CALPHAD-based ICME framework. npj Comput. Mater. 6, 188.",

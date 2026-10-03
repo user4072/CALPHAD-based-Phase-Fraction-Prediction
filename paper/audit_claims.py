@@ -1750,6 +1750,26 @@ def g_screen():
     check_exact("tex:conclusions 49911 full-set solves "
                 "(shortlist+probe+phaseset)",
                 grand, 25411 + 14000 + 10500)
+    gr = J(os.path.join(PAPER, "screen_data", "grades.json"))["grades"]
+    g304, g430, gdup = gr["AISI 304"], gr["AISI 430"], gr["S31803-projected"]
+    check_exact("tex:screen 304 refused (CALPHAD sigma 0.037)",
+                (g304["shortlist_hit"], g304["calphad"]["SIGMA"]),
+                (False, 0.037))
+    check("tex:screen 304 surr-CAL agree to 0.005",
+          abs(g304["surrogate_FCC"] - g304["calphad"]["FCC_A1"]), "0.005")
+    check_exact("tex:screen 430 rejected ferritic",
+                (g430["shortlist_hit"], g430["calphad"]["FCC_A1"],
+                 g430["calphad"]["BCC_A2"]), (False, 0.0, 1.0))
+    check_exact("tex:screen duplex control rejected",
+                gdup["shortlist_hit"], False)
+    import pandas as pd
+    _rows = {}
+    for _s in ("fecrni", "fecrmn", "fecrmo", "fecrv", "femnni"):
+        _rows[_s] = sum(1 for _ in
+                        open(os.path.join(RAW, f"dataset_{_s}.csv"),
+                             encoding="utf-8")) - 1
+    check_exact("tex:sampling 8,880 rows x4 + 8,877 Mo (3 rejects)",
+                sorted(_rows.values()), [8877, 8880, 8880, 8880, 8880])
 
 
 # ================================================================== main

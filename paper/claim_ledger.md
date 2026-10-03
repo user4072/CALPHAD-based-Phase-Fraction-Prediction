@@ -414,3 +414,16 @@ strength in Limitations. sig_norm LR sweep closes the M6 gap (0.0135 to
 25,411 shortlist + 14,000 probe + 10,500 phase-set = 49,911 full-set
 solves, stated as "almost 50,000" (anchor sweep grids unarchived,
 excluded). Tex + docx mirrored. Audit +4. Audit: 444/0/7.
+
+## ADDENDUM -- Stoco + N4 + rejected-tasks + N3 grades (2026-10-01)
+
+Stoco et al. CMS 272 (2026) 114834 cited + differentiated in intro
+(single-T labels vs multi-T fraction regression; augmentation vs
+evaluation-under-shift). N4 reproducibility doctrine in Methods.
+Rejected-task contrast in Sampling (11,220 -> 8,880 design filter,
+0--3 mass-balance rejects; Stoco 21.5 % comparison) + per-system row
+audit. N3 grade confrontation (paper/grades_recovery.py ->
+grades.json): 304 refused-correctly (CALPHAD sigma 3.7 %, surr agrees
+to 0.005), 430 ferritic-reject, duplex control rejected; paragraph in
+Section 14 + 5 audit checks. Tex + docx mirrored. Audit +5.
+Audit: 449/0/7.
