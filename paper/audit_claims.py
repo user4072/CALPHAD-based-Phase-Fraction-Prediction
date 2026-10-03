@@ -1638,6 +1638,30 @@ def g_screen():
           float(sqq["X"][vq["order"][(_kk == "frontier")
                                      & (vq["confirmed"] == 1)], 2].min()),
           "0.029")
+    rt = J(os.path.join(MODELS, "results_retemplate.json"))["runs"]
+
+    def rt_mean(head):
+        v = [rt[f"{head}_s{s}"]["mean_mae"] for s in SEEDS]
+        return sum(v) / len(v)
+
+    check("tex:coverage retemplate renorm 0.0095",
+          rt_mean("renorm"), "0.0095")
+    check("tex:coverage retemplate RF 0.0179",
+          rt_mean("rf"), "0.0179")
+    check("tex:coverage retemplate sig 0.0126 mean",
+          rt_mean("sig_norm"), "0.0126")
+    import pandas as pd
+    check_exact("tex:coverage retemplate 8,901 rows",
+                sum(1 for _ in
+                    open(os.path.join(RAW, "dataset_fecrni_rt.csv"),
+                         encoding="utf-8")) - 1, 8901)
+    b5 = J(os.path.join(MODELS, "paired_bootstrap_5seed.json"))
+    check("tex:bootstrap Mo 5-seed diff +0.00037",
+          b5["fecrmo"]["mean_diff_mlp_minus_rf"], "0.00037")
+    check("tex:bootstrap Mo 5-seed CI",
+          b5["fecrmo"]["ci95"][0], "-0.00031")
+    check("tex:bootstrap V 5-seed diff +0.00033",
+          b5["fecrv"]["mean_diff_mlp_minus_rf"], "0.00033")
     cov = J(os.path.join(MODELS, "coverage_robustness.json"))
     T = cov["by_thr"]["0.25"]
     check_exact("tex:coverage matched frac = min share (MnNi)",

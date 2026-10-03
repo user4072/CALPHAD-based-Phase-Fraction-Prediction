@@ -84,9 +84,9 @@ def run_eq(args):
     return row
 
 
-def generate_tasks(cfg):
+def generate_tasks(cfg, seed=42):
     tasks = []
-    rng = np.random.default_rng(42)
+    rng = np.random.default_rng(seed)
     t_min, t_max = cfg["t_min"], cfg["t_max"]
     n_free = len(cfg["comps_species"])
 

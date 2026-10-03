@@ -664,6 +664,12 @@ Table~\ref{tab:bootstrap}). The
 of the MLP on Fe--Cr--Ni and Fe--Cr--Mn and in favour of the random forest
 on Fe--Mn--Ni, while it includes zero on Fe--Cr--Mo and Fe--Cr--V: the two
 near-ties claimed above are genuine ties, not under-powered comparisons.
+Recomputed on five seeds for the two ties
+(\texttt{analysis\_revision/paired\_bootstrap\_5seed.py}),
+the verdicts stand with tighter intervals --- Mo $+0.00037$
+$[-0.00031, +0.00103]$, V $+0.00033$ $[-0.00112, +0.00181]$ --- and the
+V mean difference shrinks 3.5-fold toward zero, as a tie should under
+more data.
 A caveat: pooling three seeds treats test rows as independent, but rows
 from one design share spatial correlation, so these intervals are
 optimistic; they support rather than certify the ranking. The comparison
@@ -1778,8 +1784,16 @@ matched boundary density the published ranking reproduces on all five
 systems (0.0106 vs 0.0180, 0.0074 vs 0.0133, 0.0126 vs 0.0123, 0.0149
 vs 0.0137, 0.0140 vs 0.0058). Boundary-row share itself varies 3--39\%
 across systems --- a topology fingerprint, not a sampling one. The
-topology hypothesis survives the confound it was most exposed to, short
-of re-templating, which remains future work. Crucially, the ranking above is conditional on fraction-only
+topology hypothesis survives the confound it was most exposed to. The
+remaining step, re-templating, is now also done for one system: a second
+Fe--Cr--Ni dataset under a new seed (1007) plus a shifted sigma-focus
+box (8{,}901 rows, 40.4\% in-box, occurrence shifted toward BCC) keeps
+the family ranking intact --- renorm 0.0095 against RF 0.0179, agreeing
+on all three seeds --- while shuffling the head order (sig-norm turns
+seed-sensitive at 0.0162/0.0120/0.0097). Family-level topology survives
+a new template; head-level ordering does not fully, which bounds the
+topology claim exactly where it should be bounded. Re-templating the
+other four systems remains future work. Crucially, the ranking above is conditional on fraction-only
 supervision: the presence-supervised gated head leads the forest on all
 five ternaries (Table~\ref{tab:main}). A surrogate pipeline should
 therefore evaluate both families \emph{and} the presence-supervised variant

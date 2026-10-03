@@ -442,3 +442,17 @@ box+bulk while MLP takes nonbox 3/3; matched ranking reproduces Table 3
 on all five. Paragraph in Discussion 15.1 + 11 audit checks; docx
 mirrored; fixed a fatal bare-underscore crash in the new paragraph.
 Re-templating stays future work. Audit: 460/0/7.
+
+## ADDENDUM -- re-template gold standard + 5-seed bootstrap (2026-10-01)
+
+paper/retemplate_fecrni.py (seed 1007 + shifted sigma-focus; box tag
+unchanged): 8,901 rows, 40.4 % in-box. paper/train_retemplate.py:
+renorm mean 0.0095 (exact; a draft wrote 0.0098 from rounded per-seed
+inputs and the audit FAILED it --- kept as evidence the audit works),
+RF 0.0179, sig_norm seed-sensitive (0.0162/0.0120/0.0097), softmax
+0.0117. Family ranking holds; head order shuffles. 5-seed bootstrap
+(analysis_revision/paired_bootstrap_5seed.py, new JSON): Mo +0.00037
+[-0.00031,+0.00103], V +0.00033 [-0.00112,+0.00181]; both ties stand,
+V diff shrinks 3.5x. New files: results_retemplate.json,
+pred_fecrni_rt_*.npz, dataset/checkpoint fecrni_rt (in release globs).
+Tex + docx mirrored. Audit +7. Audit: 467/0/7.
