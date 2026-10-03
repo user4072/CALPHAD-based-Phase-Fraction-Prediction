@@ -388,3 +388,15 @@ models/extra_seeds.json, models/extra_*.npz (in release globs). Methods
 tuning paragraph rewritten (levels move, ordering stable), Mo/V tie
 paragraphs + limitations updated; docx mirrored. Audit +14. Audit:
 440/0/7.
+
+## ADDENDUM -- question-led reframe (2026-10-01)
+
+Title -> "Trustworthy high-throughput screening with
+simplex-constrained surrogates for CALPHAD phase-fraction prediction".
+Abstract/contributions rewritten around the three research questions
+(how to predict / where to trust / whether it saves cost); quaternary
+screen added to contributions; roadmap paragraph maps sections to
+questions. Discussion 15.1-15.3 retitled as Answers 1-3; Conclusions
+gets Answer 1/2/3 markers. No numbers touched. Docx mirrored
+(title/abstract/contributions/roadmap/headings/markers, verified).
+Audit: 440/0/7 (unchanged).

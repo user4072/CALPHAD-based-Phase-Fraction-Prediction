@@ -243,9 +243,9 @@ def build() -> None:
     doc = new_doc()
 
     # title block
-    para(doc, "Simplex Constraints, Spatial Generalization, and the "
-              "Regressor\u2013Detector Gap in Machine-Learning Surrogates "
-              "for CALPHAD Phase-Fraction Prediction",
+    para(doc, "Trustworthy high-throughput screening with "
+              "simplex-constrained surrogates for CALPHAD phase-fraction "
+              "prediction",
          align=WD_ALIGN_PARAGRAPH.CENTER, bold=True, size=15)
     para(doc, "Anonymous", align=WD_ALIGN_PARAGRAPH.CENTER, size=11)
     para(doc, "Submitted to Computational Materials Science",
@@ -254,26 +254,25 @@ def build() -> None:
     # abstract
     doc.add_heading("Abstract", level=1)
     body(doc,
-         f"We benchmark simplex-constraint mechanisms for machine-learning "
-         f"surrogates mapping composition and temperature to CALPHAD phase "
-         f"fractions: six neural heads and four baselines on five Fe-based "
-         f"ternaries (44,397 equilibria) plus quaternary and carbide "
-         f"extensions. Softmax, sigmoid/{SIG} and clip-renormalise close to "
-         f"{LEQ}5{TIMES}10{sup('-8')} at no accuracy cost; projection alone "
-         f"recovers renorm accuracy to {LEQ}1.3{TIMES}10{sup('-4')}. Under "
-         f"fraction-only supervision the ranking tracks phase geometry "
-         f"\u2014 but a presence-gated head, which additionally sees "
-         f"presence labels, leads the forest on all seven systems while "
-         f"lifting macro-AUPRC from 0.36\u20130.99 to 0.91\u20130.99. "
-         f"Spatial protocols with random and region-matched controls, and "
-         f"three negative results (sparsemax exhibits severe seed "
-         f"sensitivity; a sum-to-one penalty degrades MAE; the residue "
-         f"head is 1.4\u20132.5 times worse), complete the benchmark. "
-         f"Against four DTA transitions the surrogate matches CALPHAD "
-         f"within 21 K (mean 17.75 K), the same order as the database's "
-         f"19 K deviation from experiment. A 501,501-composition screen "
-         f"shortlists 10,936 candidates in 0.4 s; all 10,936 shortlist "
-         f"points confirm.")
+         f"Machine-learning surrogates can replace per-point CALPHAD "
+         f"minimisation, but three questions block deployment: how should "
+         f"phase fractions be predicted under the simplex constraint, "
+         f"where can the predictions be trusted, and does screening "
+         f"actually save cost? On five Fe-based ternaries (44,397 "
+         f"equilibria) plus quaternary and carbide extensions we find. "
+         f"(1) Softmax, sigmoid/{SIG} and clip-renormalise close to "
+         f"{LEQ}5{TIMES}10{sup('-8')} at no accuracy cost, and presence "
+         f"supervision \u2014 not architecture \u2014 resolves the "
+         f"sharp-boundary cases, leading the forest on all seven systems "
+         f"while lifting macro-AUPRC from 0.36\u20130.99 to 0.91\u20130.99. "
+         f"(2) Holdout and extrapolation protocols with matched controls "
+         f"show graceful degradation in-region and failure for all models "
+         f"out-of-range, with detection collapsing on temperature shift. "
+         f"(3) Two validated lean-nickel screens (501,501 and 330,000 "
+         f"compositions; shortlist precision 1.00 and 0.98) pay back data "
+         f"costs several times over. Failed mechanisms (sparsemax exhibits "
+         f"severe seed sensitivity; a sum-to-one penalty degrades MAE; the "
+         f"residue head is 1.4\u20132.5 times worse) delimit the scope.")
     para(doc, "Keywords: CALPHAD; surrogate model; phase fraction; simplex "
               "constraint; spatial generalisation; iron alloys",
          size=10, italic=True, space_after=12)
@@ -376,28 +375,31 @@ def build() -> None:
          "in the higher-dimensional design spaces where surrogate speed "
          "becomes a practical necessity.")
     for i, c in enumerate([
-        "What to fit: a systematic comparison of simplex-constraint "
+        "How to predict: a systematic comparison of simplex-constraint "
         "mechanisms \u2014 six fraction-only heads plus a "
         "presence-supervised gated head across five ternaries, against four "
         "classical baselines (Sections 4 and 6.1) \u2014 with a projection "
         "analysis showing the renorm head's accuracy is fully accounted for "
-        "by post-hoc projection (Section 5). Result: presence supervision, "
+        "by post-hoc projection (Section 5). Answer: presence supervision, "
         "not architecture, resolves the sharp-boundary cases, and the "
         "regressor\u2013detector gap it closes is stable across presence "
         "thresholds (Section 6).",
-        "Where it holds: two spatial generalisation protocols with "
+        "Where to trust it: two spatial generalisation protocols with "
         "size-matched random controls and a region-matched reanalysis "
         "(Section 7) \u2014 contiguous interior-band holdout (an in-hull "
         "shift, not extrapolation) and strict one-sided out-of-range "
         "extrapolation \u2014 separating spatial penalties from "
         "data-volume reductions, complemented by a cheap "
-        "ensemble-disagreement triage where validated (Section 8).",
-        "Why it matters: a validated high-throughput application \u2014 a "
-        "501,501-composition lean-nickel screen with all 10,936 shortlist "
-        "points confirming under full CALPHAD, plus learning curves "
-        "pricing adoption (Section 14) \u2014 on top of a protocol re-run "
-        "on two extension systems and a four-point experimental anchor as "
-        "supporting evidence (Sections 12 and 13).",
+        "ensemble-disagreement triage where validated (Section 8), plus a "
+        "four-point experimental anchor bounding the database's own "
+        "disagreement with experiment (Section 13).",
+        "Whether it saves cost: two validated high-throughput screens "
+        "\u2014 a 501,501-composition lean-nickel screen with all 10,936 "
+        "shortlist points confirming, and a 330,000-composition quaternary "
+        "screen with carbon at 0.98 shortlist precision \u2014 plus "
+        "learning curves pricing adoption (Section 14), on top of a "
+        "protocol re-run on two extension systems as supporting evidence "
+        "(Section 12).",
     ], start=1):
         p = doc.add_paragraph(style="List Number")
         p.add_run(c)
@@ -406,6 +408,16 @@ def build() -> None:
          "Failed mechanisms (sparsemax, sum-to-one penalty, residue "
          "closure) delimit the scope at each step; the full evidence is in "
          "the Supplement (Section 10, Supplement Section S1).")
+
+    body(doc,
+         "The paper is organised around its three questions. How to "
+         "predict: data and models (Sections 2 and 3), the accuracy "
+         "comparison and closure analysis (Sections 4 and 5), and detection "
+         "with its remedy (Sections 6 and 6.1). Where to trust it: the "
+         "spatial protocols (Section 7), uncertainty screening (Section 8), "
+         "extensions and the experimental anchor (Sections 12 and 13). "
+         "Whether it saves cost: the two validated screens with break-even "
+         "and data-efficiency analysis (Section 14).")
 
     body(doc,
          "Figure 1 summarises the pipeline end to end: the CALPHAD data "
@@ -2343,7 +2355,8 @@ def build() -> None:
 
     # 15. Discussion
     doc.add_heading("15. Discussion", level=1)
-    doc.add_heading("15.1 When do constrained MLPs beat trees?", level=2)
+    doc.add_heading("15.1 Answer 1 \u2014 how to predict: presence "
+                    "supervision, not architecture", level=2)
     body(doc,
          f"In the five ternary systems studied here, the answer tracked "
          f"geometry. "
@@ -2370,8 +2383,8 @@ def build() -> None:
          f"evaluate both families and the presence-supervised variant "
          f"and select per system; no single fraction-only architecture "
          f"consistently dominated across the five ternary systems.")
-    doc.add_heading("15.2 The spatial-generalisation result reframes the "
-                    "interpolation comparison", level=2)
+    doc.add_heading("15.2 Answer 2 \u2014 where to trust it: relative "
+                    "degradation, not reliable extrapolation", level=2)
     body(doc,
          f"Section 7 reframes the main comparison: the MLP's advantage is "
          f"not merely better in-distribution fit but less severe "
@@ -2381,7 +2394,8 @@ def build() -> None:
          f"all five ternaries) and generalisation. For alloy-design "
          f"workflows querying unseen compositions, the relative comparison "
          f"is the more relevant one.")
-    doc.add_heading("15.3 What the surrogate is and is not", level=2)
+    doc.add_heading("15.3 Answer 3 \u2014 whether it saves cost: the "
+                    "screening arithmetic", level=2)
     body(doc,
          "These results frame the surrogate as a high-speed screening "
          "filter rather than a thermodynamic arbiter: while the MLP "
@@ -2518,6 +2532,7 @@ def build() -> None:
          "and carbide extensions (26,391 more; 70,788 in total): a "
          "systematic empirical benchmark with controls, not a new "
          "architecture.")
+    para(doc, "Answer 1: how to predict.", bold=True, size=11)
     body(doc,
          f"Structurally constrained heads \u2014 softmax, sigmoid/{SIG}, and "
          f"renorm \u2014 satisfy the full simplex constraint (closure and "
@@ -2550,6 +2565,7 @@ def build() -> None:
          "leads the forest on all five ternaries (Table 3), so the durable "
          "finding is that presence supervision, not family selection, "
          "resolves the sharp-boundary cases.")
+    para(doc, "Answer 2: where to trust it.", bold=True, size=11)
     body(doc,
          f"Two spatial protocols with matched controls separated spatial "
          f"penalties from data-volume penalties. On contiguous interior "
@@ -2580,6 +2596,7 @@ def build() -> None:
          f"and composition extrapolation on the two tested systems, "
          f"failing only where detection collapses for all models "
          f"(Section 6.1).")
+    para(doc, "Answer 3: whether it saves cost.", bold=True, size=11)
     body(doc,
          "Two further results complete the operational picture. A "
          "three-seed disagreement score ranks per-row error (mean AUROC "

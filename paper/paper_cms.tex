@@ -24,30 +24,30 @@
 \begin{frontmatter}
 \setlength{\emergencystretch}{3em}
 
-\title{Simplex Constraints, Spatial Generalization, and the
-Regressor--Detector Gap in Machine-Learning Surrogates for CALPHAD
-Phase-Fraction Prediction}
+\title{Trustworthy high-throughput screening with simplex-constrained
+surrogates for CALPHAD phase-fraction prediction}
 
 \author[a]{Anonymous}
 \address[a]{Anonymous}
 
 \begin{abstract}
-We benchmark simplex-constraint mechanisms for machine-learning surrogates
-mapping composition and temperature to CALPHAD phase fractions: six neural
-heads and four baselines on five Fe-based ternaries (44{,}397 equilibria)
-plus quaternary and carbide extensions. Softmax, sigmoid/$\Sigma$ and
-clip-renormalise close to $\le 5\times10^{-8}$ at no accuracy cost;
-projection alone recovers renorm accuracy to $\le 1.3\times10^{-4}$.
-Under fraction-only supervision the ranking tracks phase geometry --- but
-a presence-gated head, which additionally sees presence labels, leads the
-forest on all seven systems while lifting macro-AUPRC from 0.36--0.99 to
-0.91--0.99. Spatial protocols with random and region-matched controls, and
-three negative results (sparsemax exhibits severe seed sensitivity; a
-sum-to-one penalty degrades MAE; the residue head is 1.4--2.5 times worse),
-complete the benchmark. Against four DTA transitions the surrogate matches
-CALPHAD within 21~K (mean 17.75~K), the same order as the database's 19~K
-deviation from experiment. A 501{,}501-composition screen shortlists
-10{,}936 candidates in 0.4~s; all 10{,}936 shortlist points confirm.
+Machine-learning surrogates can replace per-point CALPHAD minimisation,
+but three questions block deployment: how should phase fractions be
+predicted under the simplex constraint, where can the predictions be
+trusted, and does screening actually save cost? On five Fe-based
+ternaries (44{,}397 equilibria) plus quaternary and carbide extensions
+we find. (1) Softmax, sigmoid/$\Sigma$ and clip-renormalise close to
+$\le 5\times10^{-8}$ at no accuracy cost, and presence supervision ---
+not architecture --- resolves the sharp-boundary cases, leading the
+forest on all seven systems while lifting macro-AUPRC from 0.36--0.99
+to 0.91--0.99. (2) Holdout and extrapolation protocols with matched
+controls show graceful degradation in-region and failure for all models
+out-of-range, with detection collapsing on temperature shift. (3) Two
+validated lean-nickel screens (501{,}501 and 330{,}000 compositions;
+shortlist precision 1.00 and 0.98) pay back data costs several times
+over. Failed mechanisms (sparsemax exhibits severe seed sensitivity; a
+sum-to-one penalty degrades MAE; the residue head is 1.4--2.5 times
+worse) delimit the scope.
 \end{abstract}
 
 \begin{keyword}
@@ -158,32 +158,46 @@ screening --- arise identically in the higher-dimensional design spaces
 where surrogate speed becomes a practical necessity.
 
 \begin{enumerate}
-\item \textbf{What to fit}: a systematic comparison of simplex-constraint
+\item \textbf{How to predict}: a systematic comparison of simplex-constraint
 mechanisms --- six fraction-only heads plus a presence-supervised gated
 head across five ternaries, against four classical baselines
 (Sections~\ref{sec:results} and~\ref{sec:remedy}) --- with a
 \textbf{projection analysis} showing the renorm head's accuracy is fully
-accounted for by post-hoc projection (Section~\ref{sec:closure}). Result:
+accounted for by post-hoc projection (Section~\ref{sec:closure}). Answer:
 presence supervision, not architecture, resolves the sharp-boundary
 cases, and the regressor--detector gap it closes is stable across
 presence thresholds (Section~\ref{sec:detection}).
-\item \textbf{Where it holds}: two spatial generalisation protocols with
+\item \textbf{Where to trust it}: two spatial generalisation protocols with
 size-matched random controls and a region-matched reanalysis
 (Section~\ref{sec:extrapolation}) --- contiguous interior-band holdout
 (an in-hull shift, not extrapolation) and strict one-sided out-of-range
 extrapolation --- separating spatial penalties from data-volume
 reductions, complemented by a cheap ensemble-disagreement triage where
-validated (Section~\ref{sec:uncertainty}).
-\item \textbf{Why it matters}: a validated high-throughput application ---
-a 501{,}501-composition lean-nickel screen with all 10{,}936 shortlist
-points confirming under full CALPHAD, plus learning curves pricing
-adoption (Section~\ref{sec:screen}) --- on top of a protocol re-run on
-two extension systems and a four-point experimental anchor as supporting
-evidence (Sections~\ref{sec:extensions} and~\ref{sec:anchor}).
+validated (Section~\ref{sec:uncertainty}), plus a four-point
+experimental anchor bounding the database's own disagreement with
+experiment (Section~\ref{sec:anchor}).
+\item \textbf{Whether it saves cost}: two validated high-throughput
+screens --- a 501{,}501-composition lean-nickel screen with all 10{,}936
+shortlist points confirming, and a 330{,}000-composition quaternary
+screen with carbon at 0.98 shortlist precision --- plus learning curves
+pricing adoption (Section~\ref{sec:screen}), on top of a protocol
+re-run on two extension systems as supporting evidence
+(Section~\ref{sec:extensions}).
 \end{enumerate}
 Failed mechanisms (sparsemax, sum-to-one penalty, residue closure)
 delimit the scope at each step; the full evidence is in the Supplement
 (Section~\ref{sec:negative}, Supplement Section~S1).
+
+The paper is organised around its three questions. How to predict:
+data and models (Sections~\ref{sec:data} and~\ref{sec:models}), the
+accuracy comparison and closure analysis (Sections~\ref{sec:results} and
+\ref{sec:closure}), and detection with its remedy
+(Sections~\ref{sec:detection} and~\ref{sec:remedy}). Where to trust it:
+the spatial protocols (Section~\ref{sec:extrapolation}), uncertainty
+screening (Section~\ref{sec:uncertainty}), extensions and the
+experimental anchor (Sections~\ref{sec:extensions} and
+\ref{sec:anchor}). Whether it saves cost: the two validated screens with
+break-even and data-efficiency analysis (Section~\ref{sec:screen}).
 
 Figure~\ref{fig:workflow} summarises the pipeline end to end: the CALPHAD
 data generation, the fixed-protocol split and model families, and the
@@ -1698,7 +1712,8 @@ saving.}
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{When do constrained MLPs beat trees?}
+\subsection{Answer 1 --- how to predict: presence supervision, not
+architecture}
 
 In the five ternary systems studied here, the answer tracked geometry. Systems with
 extended smooth coexistence fields --- Fe--Cr--Ni and Fe--Cr--Mn --- favoured
@@ -1722,8 +1737,8 @@ therefore evaluate both families \emph{and} the presence-supervised variant
 and select per system; no single fraction-only architecture consistently
 dominated across the five ternary systems.
 
-\subsection{The spatial-generalisation result reframes the interpolation
-comparison}
+\subsection{Answer 2 --- where to trust it: relative degradation, not
+reliable extrapolation}
 
 Section~\ref{sec:extrapolation} reframes the main comparison: the MLP's
 advantage is not merely better in-distribution fit but less severe
@@ -1733,7 +1748,7 @@ of basis (liquid unseen near-side in all five ternaries) and
 generalisation. For alloy-design workflows querying unseen compositions,
 the relative comparison is the more relevant one.
 
-\subsection{What the surrogate is and is not}
+\subsection{Answer 3 --- whether it saves cost: the screening arithmetic}
 
 These results frame the surrogate as a high-speed screening filter rather
 than a thermodynamic arbiter: while the MLP speedups enable the screening
@@ -1852,6 +1867,7 @@ head, against four classical baselines, on five Fe-based ternaries
 more; 70{,}788 in total): a systematic empirical benchmark with controls,
 not a new architecture.
 
+\paragraph{Answer 1: how to predict.}
 Structurally constrained heads --- softmax, sigmoid/$\Sigma$, and renorm ---
 satisfy the full simplex constraint (closure and non-negativity) to float32
 precision at no accuracy cost relative to the unconstrained sigmoid, which
@@ -1877,6 +1893,7 @@ head leads the forest on all five ternaries
 (Table~\ref{tab:main}), so the durable finding is that presence
 supervision, not family selection, resolves the sharp-boundary cases.
 
+\paragraph{Answer 2: where to trust it.}
 Two spatial protocols with matched controls separated spatial penalties
 from data-volume penalties. On contiguous interior holdout
 (99.3--99.4\% in-hull, so distribution shift rather than extrapolation)
@@ -1903,6 +1920,7 @@ remedy survives missing-region shift and composition extrapolation on the
 two tested systems, failing only where detection collapses for all models
 (Section~\ref{sec:remedy}).
 
+\paragraph{Answer 3: whether it saves cost.}
 Two further results complete the operational picture. A three-seed
 disagreement score ranks per-row error (mean AUROC 0.70) and gates MAE by
 up to a factor of 4.3 at 50\% coverage on the systems where it helps,
