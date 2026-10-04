@@ -278,6 +278,21 @@ def build() -> None:
               "constraint; spatial generalisation; iron alloys",
          size=10, italic=True, space_after=12)
 
+    doc.add_heading("Highlights", level=1)
+    for _hl in [
+        "Simplex closure to machine precision costs no accuracy; renorm "
+        "is enough",
+        "Presence supervision, not architecture, resolves sharp phase "
+        "boundaries",
+        "Interior-band penalties are spatial, not volumetric; "
+        "extrapolation unsupported",
+        "Lean-nickel screen: 501,501 compositions in 0.4 s, shortlist "
+        "precision 1.00",
+        "Failed mechanisms delimit the scope: sparsemax, sum-to-one "
+        "penalty, residue head",
+    ]:
+        doc.add_paragraph(_hl, style="List Bullet")
+
     # 1. Introduction
     doc.add_heading("1. Introduction", level=1)
     doc.add_heading("1.1 Phase fractions as a regression target", level=2)
