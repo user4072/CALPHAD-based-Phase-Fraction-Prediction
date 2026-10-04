@@ -561,5 +561,8 @@ I/main 0.970-1.116 (mean 1.033) --- the old ~15 % training-size confound is
 second-order; band presence H/I 0.93-3.84 (mean 2.01) --- the penalty is
 spatial, not volumetric; MLP smallest H/I in 9/10 band-system combos and
 never largest (means: mlp 1.49, rf 2.25, xgb 2.28). Reported: panel B of
-tab:region (tables.py) + protocols + findings passage in tex; docx Table 12
+tab:region (tables.py) + protocols + findings passage in tex; docx Table 13
 ideal rows + mirrors; audit g_region_ideal.
+
+
+Docx table renumber (writing pass): captions were physically out of order (gated-shift table labelled Table 14 while sitting 8th); all 15 captions and 24 cross-references renumbered so the docx matches the tex exactly (gated-shift 8, holdout 9, extrap 10, ablation 11, extension 12, region 13, screen 14, screenq 15). Any earlier addendum naming a docx table number refers to the pre-fix label.

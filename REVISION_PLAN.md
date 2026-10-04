@@ -64,7 +64,7 @@ mathematical), "never hurts" (already fixed previously; verified again).
    Size effect I/main 0.970–1.116 (mean 1.033) → old confound
    second-order; band removal H/I 0.93–3.84 (mean 2.01) → penalty
    spatial; MLP smallest H/I in 9/10 combos (means 1.49 vs 2.25/2.28).
-   Panel B of tab:region + findings passage + docx Table 12 ideal rows;
+   Panel B of tab:region + findings passage + docx Table 13 ideal rows;
    audit `g_region_ideal`. Note: record keys must embed the system —
    key collision silently overwrote the first system's records (fixed).
 2. **Soft-penalty λ sweep** with Huber-scale normalisation + warm-up
