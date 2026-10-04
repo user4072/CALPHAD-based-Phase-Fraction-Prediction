@@ -35,11 +35,11 @@ Machine-learning surrogates can replace per-point CALPHAD minimisation,
 but three questions block deployment: how should phase fractions be
 predicted under the simplex constraint, where can the predictions be
 trusted, and does screening actually save cost? On five Fe-based
-ternaries (44{,}397 equilibria) plus quaternary and carbide extensions
-we find: (1) Softmax, sigmoid/$\Sigma$ and clip-renormalise close to
+ternaries (44{,}397 equilibria) plus quaternary, carbide, and Fe-free
+extensions we find: (1) Softmax, sigmoid/$\Sigma$ and clip-renormalise close to
 $\le 5\times10^{-8}$ at no accuracy cost, and presence supervision ---
 not architecture --- resolves the sharp-boundary cases, leading the
-forest on all seven systems while lifting macro-AUPRC from 0.36--0.99
+forest on all nine systems while lifting macro-AUPRC from 0.36--0.99
 to 0.91--0.99. (2) Holdout and extrapolation protocols with matched
 controls show graceful degradation in-region and failure for all models
 out-of-range; interior-band penalties are spatial, not volumetric,
@@ -172,7 +172,8 @@ extrapolation carries risk even for physics-based models
 \subsection{Contributions}
 
 The study is deliberately scoped to small systems --- five ternaries plus
-one quaternary and one carbide-rich ternary as scope extensions --- where
+one quaternary, one carbide-rich ternary, and two Fe-free ternaries as
+scope extensions --- where
 ground-truth generation is inexpensive (a few CPU-hours per system), so
 that every protocol decision can be validated exhaustively; the
 methodological questions it isolates --- constraint enforcement,
@@ -2021,7 +2022,7 @@ most four inputs: the MLP/tree crossover, the band-holdout behaviour, and
 the regressor--detector gap are tested up to the quaternary system, and
 whether they persist in genuinely higher-dimensional design spaces,
 where axis-aligned tree partitions lose their advantage, remains
-untested. All seven systems come from one assessed steel database, by
+untested. All nine systems come from one assessed steel database, by
 design as much as by necessity: a single source, solver and protocol
 isolate model behaviour from database variation, which is what makes the
 cross-system rankings interpretable --- but it also means database error
@@ -2096,9 +2097,10 @@ Section~\ref{sec:remedy}.
 Phase-presence detection degrades faster than regression under distribution
 shift, and the best regressor is not necessarily the best detector --- but
 the gap closes: the presence-gated head raises macro-AUPRC to 0.91--0.99
-on all seven systems (best classical detector beaten on six) while
-reducing MAE on the five ternaries (12--47\% cost on the two extension
-systems); presence supervision, not reweighting, is what works --- and the
+on all nine systems (best classical detector beaten on eight) while
+reducing MAE on the five ternaries (12--47\% cost on the two carbide
+extension systems, with a 10--17\% MAE improvement on the Fe-free pair);
+presence supervision, not reweighting, is what works --- and the
 remedy survives missing-region shift and composition extrapolation on the
 two tested systems, failing only where detection collapses for all models
 (Section~\ref{sec:remedy}).

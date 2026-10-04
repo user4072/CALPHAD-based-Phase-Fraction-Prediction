@@ -1039,7 +1039,8 @@ def g_remedy():
     check_exact("tex:1624 undetected phase is MU_PHASE_I",
                 rare[0] if rare else None, "MU_PHASE_I")
 
-    # all seven gated range + six of seven vs classical
+    # all nine gated range; six of seven (figure/table subset) and eight
+    # of nine vs classical; gated MAE leads the forest on all nine
     # NOTE: results_remedy_fecrnic.json comparison[*].baseline_macro_auprc is
     # null (that run only stored gated/weighted), so extension classical
     # macros come from analysis_revision/detection_*.json "families".
@@ -1058,12 +1059,31 @@ def g_remedy():
         g_all.append(c["remedy"]["gated"]["macro_auprc"])
         bc = classical_macro(det[sysn])
         n_win7 += int(c["remedy"]["gated"]["macro_auprc"] > bc)
-    check("tex:1706 gated all-seven lower 0.91", min(g_all), "0.91")
-    check("tex:1706 gated all-seven upper 0.99", max(g_all), "0.99")
-    check_exact("tex:872,1707 gated beats best classical on six of seven",
+    n_win9 = n_win7
+    for sysn in ("crconi", "crnimn"):
+        c = J(os.path.join(MODELS,
+                           f"results_remedy_{sysn}.json"))["comparison"][sysn]
+        g = c["remedy"]["gated"]["macro_auprc"]
+        g_all.append(g)
+        bl = [v for k, v in c["baseline_macro_auprc"].items()
+              if k in CLASSICAL and v is not None]
+        n_win9 += int(g > max(bl))
+    check("tex:conclusions gated all-nine lower 0.91", min(g_all), "0.91")
+    check("tex:conclusions gated all-nine upper 0.99", max(g_all), "0.99")
+    check_exact("tex:fig8 gated beats best classical on six of seven",
                 n_win7, 6)
-    check_exact("tex:1708 gated reduces MAE on all five ternaries",
+    check_exact("tex:conclusions gated beats best classical on eight of nine",
+                n_win9, 8)
+    check_exact("tex:conclusions gated reduces MAE on all five ternaries",
                 sum(1 for r in ratios if r < 1), 5)
+    lead9 = 0
+    for f in sorted(glob.glob(os.path.join(MODELS, "results_remedy*.json"))):
+        for _, c in J(f)["comparison"].items():
+            rf = c["baseline_mae"].get("rf")
+            lead9 += int(rf is not None and
+                         c["remedy"]["gated"]["mae"] < rf)
+    check_exact("tex:abstract gated leads forest in MAE on all nine",
+                lead9, 9)
 
     # gap cost 12-47% on the two extension systems
     costs = []
