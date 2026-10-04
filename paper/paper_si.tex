@@ -151,7 +151,8 @@ them.
 
 \subsection{GP/RBF baseline: smooth prior, kinked target}
 
-Independent Gaussian-process regressors per phase (RBF plus WhiteKernel,
+Independent Gaussian-process regressors per phase~\citep{rasmussen2006gaussian}
+(RBF plus WhiteKernel,
 exact GPR on a documented $N{=}2000$ train subset --- full-train exact
 GPR is $O(n^3)$) reach test MAE 0.0233 on Fe--Cr--Ni
 (0.0245/0.0229/0.0226 across seeds), against 0.0106 for renorm on the
@@ -361,6 +362,10 @@ of Fe--Cr--Ni system. Tetsu-to-Hagan\'e 73, 1676--1683.
 \bibitem[Martins and Astudillo(2016)]{martins2016sparsemax}
 Martins, A.F.T., Astudillo, R.F., 2016. From softmax to sparsemax: A sparse
 model of attention and multi-label classification. Proc.\ ICML, 1614--1623.
+
+\bibitem[Rasmussen and Williams(2006)]{rasmussen2006gaussian}
+Rasmussen, C.E., Williams, C.K.I., 2006. Gaussian Processes for Machine
+Learning. MIT Press, Cambridge, MA.
 
 \end{thebibliography}
 
