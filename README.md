@@ -32,7 +32,7 @@ pdflatex paper_cms.tex            # run 3× from paper/ to build the 60-page PDF
 py -3.12 paper/audit_claims.py    # re-verify every number claimed in the tex
 ```
 
-Latest audit: **PASS=588, FAIL=0, NV=7** (595 checks; the 7 not-verifiable
+Latest audit: **PASS=590, FAIL=0, NV=7** (597 checks; the 7 not-verifiable
 claims are documented in `paper/claim_ledger.md` together with the artefact
 behind every verified number).
 
