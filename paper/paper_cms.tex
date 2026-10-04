@@ -1099,7 +1099,9 @@ error of the main-study models on the same band rows inside the
 interpolation test set, where band data were present in training. This
 ratio isolates the regional shift on identical rows; its residual confound
 is a training-set size difference of roughly 15\%, since removing a band
-also removes those rows from training. Table~\ref{tab:holdout} reports the band results and
+also removes those rows from training --- a confound panel~B of
+Table~\ref{tab:region} removes by retraining at equal size (band rows in,
+an equal number of random non-band rows out) on identical test rows. Table~\ref{tab:holdout} reports the band results and
 Table~\ref{tab:extrap} the extrapolation results;
 Figure~\ref{fig:ablation} panel (a) shows the band penalty ratios and
 Figure~\ref{fig:extrap} the extrapolation ones.
@@ -1191,6 +1193,16 @@ near-zero denominator on one seed, which the ratio-of-means headline
 Ratios must nonetheless be read alongside absolute errors: a band that is
 easy in distribution, such as the nearly single-phase 1200--1400~K band of
 Fe--Mn--Ni, inflates ratios through a small denominator.
+The ideal-form control (Table~\ref{tab:region}, panel~B) then confirms
+that the residual size confound is second-order: at equal training size
+and on identical test rows the size effect $I/\mathrm{main}$ stays within
+0.97--1.12 (mean 1.03), while removing the band at fixed size still costs
+$H/I = 0.93$--$3.84$ (mean 2.01) --- the penalty is spatial, not
+volumetric. The MLP again degrades least: its $H/I$ is the smallest of
+the three models in nine of the ten band--system combinations (means 1.49
+versus 2.25 and 2.28 for the random forest and XGBoost), consistent with
+trees interpolating locally from precisely the rows the band removal
+deletes.
 
 \paragraph{The temperature-band penalty is mostly a data effect against
 the random control, with a genuine shift residual on identical rows.}
@@ -1584,7 +1596,11 @@ Table~\ref{tab:holdout}; see Section~\ref{sec:protocols} for the two
 references. The Fe--Cr--Ni temperature ordering reverses relative to the
 random-control picture; the Fe--Mn--Ni temperature per-seed spread
 (0.86/20.28/0.62) comes from a near-zero denominator on one seed and is
-downweighted in the headline ratio.}
+downweighted in the headline ratio. Panel B repeats the comparison in
+ideal form: identical test rows and equal training size (band rows kept
+in training, an equal number of random non-band rows dropped instead),
+reporting the band-in/band-out ratio $H/I$ with the training-size
+effect $I/\mathrm{main}$ in parentheses.}
 \label{tab:region}
 \small
 \input{tab/region.tex}

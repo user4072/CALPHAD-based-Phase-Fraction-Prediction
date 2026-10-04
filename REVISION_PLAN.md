@@ -58,6 +58,15 @@ mathematical), "never hurts" (already fixed previously; verified again).
 1. **Region-matched controls, ideal form** — retrain with band included and
    N-matched by subsampling elsewhere; test on band rows held out from
    within the band. (Removes the ~15% training-size confound.)
+   **DONE (2026-10-04):** `analysis_revision/region_matched_ideal.py` →
+   `models/region_matched_ideal.json` (90 records + `__agg__`, 180 seeded
+   fits, 5 ternaries × 3 seeds × 2 bands × 3 renorm models × 2 arms).
+   Size effect I/main 0.970–1.116 (mean 1.033) → old confound
+   second-order; band removal H/I 0.93–3.84 (mean 2.01) → penalty
+   spatial; MLP smallest H/I in 9/10 combos (means 1.49 vs 2.25/2.28).
+   Panel B of tab:region + findings passage + docx Table 12 ideal rows;
+   audit `g_region_ideal`. Note: record keys must embed the system —
+   key collision silently overwrote the first system's records (fixed).
 2. **Soft-penalty λ sweep** with Huber-scale normalisation + warm-up
    (λ ∈ {1e−4 … 10}).
 3. **Sparsemax loss / entmax-1.5 / annealing** variants.

@@ -1550,6 +1550,52 @@ def g_followups():
         check(f"tex:screen quaternary learning curve {frac}", got, e)
 
 
+# ============================================== GROUP region ideal-form control
+def g_region_ideal():
+    d = J(os.path.join(MODELS, "region_matched_ideal.json"))
+    recs = [v for v in d.values() if isinstance(v, dict) and "band" in v]
+    check_exact("ideal-form: 90 band records", len(recs), 90)
+    for s in BEST:
+        n = sum(1 for v in recs if v["system"] == s)
+        check_exact(f"ideal-form: {s} has 18 records", n, 18)
+    agg = d.get("__agg__", {})
+    check_exact("ideal-form: 30 aggregate entries", len(agg), 30)
+    im = [v["ratio_i_main_of_means"] for v in agg.values()]
+    hi = [v["ratio_h_i_of_means"] for v in agg.values()]
+    check("tex:ideal I/main lower", min(im), "0.97")
+    check("tex:ideal I/main upper", max(im), "1.12")
+    check("tex:ideal I/main mean", float(np.mean(im)), "1.03")
+    check("tex:ideal H/I lower", min(hi), "0.93")
+    check("tex:ideal H/I upper", max(hi), "3.84")
+    check("tex:ideal H/I mean", float(np.mean(hi)), "2.01")
+    best = 0
+    for s in BEST:
+        for b in ("T_band", "X2_band"):
+            m = agg[f"{s}_{b}_mlp_renorm"]["ratio_h_i_of_means"]
+            r = agg[f"{s}_{b}_rf_renorm"]["ratio_h_i_of_means"]
+            x = agg[f"{s}_{b}_xgb_renorm"]["ratio_h_i_of_means"]
+            best += (m < r) and (m < x)
+    check_exact("tex:ideal MLP smallest H/I in 9 of 10", best, 9)
+    for model, exp in (("mlp_renorm", "1.49"), ("rf_renorm", "2.25"),
+                       ("xgb_renorm", "2.28")):
+        vs = [v["ratio_h_i_of_means"] for k, v in agg.items()
+              if k.endswith(model)]
+        check(f"tex:ideal mean H/I {model}", float(np.mean(vs)), exp)
+    check("spot:fecrv T-band RF ideal H/I",
+          agg["fecrv_T_band_rf_renorm"]["ratio_h_i_of_means"], "3.84")
+    check("spot:femnni T-band MLP ideal H/I",
+          agg["femnni_T_band_mlp_renorm"]["ratio_h_i_of_means"], "0.93")
+    tab = open(os.path.join(PAPER, "tab", "region.tex"),
+               encoding="utf-8").read()
+    check_exact("tab/region.tex contains ideal-form panel",
+                "Ideal-form" in tab, True)
+    check_exact("tab/region.tex spot cell 3.84 (1.02)",
+                "3.84 (1.02)" in tab, True)
+    tex = open(os.path.join(PAPER, "paper_cms.tex"), encoding="utf-8").read()
+    check_exact("tex contains ideal-form passage",
+                "the penalty is spatial, not" in tex, True)
+
+
 # ================================================== GROUP 17 winners / 2-1-2
 def g_winners():
     pb = J(os.path.join(MODELS, "paired_bootstrap.json"))
@@ -2038,7 +2084,8 @@ def main():
     for fn in (g_counts, g_probe, g_csv, g_heads, g_penalty, g_sparsemax,
                g_delaunay, g_bands, g_region_matched, g_f1_shift, g_extrap,
                g_penalties_holdout, g_remedy, g_uncertainty, g_phase_set,
-               g_anchor, g_ext_heads, g_transfer, g_followups, g_winners, g_threshold, g_recompute,
+               g_anchor, g_ext_heads, g_transfer, g_followups, g_region_ideal,
+               g_winners, g_threshold, g_recompute,
                g_structural, g_nv, g_screen):
         guarded(fn)
     n_pass = sum(1 for st, _, _ in results if st == "PASS")

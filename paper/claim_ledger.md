@@ -546,3 +546,20 @@ Quaternary learning curves (learning_curves.py generalized --system/--out;
 paper/screen_data/learning_fecrnic_renorm.json): renorm MAE 0.0122@844,
 0.0061@2110, 0.0047@4220, 0.0032@8440 --- same saturating shape as
 ternary Case D, 25 % buys most. Main-text Sec14 sentence + docx mirror.
+
+Region-matched ideal-form control (REVISION_PLAN #1;
+analysis_revision/region_matched_ideal.py -> models/region_matched_ideal.json):
+three-arm decomposition per (5 ternary systems, 3 seeds, 2 bands, 3 renorm
+models): main ref = stored npz on te-band-rows; arm I = band present +
+|tr-band| random non-band rows dropped (size-matched to H); arm H = tr minus
+band; both arms validate on va-minus-band, identical seeded inits; 180 fits,
+90 records + __agg__ (30 combos, keyed BY SYSTEM --- the first runs omitted
+the system from the record key, so each new system silently overwrote the
+previous; records were recovered from per-system reruns, bit-identical to
+the originals because seeded fits are deterministic). RESULT: size effect
+I/main 0.970-1.116 (mean 1.033) --- the old ~15 % training-size confound is
+second-order; band presence H/I 0.93-3.84 (mean 2.01) --- the penalty is
+spatial, not volumetric; MLP smallest H/I in 9/10 band-system combos and
+never largest (means: mlp 1.49, rf 2.25, xgb 2.28). Reported: panel B of
+tab:region (tables.py) + protocols + findings passage in tex; docx Table 12
+ideal rows + mirrors; audit g_region_ideal.

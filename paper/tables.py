@@ -888,6 +888,29 @@ if rmb and all(s in rmb for s in SYS):
       "holdout mean MAE on band rows divided by in-distribution mean MAE on "
       "the identical rows; per-seed ratios in parentheses (seeds "
       "42/123/2024).} \\\\")
+    RMI = jload(os.path.join(M, "region_matched_ideal.json"))
+    rig = RMI.get("__agg__") if RMI else None
+    if rig and len(rig) == 30:
+        W("\\addlinespace")
+        W("\\multicolumn{5}{l}{\\scriptsize Ideal-form size-matched control "
+          "(identical test rows, equal training size): band-in/band-out "
+          "ratio $H/I$, training-size effect $I/\\mathrm{main}$ in "
+          "parentheses.} \\\\")
+        W("\\midrule")
+        for bi, (blk, blab) in enumerate([("X2_band", "$x_2$ band"),
+                                          ("T_band", "$T$ band")]):
+            for si, s in enumerate(SYS):
+                cells = []
+                for key in ["mlp_renorm", "rf_renorm", "xgb_renorm"]:
+                    e = rig[f"{s}_{blk}_{key}"]
+                    cells.append(f"{e['ratio_h_i_of_means']:.2f} "
+                                 f"({e['ratio_i_main_of_means']:.2f})")
+                tag = blab if si == 0 else ""
+                W(f"{tag} & {LBL[s]} & " + " & ".join(cells) + " \\\\")
+            if bi == 0:
+                W("\\addlinespace")
+    else:
+        W("% models/region_matched_ideal.json __agg__ not present")
     W("\\bottomrule")
     W("\\end{tabular}}")
 else:

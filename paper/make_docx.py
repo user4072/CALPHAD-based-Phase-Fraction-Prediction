@@ -1500,7 +1500,9 @@ def build() -> None:
          "present in training. This ratio isolates the regional shift on "
          "identical rows; its residual confound is a training-set size "
          "difference of roughly 15%, since removing a band also removes "
-           "those rows from training. Table 8 "
+           "those rows from training \u2014 a confound the ideal rows of "
+           "Table 12 remove (equal training size, identical test rows). "
+           "Table 8 "
            "reports the band results and Table 9 the extrapolation results; "
          "Figure 6 panel (a) shows the band penalty ratios and Figure 7 the "
          "extrapolation ones.")
@@ -1642,7 +1644,18 @@ def build() -> None:
             f"nonetheless be read alongside absolute errors: a band that is "
             f"easy in distribution, such as the nearly single-phase "
             f"1200\u20131400 K band of {LBL['femnni']}, inflates ratios "
-            f"through a small denominator.")
+            f"through a small denominator. The ideal-form control "
+            f"(Table 12, ideal rows) then confirms that the residual "
+            f"size confound is second-order: at equal training size and "
+            f"on identical test rows the size effect I/main stays within "
+            f"0.97\u20131.12 (mean 1.03), while removing the band at "
+            f"fixed size still costs H/I = 0.93\u20133.84 (mean 2.01) "
+            f"\u2014 the penalty is spatial, not volumetric. The MLP "
+            f"again degrades least: its H/I is the smallest of the three "
+            f"models in nine of the ten band\u2013system combinations "
+            f"(means 1.49 versus 2.25 and 2.28 for the random forest and "
+            f"XGBoost), consistent with trees interpolating locally from "
+            f"precisely the rows the band removal deletes.")
     finding(doc, "The temperature-band penalty is mostly a data effect "
             "against the random control, with a genuine shift residual on "
             "identical rows",
@@ -2142,6 +2155,18 @@ def build() -> None:
                 vals = [p["region_matched_ratio"] for p in entry["per_seed"]]
                 row.append(f"{m:.2f} ({'/'.join(f'{v:.2f}' for v in vals)})")
             rrows.append(row)
+    _rmi_p = os.path.join(ROOT, "models", "region_matched_ideal.json")
+    if os.path.exists(_rmi_p):
+        RMI = json.load(open(_rmi_p))
+        for blk, blab in [("X2_band", "x2 band (ideal)"),
+                          ("T_band", "T band (ideal)")]:
+            for s in SYS:
+                row = [blab, LBL[s]]
+                for key in ["mlp_renorm", "rf_renorm", "xgb_renorm"]:
+                    e = RMI["__agg__"][f"{s}_{blk}_{key}"]
+                    row.append(f"{e['ratio_h_i_of_means']:.2f} "
+                               f"({e['ratio_i_main_of_means']:.2f})")
+                rrows.append(row)
     table(doc, ["Band", "System", "MLP renorm", "random forest", "XGBoost"],
           rrows,
           "Table 12. Region-matched band reanalysis: holdout mean MAE on "
@@ -2153,7 +2178,10 @@ def build() -> None:
           "reverses relative to the random-control picture; the "
           "Fe\u2013Mn\u2013Ni temperature per-seed spread (0.86/20.28/0.62) "
           "comes from a near-zero denominator on one seed and is "
-          "downweighted in the headline ratio.",
+          "downweighted in the headline ratio. Rows marked (ideal) repeat "
+          "the comparison at equal training size and identical test rows "
+          "(band-in/band-out H/I, training-size effect I/main in "
+          "parentheses).",
           left_cols=(0, 1))
 
     # 14. Application: high-throughput stainless screening
