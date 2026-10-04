@@ -167,12 +167,11 @@ class Board:
 
 def header(b: Board):
     b.text(0.55, 0.13, 12.25, 0.40,
-           [[("Machine-Learning Surrogates for CALPHAD "
-              "Phase-Fraction Prediction", 20,
+           [[("Trustworthy High-Throughput Screening", 20,
               BLUE_DK, True)]])
     b.text(0.55, 0.52, 12.25, 0.24,
-           [[("Simplex constraints, spatial generalization, and the "
-              "regressor\u2013detector gap in five Fe-based ternary "
+           [[("with simplex-constrained surrogates for CALPHAD "
+              "phase-fraction prediction in five Fe-based ternary "
               "systems", 10, GREY, False)]])
     ln = b.rect(0.55, 0.80, 12.25, 0.012, LINE_SOFT)
     return ln
@@ -580,7 +579,8 @@ def panel3(b: Board, x):
 def footer(b: Board):
     b.text(0.55, 7.12, 12.25, 0.24,
            [[("Fixed-protocol benchmark \u00b7 6 heads + 2 mechanism probes "
-              "\u00b7 4 baselines \u00b7 5 systems \u00b7 44,397 equilibria "
+              "\u00b7 4 baselines \u00b7 5 ternary + 4 extension systems "
+              "\u00b7 88,542 equilibria "
               "\u00b7 seeds 42 / 123 / 2024 \u00b7 negative results reported "
               "in full", 8, LIGHT, False)]],
            align=PP_ALIGN.CENTER)

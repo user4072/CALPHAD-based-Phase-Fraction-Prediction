@@ -1,37 +1,38 @@
 # fe_surrogate — Simplex-Constrained ML Surrogates for CALPHAD Phase Fractions
 
 Benchmark and failure-mode analysis of machine-learning surrogates that
-predict equilibrium phase fractions in seven systems: five Fe-based ternaries
+predict equilibrium phase fractions in nine systems: five Fe-based ternaries
 (**Fe–Cr–Ni, Fe–Cr–Mn, Fe–Cr–Mo, Fe–Cr–V, Fe–Mn–Ni**), the quaternary
-**Fe–Cr–Ni–C**, and the carbon-rich ternary **Fe–Cr–C** — 70,788
+**Fe–Cr–Ni–C**, the carbon-rich ternary **Fe–Cr–C**, and two Fe-free
+ternaries (**Cr–Co–Ni**, **Cr–Ni–Mn**) — 88,542
 mass-balance-validated equilibria in total.
 
 The full study is described in the manuscript
 
-(*"Simplex Constraints, Spatial Generalization, and the Regressor–Detector Gap
-in Machine-Learning Surrogates for CALPHAD Phase-Fraction Prediction"*).
+(*"Trustworthy high-throughput screening with simplex-constrained
+surrogates for CALPHAD phase-fraction prediction"*).
 
 ## What this repository contains
 
 | Path | Contents |
 |---|---|
 | `databases/` | TDB extraction scripts only. Neither the MatCalc source database `mc_fe_v2.062` nor the derived ternary extractions are redistributed (see License); regenerate them from a licensed MatCalc copy with step 0 below. |
-| `data/raw/` | The seven datasets — five ternaries (44,397 rows) plus quaternary Fe–Cr–Ni–C (13,192) and carbon-rich Fe–Cr–C (13,199), 70,788 mass-balance-validated equilibria in total — with per-phase fractions, GM/HM/SM/CPM, probe sidecars, and design checkpoints. |
+| `data/raw/` | The nine datasets — five ternaries (44,397 rows), quaternary Fe–Cr–Ni–C (13,192), carbon-rich Fe–Cr–C (13,199), and Fe-free Cr–Co–Ni (8,874) + Cr–Ni–Mn (8,880), 88,542 mass-balance-validated equilibria in total — with per-phase fractions, GM/HM/SM/CPM, probe sidecars, and design checkpoints. |
 | `src/fe_surrogate/` | Shared library: system registry, splits, metrics, heads, TDB utilities. |
-| `models/` | Per-seed result JSONs and stored test-set predictions (`pred_*.npz`) for every model × system × seed — including the `fecrnic`/`fecrc` extension results and the presence-gated remedy runs (`results_remedy*.json`); source of every number in the paper. |
-| `analysis_revision/` | Revision analyses computed from stored predictions (no retraining): region-matched band controls, extrapolation seen/unseen decomposition, AUPRC, phase-rule (Gibbs) admissibility, active-cell/tail errors, design-space accounting reconstruction, full-set phase validation, inference timing; plus the Fe–Cr–C detection, phase-set, and holdout analyses (`detection_fecrc.py`, `phase_set_validation_fecrc.json`, `holdout_extrap_c_fecrc.py`). |
+| `models/` | Per-seed result JSONs and stored test-set predictions (`pred_*.npz`) for every model × system × seed — including the `fecrnic`/`fecrc`/`crconi`/`crnimn` extension results and the presence-gated remedy runs (`results_remedy*.json`); source of every number in the paper. |
+| `analysis_revision/` | Revision analyses computed from stored predictions (no retraining): region-matched band controls with the ideal-form equal-size control, extrapolation seen/unseen decomposition, AUPRC, phase-rule (Gibbs) admissibility, active-cell/tail errors, design-space accounting reconstruction, full-set phase validation, inference timing; plus the Fe–Cr–C detection, phase-set, and holdout analyses (`detection_fecrc.py`, `phase_set_validation_fecrc.json`, `holdout_extrap_c_fecrc.py`). |
 | `paper/` | Manuscript source (`paper_cms.tex`) and figure/table generation scripts, the experimental-anchor pipeline (`anchor_eval.py`, `anchor_data/`), and the claim audit (`audit_claims.py`, `claim_ledger.md`). |
 | `*.py` (root) | The pipeline: probing, dimension-generic data generation (`generate_data.py`), training (including `train_remedy.py` for the presence-gated two-stage head), evaluation, and statistical analyses. |
 
 ## Manuscript verification
 
 ```bash
-py -3.12 paper/tables.py          # regenerate all 14 tables from the stored results
-pdflatex paper_cms.tex            # run 3× from paper/ to build the 47-page PDF
+py -3.12 paper/tables.py          # regenerate all 19 tables from the stored results
+pdflatex paper_cms.tex            # run 3× from paper/ to build the 60-page PDF
 py -3.12 paper/audit_claims.py    # re-verify every number claimed in the tex
 ```
 
-Latest audit: **PASS=373, FAIL=0, NV=7** (380 checks; the 7 not-verifiable
+Latest audit: **PASS=588, FAIL=0, NV=7** (595 checks; the 7 not-verifiable
 claims are documented in `paper/claim_ledger.md` together with the artefact
 behind every verified number).
 
@@ -48,7 +49,7 @@ pip install -r requirements.txt
 0. **TDB extraction** (requires a local copy of the MatCalc database — place it at
    `databases/mc_fe_v2.062.tdb`; the generated `.tdb` files are gitignored and stay local):
    ```bash
-   py -3.12 create_ternary_tdb.py        # per-system extractions (seven systems)
+   py -3.12 create_ternary_tdb.py        # per-system extractions (nine systems)
    py -3.12 build_unpruned_tdbs.py       # unpruned references for equivalence checks
    py -3.12 validate_tdbs.py            # syntax/schema validation
    py -3.12 validate_tdb_equivalence.py # pruned vs unpruned equilibrium equivalence
