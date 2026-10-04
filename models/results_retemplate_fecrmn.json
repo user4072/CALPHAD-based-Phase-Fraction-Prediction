@@ -1,0 +1,67 @@
+{
+  "config": {
+    "system": "fecrmn_rt",
+    "template_seed": 1007,
+    "seeds": [
+      42,
+      123,
+      2024
+    ],
+    "heads": [
+      "renorm",
+      "sig_norm",
+      "softmax",
+      "rf"
+    ]
+  },
+  "runs": {
+    "renorm_s42": {
+      "mean_mae": 0.00907757319509983,
+      "time_s": 156.3
+    },
+    "sig_norm_s42": {
+      "mean_mae": 0.00892999954521656,
+      "time_s": 188.9
+    },
+    "softmax_s42": {
+      "mean_mae": 0.008391563780605793,
+      "time_s": 59.6
+    },
+    "rf_s42": {
+      "mean_mae": 0.012953459857980668,
+      "time_s": 4.4
+    },
+    "renorm_s123": {
+      "mean_mae": 0.009217732585966587,
+      "time_s": 187.0
+    },
+    "sig_norm_s123": {
+      "mean_mae": 0.007957255467772484,
+      "time_s": 171.2
+    },
+    "softmax_s123": {
+      "mean_mae": 0.008320102468132973,
+      "time_s": 58.6
+    },
+    "rf_s123": {
+      "mean_mae": 0.012150885215627885,
+      "time_s": 11.2
+    },
+    "renorm_s2024": {
+      "mean_mae": 0.007906139828264713,
+      "time_s": 159.8
+    },
+    "sig_norm_s2024": {
+      "mean_mae": 0.007043836172670126,
+      "time_s": 98.1
+    },
+    "softmax_s2024": {
+      "mean_mae": 0.008077012374997139,
+      "time_s": 48.5
+    },
+    "rf_s2024": {
+      "mean_mae": 0.013782862366850288,
+      "time_s": 10.5
+    }
+  }
+}

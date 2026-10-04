@@ -1792,6 +1792,46 @@ def g_screen():
                 sum(1 for _ in
                     open(os.path.join(RAW, "dataset_femnni_rt.csv"),
                          encoding="utf-8")) - 1, 8900)
+    rt3 = {s: J(os.path.join(MODELS, f"results_retemplate_{s}.json"))["runs"]
+           for s in ("fecrmo", "fecrmn", "fecrv")}
+
+    def rt3_mean(sysn, head):
+        v = [rt3[sysn][f"{head}_s{s}"]["mean_mae"] for s in SEEDS]
+        return sum(v) / len(v)
+
+    check("tex:coverage retemplate Mn sig 0.0080",
+          rt3_mean("fecrmn", "sig_norm"), "0.0080")
+    check("tex:coverage retemplate Mn RF 0.0130",
+          rt3_mean("fecrmn", "rf"), "0.0130")
+    check_exact("tex:coverage retemplate Mn 8,899 rows",
+                sum(1 for _ in
+                    open(os.path.join(RAW, "dataset_fecrmn_rt.csv"),
+                         encoding="utf-8")) - 1, 8899)
+    check_exact("tex:coverage retemplate V 8,901 rows",
+                sum(1 for _ in
+                    open(os.path.join(RAW, "dataset_fecrv_rt.csv"),
+                         encoding="utf-8")) - 1, 8901)
+    check_exact("tex:coverage retemplate Mo 8,896 rows",
+                sum(1 for _ in
+                    open(os.path.join(RAW, "dataset_fecrmo_rt.csv"),
+                         encoding="utf-8")) - 1, 8896)
+    brt = J(os.path.join(MODELS, "paired_bootstrap_rt.json"))
+    check("tex:coverage retemplate Mn diff -0.0050",
+          brt["fecrmn_rt"]["mean_diff"], "-0.0050")
+    check_le("tex:coverage retemplate Mn CI entirely negative",
+             brt["fecrmn_rt"]["ci95"][1], "0")
+    check("tex:coverage retemplate V diff -0.0001",
+          brt["fecrv_rt"]["mean_diff"], "-0.0001")
+    check_le("tex:coverage retemplate V CI straddles (lo)",
+             brt["fecrv_rt"]["ci95"][0], "0")
+    check_ge("tex:coverage retemplate V CI straddles (hi)",
+             brt["fecrv_rt"]["ci95"][1], "0")
+    check("tex:coverage retemplate Mo diff +0.0005",
+          brt["fecrmo_rt"]["mean_diff"], "0.0005")
+    check_le("tex:coverage retemplate Mo CI straddles (lo)",
+             brt["fecrmo_rt"]["ci95"][0], "0")
+    check_ge("tex:coverage retemplate Mo CI straddles (hi)",
+             brt["fecrmo_rt"]["ci95"][1], "0")
     b5 = J(os.path.join(MODELS, "paired_bootstrap_5seed.json"))
     check("tex:bootstrap Mo 5-seed diff +0.00037",
           b5["fecrmo"]["mean_diff_mlp_minus_rf"], "0.00037")

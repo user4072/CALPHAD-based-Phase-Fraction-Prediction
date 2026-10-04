@@ -1,0 +1,36 @@
+{
+  "system": "fecrmn_rt",
+  "n_rows": 8899,
+  "template": {
+    "seed": 1007,
+    "sigma_focus": {
+      "low": [
+        0.1,
+        0.45,
+        700.0
+      ],
+      "high": [
+        0.05,
+        0.3,
+        1250.0
+      ]
+    },
+    "box_unchanged": true
+  },
+  "eligible_phases": [
+    "NP_ALPHA_MN",
+    "NP_BCC_A2",
+    "NP_BETA_MN",
+    "NP_CR3MN5",
+    "NP_FCC_A1",
+    "NP_LIQUID",
+    "NP_SIGMA"
+  ],
+  "active_phases": [
+    "NP_ALPHA_MN",
+    "NP_BCC_A2",
+    "NP_FCC_A1",
+    "NP_LIQUID",
+    "NP_SIGMA"
+  ]
+}

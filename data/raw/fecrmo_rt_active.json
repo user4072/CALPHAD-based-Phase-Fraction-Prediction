@@ -1,0 +1,41 @@
+{
+  "system": "fecrmo_rt",
+  "n_rows": 8896,
+  "template": {
+    "seed": 1007,
+    "sigma_focus": {
+      "low": [
+        0.1,
+        0.45,
+        700.0
+      ],
+      "high": [
+        0.05,
+        0.3,
+        1250.0
+      ]
+    },
+    "box_unchanged": true
+  },
+  "eligible_phases": [
+    "NP_BCC_A2",
+    "NP_CHI_A12",
+    "NP_FCC_A1",
+    "NP_LAVES_PHASE",
+    "NP_LIQUID",
+    "NP_MU_PHASE",
+    "NP_MU_PHASE_I",
+    "NP_R_PHASE",
+    "NP_SIGMA"
+  ],
+  "active_phases": [
+    "NP_BCC_A2",
+    "NP_CHI_A12",
+    "NP_FCC_A1",
+    "NP_LAVES_PHASE",
+    "NP_LIQUID",
+    "NP_MU_PHASE",
+    "NP_R_PHASE",
+    "NP_SIGMA"
+  ]
+}

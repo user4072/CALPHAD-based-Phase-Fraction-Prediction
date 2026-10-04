@@ -497,3 +497,18 @@ gated-crconi). Two brace bugs in the widened table (stray }} in
 presence-supervised + panel-C multicolumn) hung pdflatex; fixed, PDF
 rebuilds clean (58 pp, zero errors, one pre-existing vbox overfull).
 Release verified (615 files, 88,542 rows). Audit: 531/0/7.
+
+## ADDENDUM -- re-template completed on all five systems (2026-10-04)
+
+Same template delta (seed 1007 + shifted sigma-focus) on the remaining
+three systems via the generalized CLI: fecrmo_rt 8,896 rows (9 phases
+incl. LAVES/MU/R), fecrmn_rt 8,899 rows, fecrv_rt 8,901 rows.
+paper/train_retemplate.py + new analysis_revision/paired_bootstrap_rt.py
+(same paired protocol, rt naming; models/paired_bootstrap_rt.json):
+Mn keeps the MLP ahead (sig_norm 0.0080 vs RF 0.0130, CI
+[-0.0058,-0.0042] entirely negative); V keeps its tie (diff -0.0001, CI
+straddles); Mo keeps its tie (diff +0.0005, CI straddles, RF-lean in
+means but not significant). Full winner taxonomy reproduces 5-for-5
+(2 MLP / 2 tie / 1 RF): no system changes sides under a new template.
+Tex + docx re-template paragraph updated (future-work sentence
+retired). Audit +12.
