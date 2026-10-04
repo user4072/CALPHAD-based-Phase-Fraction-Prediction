@@ -243,7 +243,7 @@ def build() -> None:
     doc = new_doc()
 
     # title block
-    para(doc, "Trustworthy high-throughput screening with "
+    para(doc, "Validated high-throughput screening with "
               "simplex-constrained surrogates for CALPHAD phase-fraction "
               "prediction",
          align=WD_ALIGN_PARAGRAPH.CENTER, bold=True, size=15)

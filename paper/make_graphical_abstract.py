@@ -167,12 +167,12 @@ class Board:
 
 def header(b: Board):
     b.text(0.55, 0.13, 12.25, 0.40,
-           [[("Trustworthy High-Throughput Screening", 20,
+           [[("Validated High-Throughput Screening", 20,
               BLUE_DK, True)]])
     b.text(0.55, 0.52, 12.25, 0.24,
            [[("with simplex-constrained surrogates for CALPHAD "
-              "phase-fraction prediction in five Fe-based ternary "
-              "systems", 10, GREY, False)]])
+              "phase-fraction prediction in nine alloy systems", 10,
+              GREY, False)]])
     ln = b.rect(0.55, 0.80, 12.25, 0.012, LINE_SOFT)
     return ln
 
