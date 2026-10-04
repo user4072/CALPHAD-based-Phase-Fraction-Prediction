@@ -512,3 +512,37 @@ means but not significant). Full winner taxonomy reproduces 5-for-5
 (2 MLP / 2 tie / 1 RF): no system changes sides under a new template.
 Tex + docx re-template paragraph updated (future-work sentence
 retired). Audit +12.
+
+## ADDENDUM -- N1b/N2/GP/second-solver/Q-curves batch (2026-10-04)
+
+N1b assemblage-targeted augmentation (fecrni, paper/augment_n1b.py,
+models/augmentation_n1b.json): 200 jittered-around-boundary-train-rows
+solves vs 200 uniform-simplex solves, renorm retrains, frozen test set.
+Valid v2 only --- v1 is VOID (appended pool but passed original tr, so
+the 200 points never trained; ambient inits): v2 extends tr, seeds
+inits, determinism self-check passes bit-identical, and base retrains
+reproduce published MAEs exactly. Result NEGATIVE: uniform wins 3/3
+overall (mean -0.0004) and boundary (mean -0.0010, ~4 %); targeted mixed
+sign, loses 5/6 comparisons. SI S1 reports it; audit g_followups.
+
+N2 presence-recalibration (fecrv X2, analysis_revision/recalibrate_n2.py,
+models/recalibrate_n2.json): temperature scaling of presence logits fit
+on val rows. Result NEGATIVE: bestT 0.22-0.36 sharpens but TEST MAE
+worsens all 3 seeds on X2-extrap (0.105->0.126, 0.094->0.098,
+0.080->0.090); gate already calibrated on average (pred vs prevalence
+within 0.03 all phases) --- failures are per-row, no global fix. SI S1.
+
+GP/RBF baseline (fecrni, paper/gp_baselines.py, models/gp_baselines.json):
+independent RBF+WhiteKernel GPs per phase, N=2000 subset (documented):
+MAE 0.0233 mean vs 0.0106 renorm (2.2x), lands with unconstrained
+sigmoid (0.0232), behind RF (0.0180)/XGB (0.0212); raw closure violation
+0.031. Stationary prior vs kinked target. SI S1.
+
+Second solver: INFEASIBLE in this environment (pycalphad 0.11.2 ships a
+single Solver implementation; no OpenCalphad/Thermo-Calc binaries).
+Limitations already state single-solver; no text change, recorded here.
+
+Quaternary learning curves (learning_curves.py generalized --system/--out;
+paper/screen_data/learning_fecrnic_renorm.json): renorm MAE 0.0122@844,
+0.0061@2110, 0.0047@4220, 0.0032@8440 --- same saturating shape as
+ternary Case D, 25 % buys most. Main-text Sec14 sentence + docx mirror.

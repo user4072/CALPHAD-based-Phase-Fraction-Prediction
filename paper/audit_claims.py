@@ -1504,6 +1504,52 @@ def g_transfer():
                 25411 + 18000 + 13500, "56000", "58000")
 
 
+# ============================================ GROUP followups N1b/N2/GP/Q
+def g_followups():
+    import numpy as np
+    n1 = J(os.path.join(MODELS, "augmentation_n1b.json"))
+    check_exact("SI:N1b determinism self-check passes",
+                n1["determinism_check"]["pass"], True)
+    lose_o, lose_b = 0, 0
+    for s in ("s42", "s123", "s2024"):
+        e = n1["variants"][s]
+        check_le(f"SI:N1b random improves overall [{s}]",
+                 e["random_overall_mae"] - e["base_overall_mae"], "0")
+        check_le(f"SI:N1b random improves boundary [{s}]",
+                 e["random_boundary_mae"] - e["base_boundary_mae"], "0")
+        lose_o += e["targeted_overall_mae"] > e["random_overall_mae"]
+        lose_b += e["targeted_boundary_mae"] > e["random_boundary_mae"]
+    check_exact("SI:N1b targeted loses to random 3/3 overall", lose_o, 3)
+    check_exact("SI:N1b targeted loses to random 5/6 overall", lose_o + lose_b,
+                5)
+    n2 = J(os.path.join(MODELS, "recalibrate_n2.json"))["runs"]
+    for k in ("extrap_X2_extrap_s42", "extrap_X2_extrap_s123",
+              "extrap_X2_extrap_s2024"):
+        v = n2[k]
+        check_exact(f"SI:N2 recal hurts test [{k}]",
+                    v["mae_recal"] > v["mae_T1"], True)
+        check_prose(f"SI:N2 bestT in 0.2-0.4 [{k}]", v["best_T"],
+                    "0.2", "0.4")
+    worst_cal = 0.0
+    for k, v in n2.items():
+        if not k.startswith("extrap"):
+            continue
+        for ph, c in v["calibration_val"].items():
+            worst_cal = max(worst_cal, abs(c["pred_T1"] - c["true"]))
+    check_le("SI:N2 gate calibrated within 0.03", worst_cal, "0.03")
+    gp = J(os.path.join(MODELS, "gp_baselines.json"))["runs"]
+    gp_mae = np.mean([gp[f"s{s}"]["mae"] for s in SEEDS])
+    gp_ref = np.mean([gp[f"s{s}"]["ref_renorm_mae"] for s in SEEDS])
+    check("SI:GP mean MAE 0.0233", gp_mae, "0.0233")
+    check("SI:GP ref renorm 0.0106", gp_ref, "0.0106")
+    q = J(os.path.join(PAPER, "screen_data",
+                       "learning_fecrnic_renorm.json"))
+    for frac, e in (("0.1", "0.0122"), ("0.25", "0.0061"),
+                    ("0.5", "0.0047"), ("1", "0.0032")):
+        got = np.mean([q[f"frac{frac}_s{s}"]["mean_mae"] for s in SEEDS])
+        check(f"tex:screen quaternary learning curve {frac}", got, e)
+
+
 # ================================================== GROUP 17 winners / 2-1-2
 def g_winners():
     pb = J(os.path.join(MODELS, "paired_bootstrap.json"))
@@ -1992,7 +2038,7 @@ def main():
     for fn in (g_counts, g_probe, g_csv, g_heads, g_penalty, g_sparsemax,
                g_delaunay, g_bands, g_region_matched, g_f1_shift, g_extrap,
                g_penalties_holdout, g_remedy, g_uncertainty, g_phase_set,
-               g_anchor, g_ext_heads, g_transfer, g_winners, g_threshold, g_recompute,
+               g_anchor, g_ext_heads, g_transfer, g_followups, g_winners, g_threshold, g_recompute,
                g_structural, g_nv, g_screen):
         guarded(fn)
     n_pass = sum(1 for st, _, _ in results if st == "PASS")

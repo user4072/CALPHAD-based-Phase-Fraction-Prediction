@@ -113,6 +113,60 @@ versus the best constrained head (green star) across all five ternary systems.}
 \label{fig:si-failures}
 \end{figure}
 
+\subsection{Targeted augmentation does not beat uniform augmentation}
+
+Boundary rows carry roughly ten times the interior MAE, so the cheapest
+hoped-for fix is more data where it hurts: 200 extra CALPHAD solves
+jittered around the train rows closest to an assemblage change versus
+200 uniform-simplex draws, retraining the Fe--Cr--Ni renorm head under
+the identical protocol on a frozen test set (three seeds, seeded
+initialisations, determinism self-check passes bit-identical).
+Uniform draws improve overall MAE on all three seeds (mean $-0.0004$)
+and boundary-bin MAE (mean $-0.0010$, about 4\% of the 0.0228 boundary
+level); targeted augmentation is mixed in sign on both metrics and
+loses to uniform draws in five of six seed-metric comparisons. More
+data helps modestly;
+targeting it by assemblage proximity does not --- jittered boundary
+points are redundant with the existing train rows, while uniform draws
+fill undersampled simplex regions. An earlier pilot version is void and
+superseded (its augmented rows never entered training and its
+initialisations were uncontrolled); the valid comparison above controls
+both.
+
+\subsection{Presence-gate temperature scaling does not rescue shift failures}
+
+On Fe--Cr--V X2-shift the gated head loses roughly twofold to plain
+renorm (0.068--0.102 against 0.037--0.052 on X2-extrapolation) while
+per-phase AUPRC stays at or above 0.98 --- the presence ranking is
+intact but the gate values fail. Fitting a presence temperature on
+validation rows (best $T$ of 0.22--0.36, i.e.\ validation wants harder
+gates) \emph{hurts} test MAE on all three seeds (0.105 to 0.126, 0.094
+to 0.098, 0.080 to 0.090); the X2-band shows the same pattern at small
+scale. The calibration diagnostic explains why there is nothing to
+rescale: mean predicted presence matches empirical prevalence within
+0.03 on every phase (e.g.\ 0.739 against 0.745 for BCC\_A2, 0.057
+against 0.041 for FCC\_A1). The gate is calibrated on average; its
+shift failures are per-row, not global, so no global rescaling fixes
+them.
+
+\subsection{GP/RBF baseline: smooth prior, kinked target}
+
+Independent Gaussian-process regressors per phase (RBF plus WhiteKernel,
+exact GPR on a documented $N{=}2000$ train subset --- full-train exact
+GPR is $O(n^3)$) reach test MAE 0.0233 on Fe--Cr--Ni
+(0.0245/0.0229/0.0226 across seeds), against 0.0106 for renorm on the
+identical rows: a 2.2-fold gap that the subset cannot explain away (2000
+rows is generous for a GP, and the gap exceeds any plausible subset
+effect). The GP lands with the unconstrained baselines --- 0.0232
+plain sigmoid, 0.0256 $k$-NN --- far behind every simplex-respecting
+family (renorm 0.0106, forest 0.0180, XGBoost 0.0212), and its raw
+outputs violate closure at 0.031 mean absolute sum deviation before
+projection. The stationary RBF prior fights the non-stationary target:
+phase fractions are smooth within assemblage regions but kinked at their
+borders, exactly where the error concentrates. Smoothness without
+structure is not enough; the constraint carries the accuracy.
+
+
 % ======================================================================
 \section{Detection threshold sensitivity in full}
 \label{sec:si-threshold}

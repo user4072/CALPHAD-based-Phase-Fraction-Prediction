@@ -1,0 +1,46 @@
+{
+  "config": {
+    "system": "fecrni",
+    "n_fit": 2000,
+    "kernel": "RBF + WhiteKernel, normalize_y=True",
+    "protocol": "independent GP per phase; clip-renorm at eval (same as tree baselines); test rows byte-identical to published runs"
+  },
+  "runs": {
+    "s42": {
+      "mae": 0.02454553032899563,
+      "per_phase_mae": [
+        0.03714462843600535,
+        0.032275252789841495,
+        0.015012916493367716,
+        0.013749323596767966
+      ],
+      "raw_consistency": 0.02848749338231763,
+      "ref_renorm_mae": 0.009978167712688446,
+      "time_s": 63.1
+    },
+    "s123": {
+      "mae": 0.022899402170184234,
+      "per_phase_mae": [
+        0.0330076808255983,
+        0.031394974577593646,
+        0.01354830623821449,
+        0.013646647039330495
+      ],
+      "raw_consistency": 0.033012978339952946,
+      "ref_renorm_mae": 0.011365491896867752,
+      "time_s": 108.5
+    },
+    "s2024": {
+      "mae": 0.02262763044446638,
+      "per_phase_mae": [
+        0.03055146064811453,
+        0.03197725941184582,
+        0.01443666159528467,
+        0.013545140122620496
+      ],
+      "raw_consistency": 0.030607021658134517,
+      "ref_renorm_mae": 0.01046555582433939,
+      "time_s": 87.8
+    }
+  }
+}

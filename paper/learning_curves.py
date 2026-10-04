@@ -30,6 +30,7 @@ import torch
 
 from fe_surrogate.experiment import (load_data, cluster_split, evaluate,
                                      renorm, SEEDS)
+from fe_surrogate.systems import SYSTEMS
 from train_mlp import MLP4, train_mlp, DEVICE
 
 SYSTEM = "fecrni"
@@ -41,15 +42,22 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--fractions", nargs="+", type=float,
                     default=[0.1, 0.25, 0.5, 1.0])
+    ap.add_argument("--system", choices=sorted(SYSTEMS), default=SYSTEM)
+    ap.add_argument("--out", type=str, default=None,
+                    help="output JSON (default screen_data/learning_"
+                         "<system>_renorm.json)")
     args = ap.parse_args()
+    system = args.system
+    out = args.out or os.path.join(
+        HERE, "screen_data", f"learning_{system}_renorm.json")
 
-    X, Y, df = load_data(SYSTEM)
+    X, Y, df = load_data(system)
     box = df["in_stainless_box"].values.astype(bool)
     n_phases = Y.shape[1]
     rng_cap = np.random.default_rng(0)
     results = {}
-    if os.path.exists(OUT):
-        results = json.load(open(OUT))
+    if os.path.exists(out):
+        results = json.load(open(out))
 
     for frac in args.fractions:
         for seed in SEEDS:
@@ -83,13 +91,13 @@ def main():
                 "mean_mae": float(res["mean_mae"]),
                 "val_mae": float(best_mae), "train_s": round(t_train, 1),
             }
-            with open(OUT, "w") as f:
+            with open(out, "w") as f:
                 json.dump(results, f, indent=2)
             print(f"[{key}] n={len(sub)} mae={res['mean_mae']:.4f} "
                   f"val={best_mae:.4f} train={t_train:.0f}s")
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
-    print(f"wrote {OUT}")
+    print(f"wrote {out}")
 
 
 if __name__ == "__main__":

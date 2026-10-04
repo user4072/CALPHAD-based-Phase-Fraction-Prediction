@@ -1696,7 +1696,12 @@ which halves the optimistic break-even above; even 568 solves train a
 0.023-MAE surrogate, roughly the raw-sigmoid baseline. The 25\% point
 carries a caveat --- one seed stalls at 0.0217 while the other two reach
 0.015 --- so small-data training is seed-sensitive and wants the same
-multi-seed discipline as the main benchmark. The full-data retrain lands
+multi-seed discipline as the main benchmark. On quaternary Fe--Cr--Ni--C
+the curve repeats the shape at lower absolute error: 0.0122 at 10\%
+(844 equilibria), 0.0061 at 25\% (2{,}110), 0.0047 at 50\% (4{,}220)
+and 0.0032 at full data (8{,}440) --- the 25\% point again buys most of
+the accuracy, so the data-efficiency finding is not ternary-specific.
+The full-data retrain lands
 at 0.0091 against Table~\ref{tab:main}'s 0.0106: retrain-to-retrain
 variation from early stopping, of the same order as the seed spread, and
 one more reason the headline comparisons use three seeds.
