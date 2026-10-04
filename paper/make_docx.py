@@ -1384,7 +1384,7 @@ def build() -> None:
             "detection itself collapses",
             f"We retrained the exact gated recipe on the band-holdout and "
             f"strict-extrapolation splits of {LBL['fecrni']} and "
-            f"{LBL['fecrv']} (Section 7 protocols; Table 14). On contiguous "
+            f"{LBL['fecrv']} (Section 7 protocols; Table 8). On contiguous "
             f"bands the gated head matches or beats the fraction-only MLP "
             f"everywhere ({LBL['fecrni']} x\u2082 band 0.013 against "
             f"0.016; {LBL['fecrv']} temperature band 0.023 against 0.036) "
@@ -1428,7 +1428,7 @@ def build() -> None:
                 f"{sum(r['macro_auprc'] for r in _rs) / len(_rs):.3f}"])
     table(doc, ["System", "Protocol", "gated", "renorm MLP",
                 "random forest", "gated AUPRC"], _grows,
-          "Table 14. Gated head under the spatial protocols "
+          "Table 8. Gated head under the spatial protocols "
           f"({LBL['fecrni']}, {LBL['fecrv']}). Test MAE (mean over three "
           f"seeds) with the stored same-seed, same-block renorm-MLP and "
           f"random-forest values alongside, plus gated macro-AUPRC. "
@@ -1519,9 +1519,9 @@ def build() -> None:
          "identical rows; its residual confound is a training-set size "
          "difference of roughly 15%, since removing a band also removes "
            "those rows from training \u2014 a confound the ideal rows of "
-           "Table 12 remove (equal training size, identical test rows). "
-           "Table 8 "
-           "reports the band results and Table 9 the extrapolation results; "
+           "Table 13 remove (equal training size, identical test rows). "
+           "Table 9 "
+           "reports the band results and Table 10 the extrapolation results; "
          "Figure 6 panel (a) shows the band penalty ratios and Figure 7 the "
          "extrapolation ones.")
 
@@ -1548,7 +1548,7 @@ def build() -> None:
                          f"{t / c:.2f} / {x / c:.2f}")
         rows.append(cells)
     table(doc, ["Held-out region", "Model"] + [LBL[s] for s in SYS], rows,
-          "Table 8. Contiguous interior-band holdout. Top: test MAE on the "
+          "Table 9. Contiguous interior-band holdout. Top: test MAE on the "
           "random control, the held-out temperature band, and the held-out "
           "composition band (mean over three seeds; uncertainty in units of "
           "the last digit). Bottom: penalty ratios (band MAE / control MAE) "
@@ -1598,7 +1598,7 @@ def build() -> None:
                              f"{x / cx:.2f} / {t / ct:.2f}")
             rows.append(cells)
         table(doc, ["Region", "Model"] + [LBL[s] for s in SYS], rows,
-              "Table 9. Strict one-sided out-of-range extrapolation: "
+              "Table 10. Strict one-sided out-of-range extrapolation: "
               "training keeps only the near side of one coordinate, the "
               "test set is the far side, and the interior gap is in neither "
               "split. Top: "
@@ -1638,11 +1638,11 @@ def build() -> None:
     doc.add_heading("7.2 Findings: contiguous interior-band holdout", level=2)
     finding(doc, "Two complementary references are needed for the band "
             "results",
-            "Results for the missing-region generalisation test (Table 8, "
+            "Results for the missing-region generalisation test (Table 9, "
             "Figure 6a) rest on two complementary references \u2014 the "
             "size-matched random controls and the region-matched reanalysis, "
             "both defined in Section 7.1. Under the region-matched measure "
-            "(Table 12) the "
+            "(Table 13) the "
             "in-distribution-to-holdout penalty is smaller for the "
             "constrained MLP than for the tree ensembles in nine of the "
             f"ten band\u2013system combinations. On the composition bands, "
@@ -1654,7 +1654,7 @@ def build() -> None:
             f"{LBL['fecrni']} the single exception, where the random-forest "
             f"ratio is lower (2.1 versus 2.8) although the forest's "
             f"absolute holdout error there remains twice the MLP's (0.0258 "
-            f"against 0.0132). The per-seed ratios in Table 12 show one "
+            f"against 0.0132). The per-seed ratios in Table 13 show one "
             f"instability behind the headline: on {LBL['femnni']} the MLP "
             f"temperature ratios spread 0.9, 20.3 and 0.6 across seeds "
             f"from a near-zero denominator on one seed, which the "
@@ -1663,7 +1663,7 @@ def build() -> None:
             f"easy in distribution, such as the nearly single-phase "
             f"1200\u20131400 K band of {LBL['femnni']}, inflates ratios "
             f"through a small denominator. The ideal-form control "
-            f"(Table 12, ideal rows) then confirms that the residual "
+            f"(Table 13, ideal rows) then confirms that the residual "
             f"size confound is second-order: at equal training size and "
             f"on identical test rows the size effect I/main stays within "
             f"0.97\u20131.12 (mean 1.03), while removing the band at "
@@ -1865,7 +1865,7 @@ def build() -> None:
     # 9. Ablations
     doc.add_heading("9. Ablations", level=1)
     body(doc,
-            f"Table 10 reports three ablations on {LBL['fecrni']}; the loss "
+            f"Table 11 reports three ablations on {LBL['fecrni']}; the loss "
          f"and width ablations appear in Figure 6 panels (b) and (c), and "
             f"the closure-penalty ablation also appears in Supplement Figure "
             f"S1 panel b.")
@@ -1904,7 +1904,7 @@ def build() -> None:
         rows.append(["closure penalty", lab,
                      f"{mae_cell(m, sd)[0]}, closure {sci(c)}", ""])
     table(doc, ["Ablation", "Setting", "renorm", f"sigmoid/{SIG}"], rows,
-          f"Table 10. Ablations on {LBL['fecrni']} (mean over three seeds; "
+          f"Table 11. Ablations on {LBL['fecrni']} (mean over three seeds; "
           f"uncertainty in units of the last digit). Loss function, "
           f"hidden-layer width, and closure penalty are varied for the renorm "
           f"and sigmoid/{SIG} heads.", left_cols=(0, 1))
@@ -1976,7 +1976,7 @@ def build() -> None:
     finding(doc, "Sum-to-one penalty: redundant and harmful",
             f"The targets already sum to one, so a soft sum-to-one penalty "
             f"competes with the data fit: MAE rises to 0.0804 at "
-            f"{LAMBDA} = 1 and 0.1693 at {LAMBDA} = 10 (Table 10) while "
+            f"{LAMBDA} = 1 and 0.1693 at {LAMBDA} = 10 (Table 11) while "
             f"closure improves only to 1.3{TIMES}10{sup('-3')}. Full curves "
             f"are in Supplement Figure S1.")
     finding(doc, "Residue closure: closure without non-negativity",
@@ -2018,7 +2018,7 @@ def build() -> None:
          "inputs, with interstitial carbon) and a change of chemistry "
          "(carbide-dominated phase diagrams).")
     body(doc,
-          "Table 11 reports the results in full. Three findings stand out.")
+          "Table 12 reports the results in full. Three findings stand out.")
     finding(doc, "The smooth-coexistence ranking survives four inputs",
             "On quaternary Fe\u2013Cr\u2013Ni\u2013C the renorm head "
              f"achieves 0.0037 MAE against 0.0075 for the random forest "
@@ -2063,14 +2063,14 @@ def build() -> None:
             "The phase-set pre-screen passes at solver "
             "precision on the quaternary system, on both transfer systems, "
             "and shows the nine "
-            "documented Fe\u2013Cr\u2013C deviations (Table 11 panel D; "
+            "documented Fe\u2013Cr\u2013C deviations (Table 12 panel D; "
             "Section 2); neither "
             "the accuracy nor the detection results depend on repairing "
             "them, and none were repaired.")
     finding(doc, "The spatial protocols give the same qualitative answers",
             "Composition-band holdout costs 2.1\u20133.5 times the random "
             "control and strict extrapolation fails on every tested axis, "
-            "worst in temperature (Table 11 panel C); the absolute-error "
+            "worst in temperature (Table 12 panel C); the absolute-error "
             "ordering of Section 7 \u2014 no architecture extrapolates "
             "reliably \u2014 does not depend on being ternary. Beyond iron "
             "the same pattern holds with region-dependent band difficulty: "
@@ -2135,7 +2135,7 @@ def build() -> None:
     table(doc, ["Quantity", "Fe\u2013Cr\u2013Ni\u2013C", "Fe\u2013Cr\u2013C",
                 "Cr\u2013Co\u2013Ni", "Cr\u2013Ni\u2013Mn"],
           rows,
-          "Table 11. Scope-extension systems. (A) System and dataset "
+          "Table 12. Scope-extension systems. (A) System and dataset "
           "statistics. (B) Test MAE (mean over three seeds; uncertainty in "
           "units of the last digit), best per system in bold. (C) "
           "Contiguous-band and strict-extrapolation holdouts against "
@@ -2187,11 +2187,11 @@ def build() -> None:
                 rrows.append(row)
     table(doc, ["Band", "System", "MLP renorm", "random forest", "XGBoost"],
           rrows,
-          "Table 12. Region-matched band reanalysis: holdout mean MAE on "
+          "Table 13. Region-matched band reanalysis: holdout mean MAE on "
           "band rows divided by in-distribution mean MAE on the identical "
           "rows (ratio of means; per-seed ratios in parentheses), for the "
           "renorm MLP, the random forest and XGBoost. Complements the "
-          "random-control penalties of Table 8; see Section 7.1 for the "
+          "random-control penalties of Table 9; see Section 7.1 for the "
           "two references. The Fe\u2013Cr\u2013Ni temperature ordering "
           "reverses relative to the random-control picture; the "
           "Fe\u2013Mn\u2013Ni temperature per-seed spread (0.86/20.28/0.62) "
@@ -2269,7 +2269,7 @@ def build() -> None:
             f"split, under the identical protocol, gives test MAE 0.0231 "
             f"at 10% (568 equilibria), 0.0173 at 25% (1,420), 0.0121 at 50% "
             f"(2,840) and 0.0091 at 100% (5,681), seed-means over the same "
-            f"three seeds (Figure 8, panel c; Table 13). Half the "
+            f"three seeds (Figure 8, panel c; Table 14). Half the "
             f"data-generation bill reaches within a factor of 1.3 of "
             f"full-data accuracy, which halves the optimistic break-even "
             f"above; even 568 solves train a 0.023-MAE surrogate, roughly "
@@ -2319,7 +2319,7 @@ def build() -> None:
             f"811-point validation pool gives precision 1.00 at all nine "
             f"combinations, with pool recall from 0.80 (strictest) to 1.00 "
             f"(loosest); the deployed query sits at precision 1.00 and "
-            f"recall 0.99 (Figure 9, panel b; Table 13). Training-set "
+            f"recall 0.99 (Figure 9, panel b; Table 14). Training-set "
             f"density around the misses completes the picture: the clear "
             f"failure sits 1.6 times farther from its nearest training row "
             f"than the validated-hit median (0.166 against 0.102 in "
@@ -2379,7 +2379,7 @@ def build() -> None:
          f"{_recs[0]:.2f}\u2013{_recs[-1]:.2f}"],
     ]
     table(doc, ["Quantity", "Value"], srows,
-          "Table 13. Application case: lean-Ni austenitic screen at 1000 K "
+          "Table 14. Application case: lean-Ni austenitic screen at 1000 K "
           f"on {LBL['fecrni']}. Break-even is the one-time cost (data "
           "generation at measured versus prose per-point cost, plus probe "
           "and 268 s training) divided by the measured 0.41 s per-point "
@@ -2595,7 +2595,7 @@ def build() -> None:
          f"workflows querying unseen compositions, the relative comparison "
          f"is the more relevant one. Within the trained region the same "
          f"distinction separates two kinds of trust: the ideal-form "
-         f"control of Table 12 panel B holds training size fixed and "
+         f"control of Table 13 panel B holds training size fixed and "
          f"still loses a factor of 2.01 on average when the band is "
          f"removed (up to 3.84), while equal-size subsampling away from "
          f"the band changes the error by only 3% on average \u2014 "
