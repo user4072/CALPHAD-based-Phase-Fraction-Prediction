@@ -2,7 +2,8 @@
 
 Collects datasets, probes, result JSONs, stored prediction tensors,
 checkpoints, screen/anchor/learning artifacts, and the claim audit;
-verifies headline row counts (44,397 + 13,192 + 13,199 = 70,788) before
+verifies headline row counts (44,397 + 13,192 + 13,199 + 8,874 + 8,880
+= 88,542) before
 zipping; writes manifest.json (sha256 per file) into the archive.
 
 Excluded by design: solver checkpoints (redundant), *.err/*.log,
@@ -31,9 +32,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXPECTED_ROWS = {
     "fecrni": 8880, "fecrmn": 8880, "fecrmo": 8877, "fecrv": 8880,
     "femnni": 8880, "fecrnic": 13192, "fecrc": 13199,
+    "crconi": 8874, "crnimn": 8880,
 }
 EXPECTED_TERNARY = 44397
-EXPECTED_TOTAL = 70788
+EXPECTED_TOTAL = 88542
 
 GLOBS = [
     "data/raw/dataset_*.csv",
@@ -109,9 +111,11 @@ def main():
     tern = sum(rows[s] for s in
                ["fecrni", "fecrmn", "fecrmo", "fecrv", "femnni"])
     assert tern == EXPECTED_TERNARY, tern
-    assert tern + rows["fecrnic"] + rows["fecrc"] == EXPECTED_TOTAL
+    assert (tern + rows["fecrnic"] + rows["fecrc"] + rows["crconi"]
+            + rows["crnimn"] == EXPECTED_TOTAL)
     print(f"row counts OK: ternary={tern} + {rows['fecrnic']} + "
-          f"{rows['fecrc']} = {EXPECTED_TOTAL}")
+          f"{rows['fecrc']} + {rows['crconi']} + {rows['crnimn']} = "
+          f"{EXPECTED_TOTAL}")
 
     manifest = {
         "title": "fe_surrogate data release v1",

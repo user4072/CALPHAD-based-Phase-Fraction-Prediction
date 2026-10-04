@@ -1,0 +1,37 @@
+{
+  "system": "crnimn",
+  "n_rows": 8880,
+  "eligible_phases": [
+    "NP_ALPHA_MN",
+    "NP_BCC_A2",
+    "NP_BETA_MN",
+    "NP_CR3MN5",
+    "NP_FCC_A1",
+    "NP_LIQUID",
+    "NP_MNNI",
+    "NP_MNNI2",
+    "NP_SIGMA"
+  ],
+  "active_phases": [
+    "NP_BCC_A2",
+    "NP_CR3MN5",
+    "NP_FCC_A1",
+    "NP_LIQUID",
+    "NP_MNNI",
+    "NP_SIGMA"
+  ],
+  "active_threshold": 0.005,
+  "occurrence": {
+    "NP_ALPHA_MN": 0.0011261261261261261,
+    "NP_BCC_A2": 0.371509009009009,
+    "NP_BETA_MN": 0.003941441441441441,
+    "NP_CR3MN5": 0.012387387387387387,
+    "NP_FCC_A1": 0.6935810810810811,
+    "NP_LIQUID": 0.27128378378378376,
+    "NP_MNNI": 0.020945945945945947,
+    "NP_MNNI2": 0.00033783783783783786,
+    "NP_SIGMA": 0.006644144144144144
+  },
+  "excluded_mass_fraction": 0.003006099228234866,
+  "max_sum_deviation": 1.1332881300063491e-08
+}

@@ -1,0 +1,44 @@
+{
+  "system": "crconi",
+  "n_points": 2000,
+  "n_ok": 2000,
+  "eligible": [
+    "ALPHA_MN",
+    "BCC_A2",
+    "BCC_B2",
+    "BCC_DISL",
+    "BETA_MN",
+    "C15_LAVES",
+    "EPS_CARB",
+    "ETA",
+    "ETA_CARB",
+    "FCC_A1",
+    "FE24C10",
+    "HCP_A3",
+    "KSI_CARBIDE",
+    "KSI_FE5C2",
+    "LAVES_PHASE",
+    "LIQUID",
+    "MNNI",
+    "MNNI2",
+    "MU_PHASE_I",
+    "NITI2",
+    "SIGMA",
+    "TIB2",
+    "ZET"
+  ],
+  "active_counts": {
+    "FCC_A1": 1400,
+    "SIGMA": 168,
+    "BCC_A2": 287,
+    "LIQUID": 424,
+    "HCP_A3": 48
+  },
+  "rate": {
+    "FCC_A1": 0.7,
+    "SIGMA": 0.084,
+    "BCC_A2": 0.1435,
+    "LIQUID": 0.212,
+    "HCP_A3": 0.024
+  }
+}

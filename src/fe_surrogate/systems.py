@@ -116,4 +116,38 @@ SYSTEMS = {
                         "high": [0.30, 0.045, 1150.0]},
         "t_min": 700.0, "t_max": 2000.0,
     },
+    "crconi": {
+        "name": "Cr-Co-Ni",
+        "tdb": os.path.join(HERE, "databases", "crconi_ternary.tdb"),
+        "dataset": os.path.join(HERE, "data", "raw", "dataset_crconi.csv"),
+        "checkpoint": os.path.join(HERE, "data", "raw", "checkpoint_crconi.csv"),
+        "elements": ["CO", "CR", "NI", "VA"],
+        "comps": ["Co", "Cr", "Ni"],                   # alphabetical, Co balance
+        "comps_species": ["CO", "CR"],                 # independent X() variables
+        # Phase set is probe-driven (see data/raw/crconi_probe.json); these
+        # fields are placeholders so generic table code can iterate safely.
+        "phases": [],
+        "phase_cols": [],
+        # Ni-base design-box analog of the stainless rule (base >= 55%,
+        # solutes <= 30%); the >= key is cfg["comps"][0] (see generate_data).
+        "box": {"Co": 0.55, "Cr": 0.30, "Ni": 0.30},
+        "sigma_focus": {"low": [0.15, 0.50, 700.0], "high": [0.02, 0.25, 1250.0]},
+        "t_min": 700.0, "t_max": 2000.0,
+    },
+    "crnimn": {
+        "name": "Cr-Ni-Mn",
+        "tdb": os.path.join(HERE, "databases", "crnimn_ternary.tdb"),
+        "dataset": os.path.join(HERE, "data", "raw", "dataset_crnimn.csv"),
+        "checkpoint": os.path.join(HERE, "data", "raw", "checkpoint_crnimn.csv"),
+        "elements": ["CR", "MN", "NI", "VA"],
+        "comps": ["Cr", "Mn", "Ni"],                   # alphabetical, Cr balance
+        "comps_species": ["CR", "MN"],                 # independent X() variables
+        # Phase set is probe-driven (see data/raw/crnimn_probe.json); these
+        # fields are placeholders so generic table code can iterate safely.
+        "phases": [],
+        "phase_cols": [],
+        "box": {"Cr": 0.55, "Mn": 0.30, "Ni": 0.30},
+        "sigma_focus": {"low": [0.15, 0.50, 700.0], "high": [0.02, 0.25, 1250.0]},
+        "t_min": 700.0, "t_max": 2000.0,
+    },
 }

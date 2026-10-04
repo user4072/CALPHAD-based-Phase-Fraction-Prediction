@@ -493,8 +493,10 @@ def fmtv(x):
     return f"{x:.1f}"
 
 
-ESYS = ["fecrnic", "fecrc"]
-ELBL = dict(LBL, fecrnic="Fe--Cr--Ni--C", fecrc="Fe--Cr--C")
+ESYS = ["fecrnic", "fecrc", "crconi", "crnimn"]
+ELBL = dict(LBL, fecrnic="Fe--Cr--Ni--C", fecrc="Fe--Cr--C",
+            crconi="Cr--Co--Ni", crnimn="Cr--Ni--Mn")
+NC = len(ESYS) + 1  # label column + one per extension/transfer system
 
 
 def remedy_rows():
@@ -678,7 +680,9 @@ if all(SUM.values()):
     allk = [k for k, _ in HEAD14] + [k for k, _ in BASE14]
     G14 = {}
     for _f, _s in [("results_remedy_fecrnic.json", "fecrnic"),
-                   ("results_remedy_fecrc.json", "fecrc")]:
+                   ("results_remedy_fecrc.json", "fecrc"),
+                   ("results_remedy_crconi.json", "crconi"),
+                   ("results_remedy_crnimn.json", "crnimn")]:
         _r = jload(os.path.join(M, _f))
         if _r:
             _g = _r["aggregated"][_s].get("gated", {})
@@ -692,12 +696,12 @@ if all(SUM.values()):
             k, SUM[s]["baselines_mae_mean_over_seeds"].get(k, np.inf))
     best = {s: min(allk + ["gated"], key=lambda k, s=s: _v14(s, k))
             for s in ESYS}
-    W("\\begin{tabular}{lcc}")
+    W("\\begin{tabular}{l" + "c" * len(ESYS) + "}")
     W("\\toprule")
-    W("\\multicolumn{3}{l}{\\emph{(B) test MAE, mean over 3 seeds}} \\\\")
+    W(f"\\multicolumn{{{NC}}}{{l}}{{\\emph{{(B) test MAE, mean over 3 seeds}}}} \\\\")
     W("Model & " + " & ".join(ELBL[s] for s in ESYS) + " \\\\")
     W("\\midrule")
-    W("\\multicolumn{3}{l}{\\scriptsize MLP heads} \\\\")
+    W(f"\\multicolumn{{{NC}}}{{l}}{{\\scriptsize MLP heads}} \\\\")
     for key, lab in HEAD14:
         cells = []
         for s in ESYS:
@@ -706,7 +710,7 @@ if all(SUM.values()):
                          else f"{v:.4f}")
         W(f"{lab} & " + " & ".join(cells) + " \\\\")
     W("\\addlinespace")
-    W("\\multicolumn{3}{l}{\\scriptsize baselines} \\\\")
+    W(f"\\multicolumn{{{NC}}}{{l}}{{\\scriptsize baselines}} \\\\")
     for key, lab in BASE14:
         cells = []
         for s in ESYS:
@@ -715,7 +719,7 @@ if all(SUM.values()):
                          else f"{v:.4f}")
         W(f"{lab} & " + " & ".join(cells) + " \\\\")
     W("\\addlinespace")
-    W("\\multicolumn{3}{l}{\\scriptsize presence-supervised "
+    W(f"\\multicolumn{{{NC}}}{{l}}{{\\scriptsize presence-supervised "
       "(see Section~\\ref{sec:remedy})} \\\\")
     cells = []
     for s in ESYS:
@@ -741,9 +745,9 @@ if all(SUM.values()):
                if k.startswith("C_extrap_ctrl_")]
         if far and ctl:
             cx["fecrc"] = (float(np.mean(far)), float(np.mean(ctl)))
-    W("\\begin{tabular}{lcc}")
+    W("\\begin{tabular}{l" + "c" * len(ESYS) + "}")
     W("\\toprule")
-    W("\\multicolumn{3}{l}{\\emph{(C) spatial holdout and extrapolation "
+    W(f"\\multicolumn{{{NC}}}{{l}}{{\\emph{{(C) spatial holdout and extrapolation "
       "(mean test MAE, all models)}} \\\\")
     W("Protocol & " + " & ".join(ELBL[s] for s in ESYS) + " \\\\")
     W("\\midrule")

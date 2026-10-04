@@ -273,11 +273,14 @@ def main():
     max_dev = np.abs(df[phase_cols].sum(axis=1) - 1.0).max()
     logger.info(f"Mass-balance filter: {len(df)} rows, max |sum-1| = {max_dev:.2e}")
 
-    # Design-space tag: stainless-like box (Fe >= 55%, Cr <= 30%, X <= 30%)
+    # Design-space tag: base element (cfg["comps"][0], Fe in the steel
+    # systems) >= threshold, solutes <= threshold. Identical to the old
+    # Fe-hardcoded rule for all existing systems.
     box = cfg["box"]
+    base = cfg["comps"][0]
     mask = np.ones(len(df), dtype=bool)
     for col, val in box.items():
-        if col == "Fe":
+        if col == base:
             mask &= df[col] >= val
         else:
             mask &= df[col] <= val

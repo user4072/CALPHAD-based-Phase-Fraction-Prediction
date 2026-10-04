@@ -37,7 +37,7 @@ sys.path.insert(0, SRC)
 sys.path.insert(0, ROOT)
 
 TERN = ["fecrni", "fecrmn", "fecrmo", "fecrv", "femnni"]
-EXT = ["fecrnic", "fecrc"]
+EXT = ["fecrnic", "fecrc", "crconi", "crnimn"]
 ALL7 = TERN + EXT
 SEEDS = [42, 123, 2024]
 BEST = {"fecrni": "mlp_renorm", "fecrmn": "mlp_sig_norm", "fecrmo": "mlp_sig_norm",
@@ -273,14 +273,19 @@ def g_counts():
     n_crc = csv_stats("fecrc")["n"]
     check_exact("tex:43 quaternary equilibria 13,192", n_nic, 13192)
     check_exact("tex:44 Fe-Cr-C equilibria 13,199", n_crc, 13199)
-    total = rows5 + n_nic + n_crc
-    check_exact("tex:44 total 70,788", total, 70788)
+    n_tni = csv_stats("crconi")["n"]
+    n_tmn = csv_stats("crnimn")["n"]
+    check_exact("tex:44 Cr-Co-Ni equilibria 8,874", n_tni, 8874)
+    check_exact("tex:44 Cr-Ni-Mn equilibria 8,880", n_tmn, 8880)
+    total = rows5 + n_nic + n_crc + n_tni + n_tmn
+    check_exact("tex:44 total 88,542", total, 88542)
     check_exact("tex:1648 conclusion 44,397", rows5, 44397)
-    check_exact("tex:1650 extension 26,391", n_nic + n_crc, 26391)
-    check_exact("tex:1650 total 70,788", total, 70788)
-    check_exact("tex:439 total 70,788", total, 70788)
-    check_exact("tex:1742 total 70,788", total, 70788)
-    check_exact("tex:217,248 two scope-extension systems", len(EXT), 2)
+    check_exact("tex:1650 extension 44,145", n_nic + n_crc + n_tni + n_tmn,
+                44145)
+    check_exact("tex:1650 total 88,542", total, 88542)
+    check_exact("tex:439 total 88,542", total, 88542)
+    check_exact("tex:1742 total 88,542", total, 88542)
+    check_exact("tex:217,248 four scope-extension systems", len(EXT), 4)
 
     # analysis-log spot (out-of-scope lines 237-238 kept as spot checks)
     log = open(os.path.join(REV, "analysis_log.txt"), encoding="utf-8", errors="replace").read()
@@ -298,7 +303,8 @@ def g_counts():
 # ===================================================== GROUP 2 probe / counts
 def g_probe():
     exp_elig = {"fecrni": 28, "fecrmn": 31, "fecrmo": 29, "fecrv": 25,
-                "femnni": 29, "fecrnic": 35, "fecrc": 32}
+                "femnni": 29, "fecrnic": 35, "fecrc": 32,
+                "crconi": 23, "crnimn": 30}
     lens = {}
     npts = {}
     for s in ALL7:
@@ -307,10 +313,10 @@ def g_probe():
         npts[s] = pj.get("n_points")
     for s, v in exp_elig.items():
         check_exact(f"tex:274-277 eligible {s} = {v}", lens[s], v)
-    check_exact("tex:294 eligible range 25-35 (min)", min(lens.values()), 25)
-    check_exact("tex:294 eligible range 25-35 (max)", max(lens.values()), 35)
+    check_exact("tex:294 eligible range 23-35 (min)", min(lens.values()), 23)
+    check_exact("tex:294 eligible range 23-35 (max)", max(lens.values()), 35)
     check_exact("tex:321 2,000-draw probe (all systems)",
-                sum(1 for v in npts.values() if v == 2000), 7)
+                sum(1 for v in npts.values() if v == 2000), 9)
     p_nic = J(os.path.join(RAW, "fecrnic_probe.json"))
     p_crc = J(os.path.join(RAW, "fecrc_probe.json"))
     check_exact("tex:429 probe activates 9 phases (fecrnic)",
@@ -951,15 +957,17 @@ def g_penalties_holdout():
     check("tex:1721 T extrap upper 20x",
           max(ext_extrap("fecrnic", "T"), ext_extrap("fecrc", "T")), "20")
 
-    # extension best constrained head leads forest ~1.9-2.0x (tex:1719):
-    # renorm on fecrnic, sigmoid/Sigma on fecrc
+    # extension best fraction-only head leads forest ~1.3-2.0x (tex:1719):
+    # renorm on fecrnic and crconi, sigmoid/Sigma on fecrc and crnimn
+    # (the gated head does better still on the transfer systems)
     lead = {}
-    ext_best = {"fecrnic": "mlp_renorm", "fecrc": "mlp_sig_norm"}
+    ext_best = {"fecrnic": "mlp_renorm", "fecrc": "mlp_sig_norm",
+                "crconi": "mlp_renorm", "crnimn": "mlp_sig_norm"}
     for s in EXT:
         h = J(os.path.join(MODELS, f"results_heads_{s}.json"))
         b = J(os.path.join(MODELS, f"results_baselines_{s}.json"))
         lead[s] = sm(b, "rf_renorm") / sm(h, ext_best[s])
-    check("tex:1719 extension MLP lead lower 1.9x", min(lead.values()), "1.9")
+    check("tex:1719 extension MLP lead lower 1.3x", min(lead.values()), "1.3")
     check("tex:1719 extension MLP lead upper 2.0x", max(lead.values()), "2.0")
     check("tex:1376 fecrnic renorm 2.0x over forest", lead["fecrnic"], "2.0")
 
@@ -1205,11 +1213,13 @@ def g_uncertainty():
 def g_phase_set():
     ra = J(os.path.join(REV, "phase_set_validation.json"))
     ext = {"fecrnic": J(os.path.join(REV, "phase_set_validation_fecrnic.json"))["fecrnic"],
-           "fecrc": J(os.path.join(REV, "phase_set_validation_fecrc.json"))["fecrc"]}
+           "fecrc": J(os.path.join(REV, "phase_set_validation_fecrc.json"))["fecrc"],
+           "crconi": J(os.path.join(REV, "phase_set_validation_crconi.json"))["crconi"],
+           "crnimn": J(os.path.join(REV, "phase_set_validation_crnimn.json"))["crnimn"]}
     allv = dict(ra)
     allv.update(ext)
     check_exact("tex:293,1585 1,500 re-solved points per system",
-                sum(1 for v in allv.values() if v["n_points"] == 1500), 7)
+                sum(1 for v in allv.values() if v["n_points"] == 1500), 9)
 
     four = [ra[s] for s in TERN]
     passed = sum(1 for v in four if v["max_abs_dNP"] <= 2.5e-9)
@@ -1379,6 +1389,119 @@ def g_ext_heads():
                 margins[0], "3", "30")
     check_prose("tex:1383-1384 ridge ~order of magnitude (fecrc)",
                 margins[1], "3", "30")
+
+
+# ==================================================== GROUP transfer Fe-free
+def g_transfer():
+    import numpy as np
+    for sysn, exp in (("crconi", {"mlp_renorm": "0.0055", "mlp_softmax": "0.0062",
+                                  "mlp_sig_norm": "0.0065", "rf_renorm": "0.0070",
+                                  "mlp_residue": "0.0128", "mlp_sigmoid": "0.0175",
+                                  "mlp_sparsemax": "0.047"}),
+                      ("crnimn", {"mlp_sig_norm": "0.0036", "mlp_renorm": "0.0040",
+                                  "mlp_sparsemax": "0.0048", "rf_renorm": "0.0052",
+                                  "mlp_softmax": "0.0046", "mlp_sigmoid": "0.0107",
+                                  "mlp_residue": "0.0108"})):
+        h = J(os.path.join(MODELS, f"results_heads_{sysn}.json"))
+        b = J(os.path.join(MODELS, f"results_baselines_{sysn}.json"))
+        for tag, e in exp.items():
+            d = b if tag.startswith(("rf", "xgb", "knn", "ridge")) else h
+            check(f"tex:extensions [{sysn}] {tag} MAE {e}", sm(d, tag), e)
+    for sysn, n_exp in (("crconi", 8874), ("crnimn", 8880)):
+        st = csv_stats(sysn)
+        check_exact(f"tex:data [{sysn}] rows", st["n"], n_exp)
+        check(f"tex:data [{sysn}] box 38.0%", st["box_pct"], "38.0")
+    check_prose("tex:data closure 1.5e-8 (crconi)",
+                csv_stats("crconi")["closure_max"], "1.4e-8", "1.5e-8")
+    check_prose("tex:data closure 1.1e-8 (crnimn)",
+                csv_stats("crnimn")["closure_max"], "1.0e-8", "1.2e-8")
+    for sysn, w_exp, g_exp, gm_exp in (("crconi", "0.799", "0.979", "0.0045"),
+                                       ("crnimn", "0.877", "0.971", "0.0036")):
+        r = J(os.path.join(MODELS, f"results_remedy_{sysn}.json"))
+        agg = r["aggregated"][sysn]
+        check(f"tex:remedy [{sysn}] weighted macro {w_exp}",
+              agg["weighted"]["macro_auprc"], w_exp)
+        check(f"tex:remedy [{sysn}] gated macro {g_exp}",
+              agg["gated"]["macro_auprc"], g_exp)
+        check(f"tex:remedy [{sysn}] gated MAE {gm_exp}",
+              agg["gated"]["mae"], gm_exp)
+    for sysn, ph, w_lo, w_hi, g_lo, g_hi in (
+            ("crconi", "HCP_A3", "0.015", "0.030", "0.900", "0.915"),
+            ("crnimn", "MNNI", "0.595", "0.615", "0.975", "0.990")):
+        r = J(os.path.join(MODELS, f"results_remedy_{sysn}.json"))
+        for var, lo, hi in (("weighted", w_lo, w_hi), ("gated", g_lo, g_hi)):
+            vals = [r["runs"][k]["per_phase_auprc"][ph]
+                    for k in r["runs"] if k.startswith(var)]
+            check_prose(f"tex:remedy [{sysn}] {ph} {var} AUPRC",
+                        float(np.mean(vals)), lo, hi)
+    summ = {s: J(os.path.join(MODELS, f"results_{s}_summary.json"))
+            for s in ("crconi", "crnimn")}
+    band_r = {}
+    for sysn in ("crconi", "crnimn"):
+        pm = summ[sysn]["holdout"]["band"]["per_block_mean_mae"]
+        band_r[sysn] = {k: pm[k] / pm["random_ctrl"] for k in ("T_band", "X2_band")}
+        xm = summ[sysn]["holdout"]["extrap"]["per_block_mean_mae"]
+        band_r[sysn]["T_ext"] = xm["T_extrap"] / xm["T_extrap_ctrl"]
+    check_prose("tex:extensions crconi bands easier (~0.8x)",
+                min(band_r["crconi"].values()), "0.70", "0.85")
+    check_prose("tex:extensions crnimn band 1.4--2.2x",
+                min(band_r["crnimn"]["T_band"], band_r["crnimn"]["X2_band"]),
+                "1.3", "1.5")
+    check_prose("tex:extensions crnimn band 1.4--2.2x (max)",
+                max(band_r["crnimn"]["T_band"], band_r["crnimn"]["X2_band"]),
+                "2.1", "2.3")
+    check_prose("tex:extensions T-extrap 22--24x (min)",
+                min(band_r["crconi"]["T_ext"], band_r["crnimn"]["T_ext"]),
+                "21", "23")
+    check_prose("tex:extensions T-extrap 22--24x (max)",
+                max(band_r["crconi"]["T_ext"], band_r["crnimn"]["T_ext"]),
+                "23", "25")
+    for sysn in ("crconi", "crnimn"):
+        b = J(os.path.join(MODELS, f"block_holdout_{sysn}.json"))
+        for blk in ("T_band", "X2_band"):
+            def _ratio(m, blk=blk, b=b):
+                mu = sum(b[f"{blk}_{m}_s{k}"]["mean_mae"] for k in SEEDS) / 3
+                cu = sum(b[f"random_ctrl_{m}_s{k}"]["mean_mae"]
+                         for k in SEEDS) / 3
+                return mu / cu
+            mlp_best = min(_ratio(m) for m in ("mlp_renorm", "mlp_sig_norm"))
+            tree_best = min(_ratio(m) for m in ("rf_renorm", "xgb_renorm"))
+            check_exact(f"tex:extensions [{sysn}] {blk} MLP degrades least",
+                        mlp_best <= tree_best, True)
+    for sysn in ("crconi", "crnimn"):
+        p = J(os.path.join(ROOT, "analysis_revision",
+                           f"phase_set_validation_{sysn}.json"))[sysn]
+        check_exact(f"tex:extensions [{sysn}] phaseset n_ok", p["n_ok"], 1500)
+        check_exact(f"tex:extensions [{sysn}] phaseset fails",
+                    p["points_with_dNP_gt_1e-3"], 0)
+    check("tex:extensions phaseset 6.1e-10 (crconi)",
+          J(os.path.join(ROOT, "analysis_revision",
+                         "phase_set_validation_crconi.json"))
+          ["crconi"]["max_abs_dNP"], "6.1e-10")
+    check("tex:extensions phaseset 7.3e-10 (crnimn)",
+          J(os.path.join(ROOT, "analysis_revision",
+                         "phase_set_validation_crnimn.json"))
+          ["crnimn"]["max_abs_dNP"], "7.3e-10")
+    h = {s: J(os.path.join(MODELS, f"results_heads_{s}.json"))
+         for s in ("crconi", "crnimn")}
+    b = {s: J(os.path.join(MODELS, f"results_baselines_{s}.json"))
+         for s in ("crconi", "crnimn")}
+    r = {s: J(os.path.join(MODELS, f"results_remedy_{s}.json"))
+         for s in ("crconi", "crnimn")}
+    margins = [b[s][f"rf_renorm_s{k}"]["mean_mae"]
+               / min(h[s][f"mlp_renorm_s{k}"]["mean_mae"],
+                     h[s][f"mlp_sig_norm_s{k}"]["mean_mae"])
+               for s in ("crconi", "crnimn") for k in SEEDS]
+    check_prose("tex:conclusions transfer forest margin 1.3--2.0 (min)",
+                min(margins), "1.2", "1.4")
+    improv = [1 - r[s]["aggregated"][s]["gated"]["mae"] / sm(h[s], "mlp_renorm")
+              for s in ("crconi", "crnimn")]
+    check_prose("tex:limitations gated improves 10--17% (min)",
+                100 * min(improv), "9", "11")
+    check_prose("tex:limitations gated improves 10--17% (max)",
+                100 * max(improv), "16", "18")
+    check_prose("tex:conclusions almost 57,000 full-set solves",
+                25411 + 18000 + 13500, "56000", "58000")
 
 
 # ================================================== GROUP 17 winners / 2-1-2
@@ -1794,14 +1917,14 @@ def g_screen():
                 shortlist_total, 25411)
     probe_total, probe_n = 0, 0
     for s in ("fecrni", "fecrmn", "fecrmo", "fecrv", "femnni",
-              "fecrnic", "fecrc"):
+              "fecrnic", "fecrc", "crconi", "crnimn"):
         p = J(os.path.join(RAW, f"{s}_probe.json"))
         probe_total += p.get("n_points", 2000)
         probe_n += 1
-    grand = shortlist_total + probe_total + 7 * 1500
-    check_exact("tex:conclusions 49911 full-set solves "
+    grand = shortlist_total + probe_total + 9 * 1500
+    check_exact("tex:conclusions 56911 full-set solves "
                 "(shortlist+probe+phaseset)",
-                grand, 25411 + 14000 + 10500)
+                grand, 25411 + 18000 + 13500)
     gr = J(os.path.join(PAPER, "screen_data", "grades.json"))["grades"]
     g304, g430, gdup = gr["AISI 304"], gr["AISI 430"], gr["S31803-projected"]
     check_exact("tex:screen 304 refused (CALPHAD sigma 0.037)",
@@ -1829,7 +1952,7 @@ def main():
     for fn in (g_counts, g_probe, g_csv, g_heads, g_penalty, g_sparsemax,
                g_delaunay, g_bands, g_region_matched, g_f1_shift, g_extrap,
                g_penalties_holdout, g_remedy, g_uncertainty, g_phase_set,
-               g_anchor, g_ext_heads, g_winners, g_threshold, g_recompute,
+               g_anchor, g_ext_heads, g_transfer, g_winners, g_threshold, g_recompute,
                g_structural, g_nv, g_screen):
         guarded(fn)
     n_pass = sum(1 for st, _, _ in results if st == "PASS")

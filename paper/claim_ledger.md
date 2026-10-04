@@ -464,3 +464,36 @@ Fe--Mn--Ni under the same template delta (seed 1007, shifted focus):
 all three seeds (56 % reduction): the RF side of 2-1-2 is template-robust
 too. Scripts generalized via CLI (no duplication); release globs cover
 the new artifacts. Tex + docx mirrored. Audit +3. Audit: 470/0/7.
+
+## ADDENDUM -- Fe-free chemistry transfer: Cr--Co--Ni + Cr--Ni--Mn (2026-10-04)
+
+Same assessed source (mc_fe_v2.062), new element sets: SYSTEMS +=
+crconi/crnimn (alphabetical comps, Co/Cr balance; box tag generalized in
+generate_data.py from hardcoded Fe to comps[0], identical rule for all
+old systems). Probe 2000 draws each: CrCoNi 2000/2000 ok, 5 active
+(FCC 70 %, LIQUID 21 %, BCC 14 %, SIGMA 8.4 %, HCP 2.4 %); CrNiMn
+1999/2000 ok, 9 active (+ BETA_MN/MNNI/CR3MN5/SIGMA/ALPHA_MN/MNNI2 rare).
+Data-gen (standard 5 ternary strategies, seed 42): 8,874 + 8,880 rows,
+box analog 38.0 % both, closure 1.45e-8/1.13e-8; phase-set validation
+(paper/phase_set_transfer.py, n=1500 with GM capture) 1500/1500 both,
+max|dNP| 6.1e-10/7.3e-10, no deviations. Full battery, fixed protocol:
+heads (6x3) + baselines + weighted/gated remedy + band holdout + strict
+extrapolation. Findings: head ranking transfers (renorm best-or-tied
+0.0055/0.0040, beats RF 0.0070/0.0052 by 1.3x); sparsemax interaction
+(collapses K=5 at 0.047, competes K=9 at 0.0048); detector gap
+reproduced and closed by the identical gated recipe (0.799->0.979 with
+HCP 0.02->0.91; 0.877->0.971 with MNNI 0.60->0.98), gated MAE best-or-tied
+(0.0045/0.0036, +10-17 % better than renorm); band penalties
+region-dependent (CoNi 0.8x easier-than-control, NiMn 1.4-2.2x, MLP
+degrades least all 4 bands); strict extrap fails every axis, worst T
+(22-24x). Integration: ESYS += 2 (tab/extension.tex panels widened;
+all 27 old rows verified byte-identical), Sec:extensions retitled with
+3 transfer paragraphs, counts updated throughout (9 datasets, 88,542
+rows, 56,911 full-set solves, 23-35 eligible, 7 ternary-protocol
+systems), remedy/limitations/conclusions/availability updated; audit
+EXT/ALL7 extended + new g_transfer group (49 checks); docx Table 11 to
+4 columns + prose mirrored (bolds match tex: renorm-Q, sig-C, sig-crnimn,
+gated-crconi). Two brace bugs in the widened table (stray }} in
+presence-supervised + panel-C multicolumn) hung pdflatex; fixed, PDF
+rebuilds clean (58 pp, zero errors, one pre-existing vbox overfull).
+Release verified (615 files, 88,542 rows). Audit: 531/0/7.

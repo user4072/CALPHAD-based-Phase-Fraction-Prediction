@@ -188,7 +188,7 @@ screens --- a 501{,}501-composition lean-nickel screen with all 10{,}936
 shortlist points confirming, and a 330{,}000-composition quaternary
 screen with carbon at 0.98 shortlist precision --- plus learning curves
 pricing adoption (Section~\ref{sec:screen}), on top of a protocol
-re-run on two extension systems as supporting evidence
+re-run on four extension systems as supporting evidence
 (Section~\ref{sec:extensions}).
 \end{enumerate}
 Failed mechanisms (sparsemax, sum-to-one penalty, residue closure)
@@ -227,8 +227,9 @@ contiguous interior-band holdout, and strict one-sided extrapolation, the
 two spatial ones each with a size-matched random control --- plus
 secondary analyses (ablations, boundary-error analysis, the
 presence-gated remedy, uncertainty screening, and the experimental
-anchor, dashed arrows). Two scope-extension systems (quaternary
-Fe--Cr--Ni--C and Fe--Cr--C) reuse the same pipeline end to end and are
+anchor, dashed arrows). Four scope-extension systems (quaternary
+Fe--Cr--Ni--C, Fe--Cr--C, and Fe-free Cr--Co--Ni and Cr--Ni--Mn) reuse
+the same pipeline end to end and are
 reported in Sections~\ref{sec:extensions} and~\ref{sec:anchor}.}
 \label{fig:workflow}
 \end{figure}
@@ -254,9 +255,10 @@ is correspondingly bounded by the database's assessments and the solver's
 convergence behaviour.
 
 Eligible phase counts are 28 (Fe--Cr--Ni), 31 (Fe--Cr--Mn), 29 (Fe--Cr--Mo),
-25 (Fe--Cr--V), and 29 (Fe--Mn--Ni); the two scope-extension systems use
+25 (Fe--Cr--V), and 29 (Fe--Mn--Ni); the four scope-extension systems use
 the same parser and database, with 35 eligible phases for the quaternary
-Fe--Cr--Ni--C subset and 32 for Fe--Cr--C. Pressure is fixed at 101{,}325~Pa
+Fe--Cr--Ni--C subset, 32 for Fe--Cr--C, 23 for Cr--Co--Ni, and 30 for
+Cr--Ni--Mn. Pressure is fixed at 101{,}325~Pa
 throughout.
 
 \subsection{Probe-driven phase sets}
@@ -273,7 +275,7 @@ from any train/validation/test row enters the phase-set construction. This
 global preprocessing step fixes the output dimensionality for each system
 prior to any predictive modelling. The fidelity of this phase-set reduction
 is validated on an independent set of 1{,}500 points per system by
-re-solving every point with the complete eligible phase set (25--35 phases
+re-solving every point with the complete eligible phase set (23--35 phases
 depending on system) and comparing per-phase amounts and total molar Gibbs
 energies against the stored values. In four of the five ternary systems the
 reduced-set and full-set equilibria agree to solver precision: $\max
@@ -289,10 +291,12 @@ target set, so these discrepancies reflect near-degenerate solver minima in
 this region rather than an incomplete target set: repeated full-set solves
 can return either minimum, and the exact failing-point count varies between
 validation runs (1--3 of 1{,}500); no excluded phase exceeds the
-$10^{-3}$ threshold anywhere. The same validation applied to the two
+$10^{-3}$ threshold anywhere. The same validation applied to the four
 scope-extension systems passes at solver precision on Fe--Cr--Ni--C
 ($\max |\Delta\Np{\phi}| = 8.7\times10^{-9}$ over 1{,}500 points, no
-point deviating by more than $10^{-3}$), while on Fe--Cr--C it exposes an
+point deviating by more than $10^{-3}$) and on both Fe-free transfer
+systems ($6.1\times10^{-10}$ and $7.3\times10^{-10}$ over 1{,}500 points
+each, no deviations), while on Fe--Cr--C it exposes an
 imperfection of the pre-screen: 9 of the 1{,}497 converged points (0.6\%)
 return a different assemblage under the full 32-phase set, with $\max
 |\Delta\Np{\phi}| = 0.95$ and $\max |\Delta G| = 36$~J/mol, the differing
@@ -407,7 +411,7 @@ $10^{-9}$--$10^{-8}$.}
 
 \subsection{Scope-extension datasets}
 
-Two additional systems test whether the conclusions survive a change of
+Four additional systems test whether the conclusions survive changes of
 dimension and chemistry, under the identical probe, acceptance, and split
 protocol. The \emph{quaternary Fe--Cr--Ni--C} system adds interstitial
 carbon: solutes are drawn from $x_{\mathrm{Cr}} \in [0.001, 0.35]$,
@@ -428,11 +432,25 @@ $x_{\mathrm{C}} \in [0.0005, 0.06]$ and the same strategies, yielding
 13{,}199 accepted rows of 13{,}200 candidates (one fails the in-run
 solver/mass-balance gate; $\max |\sum_k \Np{k} - 1|
 = 6.8\times10^{-9}$, 100\% inside the box by construction), with 9 active
-phases among 32 eligible, SIGMA appearing in only 0.4\% of rows. Both
-datasets span $T \in [700, 2000]$~K. No hyperparameter search was
-performed on either system; all heads and baselines use the fixed
-protocol of Section~\ref{sec:models}. Together the seven datasets contain
-70{,}788 mass-balance-validated equilibria; the extension systems are
+phases among 32 eligible, SIGMA appearing in only 0.4\% of rows. Two
+further ternaries change the chemistry instead of the dimension, reusing
+the identical ternary protocol (the same five sampling strategies, split,
+and seeds over the same $T \in [700, 2000]$~K range; the design-box tag
+uses the balance-element analog, Co $\geq$ 55\% and Cr $\geq$ 55\%
+respectively, solutes $\leq$ 30\%). The Fe-free \emph{Cr--Co--Ni} system
+(the medium-entropy corner) yields 8{,}874 accepted rows with 5
+probe-active phases among 23 eligible (FCC\_A1 dominant at 81.0\%
+nonzero; HCP\_A3 rarest at 0.7\%), and \emph{Cr--Ni--Mn} yields 8{,}880
+rows with 9 probe-active phases among 30 eligible, including the Mn
+intermetallics MNNI (2.1\%) and CR3MN5 (1.2\%), with BETA\_MN, ALPHA\_MN,
+and MNNI2 below the 0.5\% target threshold but retained as targets exactly
+as in the ternary protocol. Both pass mass balance at $\max |\sum_k
+\Np{k} - 1| = 1.5\times10^{-8}$ and $1.1\times10^{-8}$, with 38.0\% of
+rows inside the box analog. All four datasets span $T \in [700, 2000]$~K.
+No hyperparameter search was
+performed on any of these systems; all heads and baselines use the fixed
+protocol of Section~\ref{sec:models}. Together the nine datasets contain
+88{,}542 mass-balance-validated equilibria; the extension systems are
 reported in Section~\ref{sec:extensions}.
 
 % ======================================================================
@@ -951,9 +969,12 @@ on all five ternaries, by 6\% (Fe--Cr--Ni) to 72\% (Fe--Mn--Ni, 0.0140 to
 0.0039). In absolute terms the gated head's test MAE is 0.0100, 0.0075,
 0.0110, 0.0110 and 0.0039 across the five ternaries (Table~\ref{tab:main},
 $\ddagger$ row) --- ahead of the random forest on every one of them ---
-and 0.0041 and 0.0047 on the two extension systems, again ahead of the
-forest (0.0075 and 0.0055) though behind the best fraction-only head on
-those systems. Two caveats bound this result. The remedy was designed
+and 0.0041 and 0.0047 on the carbide extension systems, again ahead of
+the forest (0.0075 and 0.0055) though behind the best fraction-only head
+on those systems; on the Fe-free transfer systems the gated head is
+best-or-tied overall (0.0045 against a 0.0055 renorm MLP and a 0.0070
+forest on Cr--Co--Ni; 0.0036, tying sigmoid/$\Sigma$, against a 0.0052
+forest on Cr--Ni--Mn). Two caveats bound this result. The remedy was designed
 \emph{after} seeing the bare regressor fail on these same test sets, so
 its test numbers are post-hoc by construction; and the shift evaluation
 below covers two systems only. The presence
@@ -968,8 +989,9 @@ reported as such. The weighted-only ablation is insufficient (macro-AUPRC
 presence supervision, not the loss reweighting, is the operative
 ingredient.
 
-\paragraph{On the two extension systems the gated head buys detection
-at a measurable regression cost.}
+\paragraph{On the carbide extension systems the gated head buys detection
+at a measurable regression cost; on the Fe-free transfer systems it buys
+detection nearly for free.}
 On quaternary Fe--Cr--Ni--C the gated head raises macro-AUPRC from 0.805
 to 0.965 against 0.860 for the best classical detector, and the macro over
 the quaternary's carbide phases (M23C6, M7C3, CEMENTITE, GRAPHITE) from
@@ -979,10 +1001,15 @@ cost. On Fe--Cr--C the picture is sharper: the bare MLP is a weak
 detector (macro-AUPRC 0.559; CEMENTITE 0.036, SIGMA 0.003) while the
 trees reach 0.896--0.897; the gated head reaches 0.922, lifting CEMENTITE
 to 0.800, GRAPHITE to 0.808, and SIGMA to 0.805, and macro $F_1$ from
-0.515 to 0.832, at a 47\% MAE cost. Whether that trade is worthwhile
+0.515 to 0.832, at a 47\% MAE cost. On the Fe-free transfer systems the
+identical recipe buys detection nearly for free: Cr--Co--Ni rises from
+0.799 to 0.979 macro-AUPRC --- HCP\_A3, invisible to the joint head at
+0.02, reaches 0.91 --- while MAE \emph{improves} from 0.0055 to 0.0045,
+and Cr--Ni--Mn rises from 0.877 to 0.971 (MNNI from 0.60 to 0.98) with
+MAE improving from 0.0040 to 0.0036. Whether that trade is worthwhile
 depends on the application, but for alloy screening the metallurgically
 consequential question --- will this carbide precipitate --- is exactly
-what the bare regressor answers worst. Both extension systems are re-run
+what the bare regressor answers worst. All four extension systems are re-run
 through the full protocol --- heads, spatial holdouts, and phase-set
 validation --- in Section~\ref{sec:extensions}.
 
@@ -1440,21 +1467,24 @@ boundary-to-interior ratio of $\sim$10. Full fields, error maps and the
 proxy definition are in the Supplement, Section~S4 (Figure~S3).
 
 % ======================================================================
-\section{Scope extensions: quaternary Fe--Cr--Ni--C and Fe--Cr--C}
+\section{Scope extensions: dimension, carbides, and Fe-free chemistries}
 \label{sec:extensions}
 
 The preceding sections were developed on five ternaries with three
-inputs (Section~\ref{sec:remedy} already reports the gated head on both
-extension systems). This section re-runs the full protocol --- probe-driven
+inputs (Section~\ref{sec:remedy} already reports the gated head on all
+four extension systems). This section re-runs the full protocol --- probe-driven
 phase set, fixed heads and baselines, identical split and seeds (for the
 quaternary the K-means fit uses all four design coordinates ---
 $x_{\mathrm{Cr}}$, $x_{\mathrm{Ni}}$, $x_{\mathrm{C}}$, and temperature ---
 with the same $k = 6$ and seeds 42, 123, 2024), no hyperparameter search
---- on the two scope-extension datasets of
+--- on the four scope-extension datasets of
 Section~\ref{sec:data}, to test whether the head ranking, the
 regressor--detector gap and its remedy, and the spatial protocols
 survive a change of dimension (three to four inputs, with interstitial
-carbon) and a change of chemistry (carbide-dominated phase diagrams).
+carbon), a change of chemistry within iron (carbide-dominated phase
+diagrams), and a change of chemistry beyond iron (the Fe-free Cr--Co--Ni
+medium-entropy corner and the intermetallic Cr--Ni--Mn system, under the
+identical ternary protocol).
 
 Table~\ref{tab:extension} reports the results in full. Three findings
 stand out.
@@ -1471,7 +1501,14 @@ decisively. The axis-aligned trees did not recover their advantage in
 four dimensions, and ridge regression remains an order of magnitude
 worse (0.081--0.082). With only two extension systems this is evidence,
 not proof, that the ternary geometry--ranking correspondence extends to
-four inputs.
+four inputs. Beyond iron the ranking transfers with one interaction: on
+Cr--Co--Ni the renorm head achieves 0.0055 against 0.0070 for the forest,
+with softmax at 0.0062 and sigmoid/$\Sigma$ at 0.0065, while on nine-phase
+Cr--Ni--Mn sigmoid/$\Sigma$ achieves 0.0036 with renorm at 0.0040, against
+0.0052 for the forest --- and sparsemax, which collapses on every Fe
+system and on Cr--Co--Ni (0.047), competes on dilute nine-phase targets
+(0.0048). The sparse head suits sparse targets; renorm remains best-or-tied
+on both transfer systems.
 
 \paragraph{The detector gap widens exactly where phases get rarer, and
 the gated head transfers without retuning.}
@@ -1483,8 +1520,14 @@ phases occurring below about 2\% of rows, while the trees retain
 The presence-gated head, trained with the identical recipe used on the
 ternaries, lifts these systems to 0.965 and 0.922 macro-AUPRC
 (Section~\ref{sec:remedy}): the remedy transfers with no retuning, at the
-regression cost quantified there. The phase-set pre-screen passes at
-solver precision on the quaternary system and shows the nine documented
+regression cost quantified there. On the Fe-free systems the same gap
+opens at the rarest phase and the identical recipe closes it: the bare
+MLP misses HCP\_A3 on Cr--Co--Ni (AUPRC 0.02) and MNNI on Cr--Ni--Mn,
+while the gated head lifts the systems to 0.979 and 0.971 macro-AUPRC ---
+at the best-or-tied regression MAE on both (0.0045 and 0.0036).
+The phase-set pre-screen passes at
+solver precision on the quaternary system and on both transfer systems,
+and shows the nine documented
 Fe--Cr--C deviations (Table~\ref{tab:extension} panel D;
 Section~\ref{sec:data}); neither the accuracy nor
 the detection results depend on repairing them, and none were repaired.
@@ -1494,7 +1537,14 @@ Composition-band holdout costs 2.1--3.5 times the random control and
 strict extrapolation fails on every tested axis, worst in temperature
 (Table~\ref{tab:extension} panel C); the absolute-error ordering of
 Section~\ref{sec:extrapolation} --- no architecture extrapolates
-reliably --- does not depend on being ternary.
+reliably --- does not depend on being ternary. Beyond iron the same
+pattern holds with region-dependent band difficulty: strict
+extrapolation fails on every tested axis of both transfer systems, worst
+in temperature (22--24 times the control), while composition-band
+holdout costs 1.4--2.2 times the control on Cr--Ni--Mn and tests
+\emph{easier} than the random control on Cr--Co--Ni (0.8 times, both
+bands FCC-dominated) --- the band protocol measures region difficulty,
+not just displacement, and on both systems the MLP degrades least.
 
 \begin{table}[htbp]
 \centering
@@ -1761,10 +1811,10 @@ binary phase boundaries, Fe--Mn--Ni favoured axis-aligned tree splits,
 whereas Fe--Cr--V, another sharp-boundary system, is a statistical tie
 between the families. We present
 this as an empirical observation across the tested systems, not a universal
-law: with only seven systems (five ternaries and two extensions,
+law: with only nine systems (five ternaries and four extensions,
 Section~\ref{sec:extensions}), system identity is confounded with phase
 topology, rare-phase frequency, sampling density, and boundary geometry ---
-and all five ternaries share the same seed-42 sampling template
+and all seven ternary-protocol systems share the same seed-42 sampling template
 (Section~\ref{sec:data}), so coverage is confounded with system
 identity too. No quantitative sharpness metric is evaluated, so the
 topology story is a hypothesis consistent with the results, not a measured
@@ -1829,7 +1879,7 @@ $4$--$6\times10^{3}$ for single queries. The 2.5~s denominator is the full
 eligible phase set (28--31 phases); the probe-reduced set actually used for
 data generation costs less per point (unrecorded), so the factor against
 the as-run pipeline is smaller. Break-even against data generation
-(70{,}788 equilibria) plus training time is worked through for the
+(88{,}542 equilibria) plus training time is worked through for the
 demonstration screen in Section~\ref{sec:screen}
 ($\sim$10$^4$--7$\times$10$^4$ points); any new deployment must redo that
 accounting for its own query volume.
@@ -1893,7 +1943,8 @@ transforms are undefined where any component is zero, so these families
 would need ad hoc zero replacement before fitting. The presence-gated
 remedy is evaluated at one architecture, one presence threshold, and two
 loss variants; it leaves one rare phase (MU\_PHASE\_I in Fe--Cr--Mo)
-undetected and costs 12--47\% MAE on the two extension systems,
+undetected and costs 12--47\% MAE on the carbide extension systems
+(while improving MAE by 10--17\% on the Fe-free transfer systems),
 so it is a demonstrated remedy, not a tuned optimum. The uncertainty gate
 is validated on five ternary systems and fails on two of them; the seed
 disagreement score must be checked per system before use. The experimental
@@ -1903,9 +1954,10 @@ surrogate's contribution but cannot validate the database. The Fe--Cr--C
 pre-screen deviation (9 of 1{,}497 points) is a known imperfection of the
 probe-based phase-set construction at rare-phase margins, kept in the
 released dataset. Three further design limitations bound generality. All
-five ternaries share one seed-42 sampling template --- identical
-stainless-box thresholds (38.0\% in-box on every system) and identical
-sigma-focus boxes, including on Fe--Mn--Ni, where no sigma phase is ever
+seven ternary-protocol systems (the five Fe ternaries plus the two Fe-free
+transfer systems) share one seed-42 sampling template --- identical
+box thresholds (38.0\% in-box on every one of them) and identical
+solute-focus boxes, including on Fe--Mn--Ni, where no sigma phase is ever
 active and the draw has no metallurgical meaning --- so system identity is
 confounded with sampling coverage. Label noise is documented but not
 removed: near-degenerate solver minima in Fe--Cr--Mo and nine genuinely
@@ -1938,8 +1990,9 @@ pipeline and data.
 We benchmarked simplex-constraint mechanisms for phase-fraction
 prediction --- six fraction-only heads plus a presence-supervised gated
 head, against four classical baselines, on five Fe-based ternaries
-(44{,}397 equilibria) plus quaternary and carbide extensions (26{,}391
-more; 70{,}788 in total): a systematic empirical benchmark with controls,
+(44{,}397 equilibria) plus quaternary, carbide, and Fe-free extensions
+(44{,}145 more; 88{,}542 in total): a systematic empirical benchmark with
+controls,
 not a new architecture.
 
 \paragraph{Answer 1: how to predict.}
@@ -1999,11 +2052,11 @@ two tested systems, failing only where detection collapses for all models
 Two further results complete the operational picture. A three-seed
 disagreement score ranks per-row error (mean AUROC 0.70) and gates MAE by
 up to a factor of 4.3 at 50\% coverage on the systems where it helps,
-whereas input-space distance has no power (AUROC 0.41). And the protocol transfers: on the two
+whereas input-space distance has no power (AUROC 0.41). And the protocol transfers: on the four
 extension systems constrained MLPs lead the forest by factors of
-1.9--2.0, the spatial protocols reproduce the
+1.3--2.0, the spatial protocols reproduce the
 same qualitative penalties (temperature extrapolation remains
-15--20 times the control on the extension systems, subject to the same
+15--24 times the control on the extension systems, subject to the same
 closed-basis limitation documented for the ternaries), and against four
 published DTA transition points the
 surrogate matches the full-CALPHAD answer within 21~K (mean 17.75~K at the
@@ -2014,7 +2067,7 @@ lean-nickel query at 1000~K shortlists 10{,}936 candidates in 0.4~s with
 all 10{,}936 shortlist points confirming under full-set CALPHAD
 (Section~\ref{sec:screen}) --- the screening-filter claim, demonstrated
 rather than asserted. Across screens, anchor sweeps, phase-set
-re-solves and probes, almost 50{,}000 full-set CALPHAD solves back the
+re-solves and probes, almost 57{,}000 full-set CALPHAD solves back the
 empirical claims of this paper (25{,}411 shortlist validations alone):
 validation at a scale exceeding the experimental spot-checks of
 comparable screening studies, which is what lets a computational study
@@ -2038,7 +2091,7 @@ evaluation, and all analyses reported in this paper, including the
 region-matched reanalysis, AUPRC, phase-rule admissibility, the
 presence-gated remedy, the uncertainty-gate analysis, the projection
 ablation, and the reconstruction of the design-space accounting) is
-available at \url{https://github.com/user4072/CALPHAD-based-Phase-Fraction-Prediction}. The seven datasets (70{,}788 equilibria with
+available at \url{https://github.com/user4072/CALPHAD-based-Phase-Fraction-Prediction}. The nine datasets (88{,}542 equilibria with
 per-phase fractions and thermodynamic potentials), the stored per-seed
 model predictions, all result files, and the experimental-anchor
 extraction and evaluation (pointers to the source PDFs, extracted tables, and

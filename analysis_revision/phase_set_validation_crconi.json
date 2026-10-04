@@ -1,0 +1,14 @@
+{
+  "crconi": {
+    "system": "crconi",
+    "n_points": 1500,
+    "n_ok": 1500,
+    "n_eligible": 23,
+    "n_active": 5,
+    "max_abs_dNP": 6.107176431235928e-10,
+    "max_abs_dNP_phase": "SIGMA",
+    "max_abs_dGM_J_per_mol": 2.510090416762978e-05,
+    "points_with_dNP_gt_1e-3": 0,
+    "missing_phases": []
+  }
+}

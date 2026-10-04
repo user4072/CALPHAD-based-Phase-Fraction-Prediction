@@ -1,0 +1,28 @@
+{
+  "system": "crconi",
+  "n_rows": 8874,
+  "eligible_phases": [
+    "NP_BCC_A2",
+    "NP_FCC_A1",
+    "NP_HCP_A3",
+    "NP_LIQUID",
+    "NP_SIGMA"
+  ],
+  "active_phases": [
+    "NP_BCC_A2",
+    "NP_FCC_A1",
+    "NP_HCP_A3",
+    "NP_LIQUID",
+    "NP_SIGMA"
+  ],
+  "active_threshold": 0.005,
+  "occurrence": {
+    "NP_BCC_A2": 0.05251295920667117,
+    "NP_FCC_A1": 0.8098940725715573,
+    "NP_HCP_A3": 0.006874013973405454,
+    "NP_LIQUID": 0.1627225602884832,
+    "NP_SIGMA": 0.15235519495154384
+  },
+  "excluded_mass_fraction": 0.0,
+  "max_sum_deviation": 1.4518118374162725e-08
+}

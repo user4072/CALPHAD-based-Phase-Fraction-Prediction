@@ -1,0 +1,14 @@
+{
+  "crnimn": {
+    "system": "crnimn",
+    "n_points": 1500,
+    "n_ok": 1500,
+    "n_eligible": 30,
+    "n_active": 9,
+    "max_abs_dNP": 7.318099459752148e-10,
+    "max_abs_dNP_phase": "LIQUID",
+    "max_abs_dGM_J_per_mol": 1.9133483874611557e-05,
+    "points_with_dNP_gt_1e-3": 0,
+    "missing_phases": []
+  }
+}
