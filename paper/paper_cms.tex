@@ -36,13 +36,14 @@ but three questions block deployment: how should phase fractions be
 predicted under the simplex constraint, where can the predictions be
 trusted, and does screening actually save cost? On five Fe-based
 ternaries (44{,}397 equilibria) plus quaternary and carbide extensions
-we find. (1) Softmax, sigmoid/$\Sigma$ and clip-renormalise close to
+we find: (1) Softmax, sigmoid/$\Sigma$ and clip-renormalise close to
 $\le 5\times10^{-8}$ at no accuracy cost, and presence supervision ---
 not architecture --- resolves the sharp-boundary cases, leading the
 forest on all seven systems while lifting macro-AUPRC from 0.36--0.99
 to 0.91--0.99. (2) Holdout and extrapolation protocols with matched
 controls show graceful degradation in-region and failure for all models
-out-of-range, with detection collapsing on temperature shift. (3) Two
+out-of-range; interior-band penalties are spatial, not volumetric,
+and detection collapses on temperature shift. (3) Two
 validated lean-nickel screens (501{,}501 and 330{,}000 compositions;
 shortlist precision 1.00 and 0.98) pay back data costs several times
 over. Failed mechanisms (sparsemax exhibits severe seed sensitivity; a
@@ -1889,6 +1890,13 @@ reliable, extrapolation. Temperature-protocol numbers are joint failures
 of basis (liquid unseen near-side in all five ternaries) and
 generalisation. For alloy-design workflows querying unseen compositions,
 the relative comparison is the more relevant one.
+Within the trained region the same distinction separates two kinds of
+trust: the ideal-form control of Table~\ref{tab:region} panel~B holds
+training size fixed and still loses a factor of 2.01 on average when
+the band is removed (up to 3.84), while equal-size subsampling away
+from the band changes the error by only 3\% on average --- trust tracks
+where the data are, not how many there are, and the constrained MLP
+degrades least in nine of the ten band--system combinations.
 
 \subsection{Answer 3 --- whether it saves cost: the screening arithmetic}
 
@@ -2053,7 +2061,13 @@ from data-volume penalties. On contiguous interior holdout
 (99.3--99.4\% in-hull, so distribution shift rather than extrapolation)
 the random forest paid a factor of 3.11 against 1.61 for the constrained
 MLP on the Fe--Cr--Ni composition band, whereas the temperature-band
-penalty is mostly a data effect against the random control. Under strict
+penalty is mostly a data effect against the random control. The
+ideal-form control closes the argument: at equal training size and on
+identical test rows the training-size effect stays within 0.97--1.12
+(mean 1.03) while removing the band still doubles the error on average
+(0.93--3.84, mean 2.01) --- spatial, not volumetric --- with the
+constrained MLP degrading least in nine of the ten band--system
+combinations. Under strict
 one-sided out-of-range extrapolation all evaluated model families
 degraded sharply, the MLP least in absolute error --- graceful
 degradation, not reliable extrapolation --- with temperature numbers
@@ -2114,7 +2128,8 @@ the Supplement, Section~S1.
 
 The complete pipeline (TDB extraction, probe, data generation, training,
 evaluation, and all analyses reported in this paper, including the
-region-matched reanalysis, AUPRC, phase-rule admissibility, the
+region-matched reanalysis and its ideal-form control, AUPRC,
+phase-rule admissibility, the
 presence-gated remedy, the uncertainty-gate analysis, the projection
 ablation, and the reconstruction of the design-space accounting) is
 available at \url{https://github.com/user4072/CALPHAD-based-Phase-Fraction-Prediction}. The nine datasets (88{,}542 equilibria with
