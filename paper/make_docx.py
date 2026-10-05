@@ -243,9 +243,9 @@ def build() -> None:
     doc = new_doc()
 
     # title block
-    para(doc, "Validated high-throughput screening with "
-              "simplex-constrained surrogates for CALPHAD phase-fraction "
-              "prediction",
+    para(doc, "Validated High-Throughput Screening with "
+              "Simplex-Constrained Surrogates for CALPHAD Phase-Fraction "
+              "Prediction",
          align=WD_ALIGN_PARAGRAPH.CENTER, bold=True, size=15)
     para(doc, "Anonymous", align=WD_ALIGN_PARAGRAPH.CENTER, size=11)
     para(doc, "Submitted to Computational Materials Science",

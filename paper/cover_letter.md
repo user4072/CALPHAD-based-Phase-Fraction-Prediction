@@ -4,8 +4,8 @@ Date: [submission date]
 
 Dear Editor,
 
-We are pleased to submit our manuscript **"Validated high-throughput
-screening with simplex-constrained surrogates for CALPHAD phase-fraction
+We are pleased to submit our manuscript **"Validated High-Throughput
+Screening with Simplex-Constrained Surrogates for CALPHAD Phase-Fraction
 prediction"** for consideration as a full-length research article in
 *Computational Materials Science*.
 

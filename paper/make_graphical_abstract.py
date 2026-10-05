@@ -170,8 +170,8 @@ def header(b: Board):
            [[("Validated High-Throughput Screening", 20,
               BLUE_DK, True)]])
     b.text(0.55, 0.52, 12.25, 0.24,
-           [[("with simplex-constrained surrogates for CALPHAD "
-              "phase-fraction prediction in nine alloy systems", 10,
+           [[("With Simplex-Constrained Surrogates for CALPHAD "
+              "Phase-Fraction Prediction in Nine Alloy Systems", 10,
               GREY, False)]])
     ln = b.rect(0.55, 0.80, 12.25, 0.012, LINE_SOFT)
     return ln

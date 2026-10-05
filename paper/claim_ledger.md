@@ -391,7 +391,7 @@ paragraphs + limitations updated; docx mirrored. Audit +14. Audit:
 
 ## ADDENDUM -- question-led reframe (2026-10-01)
 
-Title -> "Validated high-throughput screening with
+Title -> "Validated High-Throughput Screening with
 simplex-constrained surrogates for CALPHAD phase-fraction prediction".
 Abstract/contributions rewritten around the three research questions
 (how to predict / where to trust / whether it saves cost); quaternary

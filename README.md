@@ -9,8 +9,8 @@ mass-balance-validated equilibria in total.
 
 The full study is described in the manuscript
 
-(*"Validated high-throughput screening with simplex-constrained
-surrogates for CALPHAD phase-fraction prediction"*).
+(*"Validated High-Throughput Screening with Simplex-Constrained
+Surrogates for CALPHAD Phase-Fraction Prediction"*).
 
 ## What this repository contains
 
