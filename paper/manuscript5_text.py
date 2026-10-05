@@ -48,7 +48,7 @@ FIG1_CAPTION = (
     "classical baselines; evaluation under interpolation, contiguous "
     "interior-band holdout with matched controls, and strict one-sided "
     "extrapolation; deployment through a four-point experimental anchor "
-    "and two validated high-throughput screens.")
+    "and two high-throughput screens.")
 
 GATED_H2 = "Closing the Detector Gap with a Presence-Gated Head"
 GATED_PS = [

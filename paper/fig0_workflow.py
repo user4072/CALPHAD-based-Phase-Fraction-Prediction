@@ -218,7 +218,7 @@ def build():
 
     stages = [
         ("data", "#3b82c4", "CALPHAD DATA",
-         "MatCalc steel database", "9 systems \u00b7 88,542 equilibria"),
+         "MatCalc steel database", "9 alloy systems"),
         ("split", "#e08a2e", "SPLIT",
          "cluster-stratified 64 / 16 / 20", "KMeans k = 6 \u00b7 3 seeds"),
         ("train", "#d14f4f", "TRAIN MODELS",
@@ -227,10 +227,10 @@ def build():
          "interpolation \u00b7 band holdout \u00b7 extrapolation",
          "ideal-form control (H/I) \u00b7 U1 triage"),
         ("deploy", "#7c6bc0", "DEPLOY",
-         "anchor + 2 validated screens", "precision 1.00 and 0.98"),
+         "experimental anchor + 2 screens", "lean-Ni queries at 1000 K"),
     ]
-    links = ["mass-balanced equilibria", "train \u00b7 val \u00b7 test",
-             "trained surrogates", "where to trust"]
+    links = ["equilibria", "train \u00b7 val \u00b7 test",
+             "trained surrogates", "queries"]
 
     BW, BH, GAP = 4.30, 1.02, 0.55
     cys = [H - 0.95 - i * (BH + GAP) for i in range(len(stages))]

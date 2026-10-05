@@ -458,7 +458,7 @@ def build() -> None:
            "classical baselines; evaluation under interpolation, contiguous "
            "interior-band holdout with matched controls, and strict one-sided "
            "extrapolation; deployment through a four-point experimental anchor "
-           "and two validated high-throughput screens.")
+           "and two high-throughput screens.")
 
     # 2. Data generation
     doc.add_heading("2. Data generation", level=1)
