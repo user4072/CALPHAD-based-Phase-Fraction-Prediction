@@ -6,12 +6,15 @@ Reuses the visual language of Graphical_Abstract_v2.pptx [Repaired].pptx
 bars, light-tinted sub-cards, small horizontal bar charts) but replaces
 all content with the present study:
 
-  Panel 1  CALPHAD data + constrained output heads (closure vs. accuracy)
+  Panel 1  CALPHAD data over nine systems + constrained output heads
+           (closure vs. accuracy, projection bound)
   Panel 2  Spatial generalization with size-matched random controls
-  Panel 3  Regression vs. phase-presence detection
+  Panel 3  Regressor-detector gap, presence-gated remedy (confirmatory
+           numbers), and deployment through two lean-Ni screens
 
-Every number is taken from the paper's generated tables (tab/*.tex);
-nothing is invented.
+Every number is taken from the paper's generated tables (tab/*.tex),
+models/gated_confirmatory.json, or the audit-checked prose; nothing is
+invented.
 
 Usage: py -3.12 paper/make_graphical_abstract.py
 """
@@ -170,8 +173,8 @@ def header(b: Board):
            [[("Validated High-Throughput Screening", 20,
               BLUE_DK, True)]])
     b.text(0.55, 0.52, 12.25, 0.24,
-           [[("With Simplex-Constrained Surrogates for CALPHAD "
-              "Phase-Fraction Prediction in Nine Alloy Systems", 10,
+           [[("Simplex-constrained surrogates for CALPHAD phase-fraction "
+              "prediction in nine alloy systems", 10,
               GREY, False)]])
     ln = b.rect(0.55, 0.80, 12.25, 0.012, LINE_SOFT)
     return ln
@@ -196,17 +199,18 @@ def panel1(b: Board, x):
     b.rect(x + 0.15, 1.56, 3.70, 1.06, TINT_BLUE, line=BLUE, line_w=0.5,
            round_=True)
     b.text(x + 0.28, 1.63, 2.55, 0.20,
-           [[("Five Fe-based ternary systems", 10.5, INK, True)]])
+           [[("Nine alloy systems", 10.5, INK, True)]])
     b.text(x + 0.28, 1.84, 2.55, 0.30,
-           [[("Fe\u2013Cr\u2013Ni \u00b7 Fe\u2013Cr\u2013Mn \u00b7 "
-              "Fe\u2013Cr\u2013Mo", 8, GREY, False)],
-            [("Fe\u2013Cr\u2013V \u00b7 Fe\u2013Mn\u2013Ni", 8, GREY,
-              False)]], line_spacing=1.05)
-    b.text(x + 0.28, 2.14, 2.55, 0.16,
+           [[("five Fe ternaries \u00b7 quaternary Fe\u2013Cr\u2013Ni\u2013C",
+              8, GREY, False)],
+            [("carbide Fe\u2013Cr\u2013C \u00b7 Fe-free Cr\u2013Co\u2013Ni, "
+               "Cr\u2013Ni\u2013Mn", 8, GREY,
+               False)]], line_spacing=1.05)
+    b.text(x + 0.28, 2.12, 2.55, 0.16,
            [[("pycalphad + MatCalc steel DB", 8, GREY, False)]])
-    b.text(x + 0.28, 2.29, 2.55, 0.16,
-           [[("44,397 validated equilibria \u00b7 3 seeds", 8, GREY, False)]])
-    b.text(x + 0.28, 2.44, 2.55, 0.16,
+    b.text(x + 0.28, 2.25, 2.55, 0.16,
+           [[("88,542 mass-balance-validated equilibria", 8, GREY, False)]])
+    b.text(x + 0.28, 2.40, 2.55, 0.16,
            [[("targets: N\u1d4f \u2265 0,  \u03a3 N\u1d4f = 1", 8, BLUE_DK,
               True)]])
 
@@ -293,25 +297,27 @@ def panel1(b: Board, x):
               7.5, GREY, False)]], line_spacing=1.05)
 
     # -- takeaway with verdict glyphs
-    b.rect(x + 0.15, 5.24, 3.70, 0.62, TINT_BLUE, line=BLUE, line_w=0.75,
+    b.rect(x + 0.15, 5.24, 3.70, 0.78, TINT_BLUE, line=BLUE, line_w=0.75,
            round_=True)
     b.glyph(x + 0.24, 5.30, "\u2713", GREEN_OK, size=12)
-    b.text(x + 0.46, 5.30, 3.30, 0.24,
-           [[("structural constraints: \u03a3 \u0177 = 1 at no accuracy cost",
-              8.5, BLUE_DK, True)]])
-    b.glyph(x + 0.24, 5.56, "\u2717", RED_BAD, size=12)
-    b.text(x + 0.46, 5.56, 3.30, 0.24,
+    b.text(x + 0.46, 5.30, 3.30, 0.40,
+           [[("structural constraints: \u03a3 \u0177 = 1 exactly", 8.5,
+              BLUE_DK, True)],
+            [("projection recovers renorm within 1.3\u00d710\u207b\u2074 "
+               "MAE", 8.5, BLUE_DK, True)]], line_spacing=1.05)
+    b.glyph(x + 0.24, 5.74, "\u2717", RED_BAD, size=12)
+    b.text(x + 0.46, 5.74, 3.30, 0.20,
            [[("no single architecture wins all five systems", 8.5, INK,
               True)]])
 
     # -- accuracy mini-bars (best constrained MLP vs random forest)
-    b.text(x + 0.28, 5.96, 2.20, 0.16,
+    b.text(x + 0.28, 6.08, 2.20, 0.16,
            [[("Test MAE, best MLP vs random forest", 8, GREY, True)]])
     # legend
-    b.rect(x + 2.52, 6.00, 0.14, 0.07, BAR_BLUE)
-    b.text(x + 2.68, 5.96, 0.42, 0.14, [[("MLP", 6.5, GREY, False)]])
-    b.rect(x + 3.08, 6.00, 0.14, 0.07, BAR_ORANGE)
-    b.text(x + 3.24, 5.96, 0.55, 0.14, [[("forest", 6.5, GREY, False)]])
+    b.rect(x + 2.52, 6.12, 0.14, 0.07, BAR_BLUE)
+    b.text(x + 2.68, 6.08, 0.42, 0.14, [[("MLP", 6.5, GREY, False)]])
+    b.rect(x + 3.08, 6.12, 0.14, 0.07, BAR_ORANGE)
+    b.text(x + 3.24, 6.08, 0.55, 0.14, [[("forest", 6.5, GREY, False)]])
     rows = [
         ("Fe\u2013Cr\u2013Ni", 0.0106, 0.0180, "MLP wins"),
         ("Fe\u2013Cr\u2013Mn", 0.0074, 0.0133, "MLP wins"),
@@ -319,14 +325,14 @@ def panel1(b: Board, x):
         ("Fe\u2013Cr\u2013V", 0.0149, 0.0137, "tie"),
         ("Fe\u2013Mn\u2013Ni", 0.0140, 0.0058, "RF wins"),
     ]
-    yy = 6.15
+    yy = 6.27
     vmax = 0.0180
     for lab, mlp, rf, verdict in rows:
         b.text(x + 0.28, yy, 0.85, 0.14, [[(lab, 7, GREY, False)]])
         b.hbar(x + 1.16, yy + 0.02, 1.90, 0.05, mlp / vmax, BAR_BLUE)
         b.hbar(x + 1.16, yy + 0.085, 1.90, 0.05, rf / vmax, BAR_ORANGE)
         b.text(x + 3.12, yy + 0.02, 0.72, 0.14, [[(verdict, 7, GREY, True)]])
-        yy += 0.165
+        yy += 0.135
 
 
 def panel2(b: Board, x):
@@ -457,7 +463,7 @@ def panel2(b: Board, x):
 
 
 def panel3(b: Board, x):
-    panel(b, x, PURPLE, "3", "Regression vs. phase detection")
+    panel(b, x, PURPLE, "3", "Detection gap, remedy, deployment")
 
     # -- concept card: the same prediction viewed two ways
     b.rect(x + 0.15, 1.56, 3.70, 1.10, TINT_PURPLE, line=PURPLE, line_w=0.5,
@@ -547,42 +553,58 @@ def panel3(b: Board, x):
               PURPLE_DK, True)]])
 
     # -- threshold card with threshold chips
-    b.rect(x + 0.15, 4.52, 3.70, 1.06, TINT_PURPLE, line=PURPLE, line_w=0.5,
+    b.rect(x + 0.15, 4.52, 3.70, 0.76, TINT_PURPLE, line=PURPLE, line_w=0.5,
            round_=True)
-    b.text(x + 0.28, 4.59, 3.44, 0.20,
-           [[("Robust to the presence threshold", 10.5, INK, True)]])
+    b.text(x + 0.28, 4.58, 3.44, 0.20,
+           [[("Gap persists at 10\u207b\u2074 / 10\u207b\u00b3 / 10\u207b\u00b2",
+              10.5, INK, True)]])
     for i, thr in enumerate(["10\u207b\u2074", "10\u207b\u00b3",
                              "10\u207b\u00b2"]):
         cx_ = x + 0.30 + i * 0.52
-        chip = b.rect(cx_, 4.84, 0.44, 0.20, WHITE, line=PURPLE, line_w=0.75,
+        chip = b.rect(cx_, 4.82, 0.44, 0.20, WHITE, line=PURPLE, line_w=0.75,
                       round_=True)
-        b.text(cx_, 4.855, 0.44, 0.17, [[(thr, 8, PURPLE_DK, True)]],
+        b.text(cx_, 4.835, 0.44, 0.17, [[(thr, 8, PURPLE_DK, True)]],
                align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
-    b.text(x + 1.90, 4.84, 1.85, 0.20,
-           [[("gap persists at all three", 7.5, GREY, False)]],
+    b.text(x + 1.90, 4.82, 1.85, 0.20,
+           [[("presence threshold", 7.5, GREY, False)]],
            anchor=MSO_ANCHOR.MIDDLE)
-    b.text(x + 0.28, 5.12, 3.44, 0.30,
-           [[("although the detector ranking flips with the threshold on "
-              "Fe\u2013Cr\u2013Mo", 8, GREY, False)]], line_spacing=1.05)
+    b.text(x + 0.28, 5.06, 3.44, 0.16,
+           [[("detector ranking flips with the threshold on Fe\u2013Cr\u2013Mo",
+              7.5, GREY, False)]])
 
-    # -- takeaway
-    b.rect(x + 0.15, 5.70, 3.70, 1.16, TINT_AMBER, line=PURPLE, line_w=0.75,
+    # -- remedy card: the presence-gated head, confirmatory numbers
+    b.rect(x + 0.15, 5.36, 3.70, 0.84, TINT_PURPLE, line=PURPLE, line_w=0.75,
            round_=True)
-    b.text(x + 0.28, 5.78, 3.44, 1.00,
+    b.glyph(x + 0.24, 5.42, "\u2713", GREEN_OK, size=11)
+    b.text(x + 0.46, 5.42, 3.30, 0.20,
+           [[("Presence-gated head closes the gap", 9.5, PURPLE_DK, True)]])
+    b.text(x + 0.28, 5.66, 3.44, 0.16,
+           [[("confirmatory macro-AUPRC 0.88\u20130.99 on all nine systems",
+              7.5, INK, False)]])
+    b.text(x + 0.28, 5.81, 3.44, 0.16,
+           [[("beats best classical detector on 8 of 9 \u00b7 ahead of "
+              "forest in MAE on 9 of 9", 7.5, INK, False)]])
+    b.text(x + 0.28, 5.96, 3.44, 0.16,
+           [[("3 held-out seeds \u00b7 12\u201347% MAE cost on carbides",
+              7.5, GREY, False)]])
+
+    # -- takeaway: report both, then deploy
+    b.rect(x + 0.15, 6.28, 3.70, 0.66, TINT_AMBER, line=PURPLE, line_w=0.75,
+           round_=True)
+    b.text(x + 0.28, 6.34, 3.44, 0.54,
            [[("Report both. ", 9, PURPLE_DK, True),
-             ("Low phase-fraction MAE does not imply good phase-presence "
-              "detection \u2014 for alloy design, detecting a rare phase "
-              "matters as much as estimating its fraction.", 9, INK, False)]],
-           line_spacing=1.1)
+             ("Low MAE does not imply good detection \u2014 and two "
+              "lean-Ni screens repay their one-time cost 7\u201350\u00d7.",
+              9, INK, False)]], line_spacing=1.1)
 
 
 def footer(b: Board):
     b.text(0.55, 7.12, 12.25, 0.24,
-           [[("Fixed-protocol benchmark \u00b7 6 heads + 2 mechanism probes "
-              "\u00b7 4 baselines \u00b7 5 ternary + 4 extension systems "
-              "\u00b7 88,542 equilibria "
-              "\u00b7 seeds 42 / 123 / 2024 \u00b7 negative results reported "
-              "in full", 8, LIGHT, False)]],
+           [[("Fixed-protocol benchmark \u00b7 6 heads + gated remedy + 2 "
+              "mechanism probes \u00b7 4 baselines \u00b7 9 systems "
+              "\u00b7 88,542 equilibria \u00b7 seeds 42/123/2024 + "
+              "confirmatory 1009/20260905/31337 \u00b7 negative results "
+              "reported in full", 8, LIGHT, False)]],
            align=PP_ALIGN.CENTER)
 
 
