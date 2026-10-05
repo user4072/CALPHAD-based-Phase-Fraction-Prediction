@@ -50,6 +50,7 @@ SUB = {"2": "\u2082", "3": "\u2083"}
 
 
 def clean_cell(s):
+    s = re.sub(r"\bXGB\b", "XGBoost", s)
     s = s.strip()
     bold = False
     m = re.fullmatch(r"\\textbf\{(.+)\}", s)
