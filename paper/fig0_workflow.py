@@ -104,8 +104,17 @@ class Layout:
         self.rbox((BAND_L + BAND_R) / 2, (y0 + y1) / 2, BAND_R - BAND_L,
                   y1 - y0, "#fafaf7", "#c9c9bd", lw=1.0, radius=0.12,
                   zorder=1)
-        self.ax.text(0.80, y1 - 0.10, header, ha="left", va="center",
-                     fontsize=FS_HEAD, color=color, weight="bold", zorder=4)
+        # filled header strip with white bold text (modern journal look);
+        # the strip sits above everything (zorder 5) so connector drops
+        # pass behind it instead of crossing the header text
+        strip_h = 0.46
+        self.ax.add_patch(FancyBboxPatch(
+            (BAND_L + 0.02, y1 - strip_h), BAND_R - BAND_L - 0.04, strip_h - 0.06,
+            boxstyle="round,pad=0,rounding_size=0.09",
+            facecolor=color, edgecolor=color, linewidth=0, zorder=5))
+        self.ax.text(0.80, y1 - strip_h / 2 - 0.01, header, ha="left",
+                     va="center", fontsize=FS_HEAD, color="white",
+                     weight="bold", zorder=6)
 
     def text(self, x, y, s, fs=FS_BODY, color=INK, weight="normal",
              ha="center", va="center"):
@@ -227,7 +236,7 @@ def build():
     b1y0, b1y1 = 10.00, 14.30
     L.band(b1y0, b1y1, "1  CALPHAD DATA GENERATION  (pycalphad + MatCalc)", DATA)
 
-    L.box("db", CX, 13.62, 4.6, 0.62,
+    L.box("db", CX, 13.50, 4.6, 0.62,
           "MatCalc steel database  mc_fe_v2.062\n"
           "custom parser \u2192 five Fe-based ternary subsystems",
           fc=DATA_LT, ec=DATA)
@@ -309,22 +318,22 @@ def build():
             name="base->trained", orig="base", dest="trained")
 
     # ============================================================ BAND 3
-    b3y0, b3y1 = 3.15, 6.20
+    b3y0, b3y1 = 3.30, 6.35
     L.band(b3y0, b3y1, "3  EVALUATION PROTOCOLS", EVAL)
 
     # three evaluation protocols (row 1 of band 3)
-    L.box("interp", X_L, 5.45, 3.3, 0.70,
+    L.box("interp", X_L, 5.10, 3.3, 0.70,
           "Interpolation test\n"
           "MAE \u00b7 closure \u00b7 detection (AUPRC) \u00b7 admissibility\n"
           "paired bootstrap",
           fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
-    L.box("bandhold", X_M, 5.45, 3.5, 0.70,
+    L.box("bandhold", X_M, 5.10, 3.5, 0.90,
           "Contiguous interior-band holdout\n"
           "T \u2208 [1200,1400] K \u00b7 x\u2082 \u2208 [0.25,0.35]\n"
           "+ size-matched control \u00b7 region-matched reanalysis\n"
           "+ ideal-form control (H/I)",
           fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
-    L.box("extrap", X_R, 5.45, 3.2, 0.70,
+    L.box("extrap", X_R, 5.10, 3.2, 0.70,
           "Strict one-sided extrapolation\n"
           "x\u2082: \u2264 0.25 \u2192 > 0.35 \u00b7 T: \u2264 1200 K \u2192 > 1400 K\n"
           "+ size-matched random control",
@@ -335,9 +344,9 @@ def build():
     # left-to-right order of the targets, so no two arrows cross.
     tb = L.edge("trained", "b")[1]
 
-    JY = 6.02                              # elbow height for the outer arrows
+    JY = 5.80                              # elbow height for the outer arrows
 
-    x_i = L.edge("trained", "l")[0] + 0.10
+    x_i = DROP_A  # share the left rail: one vertical serves interp/ablate/U1
     x_e = L.edge("trained", "r")[0] - 0.10
     L.arrow([(x_i, tb), (x_i, JY), (X_L, JY), L.edge("interp", "t")],
             name="trained->interp", orig="trained", dest="interp")
@@ -347,34 +356,38 @@ def build():
             name="trained->extrap", orig="trained", dest="extrap")
 
     # secondary analyses (row 2 of band 3), dashed = derived analyses
-    L.box("ablate", 3.00, 4.25, 2.8, 0.60,
+    L.box("ablate", 3.00, 3.95, 2.8, 0.60,
           "Ablations: width \u00b7 loss \u00b7 penalty\n"
           "presence-threshold sensitivity 10\u207b\u2074\u201310\u207b\u00b2",
           fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
-    L.box("u1", 5.90, 4.25, 2.8, 0.60,
+    L.box("u1", 5.90, 3.95, 2.8, 0.60,
           "Uncertainty triage\n"
           "U1 spread ranks per-row error\n"
           "U2 input distance: no power",
           fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
-    L.box("boundary", 9.20, 4.25, 2.6, 0.60,
+    L.box("boundary", 9.20, 3.95, 2.6, 0.60,
           "Boundary-error analysis\n"
           "MAE vs. distance to phase-set shift",
           fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
 
-    L.arrow([(DROP_A, tb), (DROP_A, L.edge("ablate", "t")[1])],
+    # left rail: the interp elbow's first segment (solid) runs tb->JY;
+    # the dashed continuation below JY feeds the secondary analyses
+    L.arrow([(DROP_A, JY), (DROP_A, L.edge("ablate", "t")[1])],
             color=SEC, ls="--",
             name="trained->ablate", orig="trained", dest="ablate")
     # elbow to the U1 box through the row gap (no corridor available there)
     u1top = L.edge("u1", "t")
-    L.arrow([(DROP_A, tb), (DROP_A, 4.85), (u1top[0], 4.85), u1top],
+    L.arrow([(DROP_A, tb), (DROP_A, 4.45), (u1top[0], 4.45), u1top],
             color=SEC, ls="--",
             name="trained->u1", orig="trained", dest="u1")
-    L.arrow([(7.80, tb), (7.80, L.edge("boundary", "t")[1])],
+    # boundary-error analysis branches off the trunk (no extra full-height rail)
+    btop = L.edge("boundary", "t")
+    L.arrow([(TRUNK_X, 4.45), (btop[0], 4.45), btop],
             color=SEC, ls="--",
-            name="trained->boundary", orig="trained", dest="boundary")
+            name="trunk->boundary", orig="trained", dest="boundary")
 
     # ============================================================ BAND 4
-    b4y0, b4y1 = 0.25, 2.85
+    b4y0, b4y1 = 0.25, 3.05
     L.band(b4y0, b4y1, "4  DEPLOYMENT: EXPERIMENTAL ANCHOR + HIGH-THROUGHPUT SCREENS", EVAL)
 
     L.box("anchor", 2.05, 1.50, 3.0, 1.00,
