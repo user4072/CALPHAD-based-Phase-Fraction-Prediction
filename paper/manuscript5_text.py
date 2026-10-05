@@ -1,0 +1,389 @@
+"""Manuscript (5) prose constants, written in a precise, concise style.
+
+All numbers are identical to the audit-checked evidence (paper/audit_claims.py,
+paper/tab/*.tex). Style rules applied throughout: short declarative sentences,
+past tense for methods and results, one finding per sentence, First/Second/Third
+enumeration, purpose-first ("To ...") openers, no rhetorical flourishes.
+"""
+
+NEW_TITLE = ("Validated high-throughput screening with simplex-constrained "
+             "surrogates for CALPHAD phase-fraction prediction")
+
+NEW_ABSTRACT = (
+    "Abstract: Machine-learning surrogates accelerate CALPHAD equilibrium "
+    "calculations by orders of magnitude, but deployment requires three answers: "
+    "how to predict phase fractions under the simplex constraint, where the "
+    "predictions can be trusted, and whether screening saves cost. Six "
+    "neural-network output heads and a presence-gated two-stage head were "
+    "benchmarked against four classical baselines on 88,542 mass-balance-validated "
+    "equilibria from nine systems: five Fe-based ternaries, a quaternary "
+    "Fe\u2013Cr\u2013Ni\u2013C system, a carbide Fe\u2013Cr\u2013C system, and two Fe-free "
+    "ternaries. Structurally constrained heads closed the simplex to machine "
+    "precision at no accuracy cost. The gated head lifted macro-AUPRC to "
+    "0.91\u20130.99 on all nine systems while leading the random forest in MAE. "
+    "Size-matched and region-matched controls with an ideal-form control showed "
+    "interior-band penalties are spatial, not volumetric, while strict "
+    "extrapolation failed on every axis. Ensemble disagreement provided cheap "
+    "per-row triage inside the trained region. Two validated lean-nickel screens "
+    "(501,501 and 330,000 compositions; shortlist precision 1.00 and 0.98) paid "
+    "back data costs several times over. Failed mechanisms (sparsemax, sum-to-one "
+    "penalty, residue head) delimit the scope.")
+
+HIGHLIGHTS = [
+    "Simplex closure to machine precision costs no accuracy; renorm is enough",
+    "Presence supervision, not architecture, resolves sharp phase boundaries",
+    "Interior-band penalties are spatial, not volumetric; extrapolation unsupported",
+    "Lean-nickel screen: 501,501 compositions in 0.4 s, shortlist precision 1.00",
+    "Failed mechanisms delimit the scope: sparsemax, sum-to-one penalty, residue",
+]
+
+NEW_KEYWORDS = ("Keywords: CALPHAD; Machine learning surrogate; Simplex constraint; "
+                "Spatial generalization; Phase fraction prediction; "
+                "High-throughput screening.")
+
+SCOPE_PARA = (
+    "To address these challenges, this study investigates how neural-network "
+    "architectures predict multi-phase equilibria under strict mass conservation. "
+    "The benchmark comprises 88,542 validated thermodynamic equilibria from nine "
+    "systems: five Fe-based ternaries (Fe\u2013Cr\u2013Ni, Fe\u2013Cr\u2013Mn, "
+    "Fe\u2013Cr\u2013Mo, Fe\u2013Cr\u2013V, Fe\u2013Mn\u2013Ni), a quaternary Fe\u2013Cr\u2013Ni\u2013C "
+    "system, a carbide Fe\u2013Cr\u2013C system, and two Fe-free ternaries "
+    "(Cr\u2013Co\u2013Ni, Cr\u2013Ni\u2013Mn). The limits of deep-learning surrogates "
+    "are evaluated under distribution shifts, and the pipeline is demonstrated end "
+    "to end with two validated high-throughput screens. The systems cover "
+    "metallurgically relevant phases, including the FCC solid solutions of "
+    "stainless steels and nickel-based superalloys.")
+
+CONTRIB_PARA = (
+    "The contributions of this work are sixfold. First, six neural-network output "
+    "configurations are benchmarked against four classical baselines for regression "
+    "accuracy and physical admissibility. Second, spatial generalization is tested "
+    "with a contiguous interior-band holdout and a strict one-sided extrapolation "
+    "task, using size-matched random controls plus a region-matched reanalysis with "
+    "an ideal-form control to separate spatial penalties from data-volume effects. "
+    "Third, the regressor\u2013detector gap is characterized and substantially closed "
+    "with a presence-gated two-stage head. Fourth, ensemble disagreement is "
+    "evaluated as a cheap per-row error triage. Fifth, the full protocol is re-run "
+    "on four scope-extension systems. Finally, the pipeline is validated end to end "
+    "with two high-throughput lean-nickel screens and a four-point experimental "
+    "anchor, and negative results for three constraint mechanisms are reported as "
+    "design guidelines.")
+
+STOCO_PARA = (
+    "The closest adjacent work predicts single-temperature phase labels rather "
+    "than fraction vectors. Stoco et al. [33] classify single-phase FCC/BCC "
+    "against multiphase states in a ten-element space, with lever-rule data "
+    "augmentation for the minority class, while this work regresses full "
+    "fraction vectors across temperature with a structurally enforced simplex. "
+    "Their blind gridding left 21.5% of points non-converged where the balance "
+    "element vanishes. Our probe-driven design space with a mass-balance gate "
+    "avoids that failure mode by construction, at the price of the "
+    "sampling-coverage confound discussed in the Limitations.")
+
+EXT_DATA_PARA = (
+    "Four additional systems test whether the conclusions survive changes of "
+    "dimension and chemistry under the identical probe, acceptance, and split "
+    "protocol. The quaternary Fe\u2013Cr\u2013Ni\u2013C system adds interstitial carbon "
+    "(13,192 accepted rows; 9 active phases among 35 eligible, including M23C6, "
+    "M7C3, CEMENTITE, and GRAPHITE). The ternary Fe\u2013Cr\u2013C system contributes "
+    "13,199 rows with 9 active phases among 32, with SIGMA in only 0.4% of rows. "
+    "Two Fe-free ternaries reuse the identical ternary protocol: Cr\u2013Co\u2013Ni "
+    "(8,874 rows; 5 active among 23; HCP_A3 rarest at 0.7%) and Cr\u2013Ni\u2013Mn "
+    "(8,880 rows; 9 active among 30, including Mn intermetallics). Together the "
+    "nine datasets contain 88,542 mass-balance-validated equilibria.")
+
+GATED_METHOD_PARA = (
+    "To close the regressor\u2013detector gap, a presence-gated two-stage head was "
+    "evaluated under the same fixed protocol. A shared 3\u00d7192 trunk feeds two "
+    "per-phase heads: a fraction head (per-phase sigmoid outputs with "
+    "inverse-prevalence phase-weighted Huber loss) and a presence head "
+    "(per-phase logits with class-weighted binary cross-entropy at the 10\u207b\u00b3 "
+    "presence threshold). The prediction is the elementwise product of the two "
+    "sigmoid outputs, followed by clip-and-renormalize projection at evaluation. "
+    "A weighted-only ablation trains just the fraction head to isolate the "
+    "contribution of presence supervision.")
+
+SPATIAL_APPEND = (
+    " As a complementary reference, a region-matched reanalysis is also reported: "
+    "for each band, the band-holdout error is compared against the main-study "
+    "models on the identical band rows inside the interpolation test set. Its "
+    "residual confound is a roughly 15% training-size difference, which an "
+    "ideal-form control removes by retraining at equal size (band rows kept in "
+    "training, an equal number of random non-band rows dropped instead) on "
+    "identical test rows.")
+
+FIG1_CAPTION = (
+    "Figure 1. Study pipeline. (1) CALPHAD data generation: five Fe-based ternary "
+    "subsystems are extracted from the open MatCalc steel database, probe-driven "
+    "phase sets fix the target dimensionality, structured sampling draws 11,220 "
+    "candidate points per system, and a mass-balance gate accepts 44,397 equilibria "
+    "in total; four scope-extension systems (quaternary Fe\u2013Cr\u2013Ni\u2013C, "
+    "Fe\u2013Cr\u2013C, and Fe-free Cr\u2013Co\u2013Ni and Cr\u2013Ni\u2013Mn) reuse the same "
+    "pipeline and add 44,145 equilibria (88,542 in total). (2) A cluster-stratified "
+    "64/16/20 split feeds a constrained MLP with six fraction-only heads and a "
+    "presence-gated two-stage head, plus four classical baselines, all fitted under "
+    "one fixed protocol and three seeds. (3) Three evaluation protocols \u2014 "
+    "interpolation, contiguous interior-band holdout, and strict one-sided "
+    "extrapolation, the two spatial ones each with a size-matched random control "
+    "\u2014 plus secondary analyses (ablations, boundary-error analysis, "
+    "region-matched reanalysis with an ideal-form control, and uncertainty "
+    "screening, dashed arrows). (4) Deployment: a four-point experimental "
+    "anchor and two validated high-throughput screens (a 501,501-composition "
+    "ternary screen and a 330,000-composition quaternary screen), with "
+    "ensemble disagreement gating the ternary screen.")
+
+GATED_H2 = "Closing the Detector Gap with a Presence-Gated Head"
+GATED_PS = [
+    ("Separating the presence decision from the fraction estimate closes most "
+     "of the gap at no regression cost on the ternaries (Table 8, Figure 5). "
+     "Across the five ternaries, the bare renorm MLP macro-AUPRC spans "
+     "0.36\u20130.99 and the gated head 0.91\u20130.99. The gated head beats the best "
+     "classical detector on four of the five systems (Fe\u2013Cr\u2013V is a 0.988 "
+     "against 0.990 near-tie) while reducing test MAE on all five, by 6% on "
+     "Fe\u2013Cr\u2013Ni and 72% on Fe\u2013Mn\u2013Ni (0.0140 to 0.0039). Per-phase scores "
+     "locate the effect: on Fe\u2013Cr\u2013Mn, ALPHA_MN rises from 0.004 to 0.933 "
+     "and BETA_MN from 0.005 to 0.896; on Fe\u2013Mn\u2013Ni, MNNI rises from 0.003 "
+     "to 1.00. One rare phase resists: the 0.1%-occurrence MU_PHASE_I in "
+     "Fe\u2013Cr\u2013Mo stays below 0.5. The weighted-only ablation is insufficient "
+     "(0.51\u20130.99, and it degrades MAE by 28% on Fe\u2013Cr\u2013V). Presence "
+     "supervision, not loss reweighting, is the operative ingredient."),
+    ("The remedy transfers without retuning. On quaternary Fe\u2013Cr\u2013Ni\u2013C, the "
+     "gated head raises macro-AUPRC from 0.805 to 0.965 (CEMENTITE from 0.09 to "
+     "0.873, GRAPHITE from 0.58 to 0.926) at a 12% MAE cost. On Fe\u2013Cr\u2013C, it "
+     "rises from 0.559 to 0.922 at a 47% cost. On the Fe-free systems, detection "
+     "comes nearly for free: Cr\u2013Co\u2013Ni rises from 0.799 to 0.979 (HCP_A3, "
+     "invisible to the joint head at 0.02, reaches 0.91) while MAE improves from "
+     "0.0055 to 0.0045; Cr\u2013Ni\u2013Mn rises from 0.877 to 0.971 with MAE improving "
+     "from 0.0040 to 0.0036."),
+    ("Under shift, the remedy holds except where detection itself collapses. "
+     "On contiguous bands, the gated head matches or beats the fraction-only MLP "
+     "while outperforming the forest by a wide margin, with macro-AUPRC at "
+     "0.96\u20131.00. Under composition extrapolation, it wins on Fe\u2013Cr\u2013Ni (0.147 "
+     "against 0.172) but loses on Fe\u2013Cr\u2013V, where the presence head misfires "
+     "out of distribution. Under temperature extrapolation, all families fail "
+     "together and gated AUPRC collapses to 0.59\u20130.63. Two caveats apply: the "
+     "remedy was designed after the bare regressor failed on these test sets, so "
+     "its numbers are post-hoc; and the shift evaluation covers two systems only."),
+]
+TABLE11_CAP = (
+    "Table 11. Presence-gated remedy. Macro-AUPRC (mean over three seeds; "
+    "zero-positive phases excluded) for the renorm MLP, the three tree/k-NN "
+    "baselines, the phase-weighted ablation, and the gated two-stage head; the "
+    "final column is the gated-head test MAE relative to the renorm MLP (below 1 "
+    "means the gated head also improves regression). Best AUPRC per row in bold.")
+FIG9_CAP = (
+    "Figure 9. Macro-AUPRC by system and family (mean over three seeds). The "
+    "gated two-stage head (rightmost bar in each group) matches or exceeds the "
+    "best classical detector on six of the seven tabulated systems and lifts the "
+    "constrained MLP far above its bare regression ranking on the rare-phase "
+    "systems.")
+
+UNC_H2 = "Uncertainty Triage with Ensemble Disagreement"
+UNC_P1 = (
+    "Deployment needs to know when not to trust the surrogate. Two per-row scores "
+    "were evaluated on the five ternary systems using artefacts the protocol "
+    "already produces: ensemble disagreement (U1), the per-row standard deviation "
+    "across the three seed models averaged over phases; and input-space distance "
+    "(U2), the distance to the nearest training row in standardized coordinates. "
+    "U1 carries real signal. Its Spearman correlation with per-row error averages "
+    "0.707 (0.94 on Fe\u2013Cr\u2013Ni, 0.93 on Fe\u2013Cr\u2013Mn, 0.87 on Fe\u2013Cr\u2013V, 0.69 "
+    "on Fe\u2013Cr\u2013Mo, but 0.11 on Fe\u2013Mn\u2013Ni). Retaining the 50% lowest-U1 rows "
+    "cuts MAE from 0.0123 to 0.0029 on Fe\u2013Cr\u2013Ni (a factor of 4.3), with "
+    "similar factors on Fe\u2013Cr\u2013Mn and Fe\u2013Cr\u2013Mo. On Fe\u2013Cr\u2013V and "
+    "Fe\u2013Mn\u2013Ni the curve is flat or reversed, so the gate must be validated once "
+    "per system before use. Ensemble averaging itself is only a small refinement "
+    "(mean gain 0.35% on fully paired rows).")
+UNC_P2 = (
+    "Input-space distance has no power (mean AUROC 0.408, below random). Under "
+    "interpolation every test row is close to training rows, while the hardest rows "
+    "sit near phase boundaries. Disagreement cannot replace the spatial protocols "
+    "either: models trained on the same data can agree confidently and wrongly where "
+    "training carries no information. The division of labour is therefore fixed: U1 "
+    "for cheap per-row triage inside the trained region, holdout protocols or direct "
+    "CALPHAD revalidation anywhere else.")
+
+REGION_H2 = "Region-Matched Reanalysis and the Ideal-Form Control"
+REGION_P1 = (
+    "Random controls remove different rows than the band, so penalty ratios "
+    "conflate region difficulty with distribution shift. The region-matched "
+    "reanalysis compares band-holdout error against the main-study models on the "
+    "identical band rows (Table 11, panel A). Under this measure, the constrained "
+    "MLP penalty is smaller than the tree ensembles\u2019 in nine of the ten "
+    "band\u2013system combinations. On composition bands the ratios are 1.2\u20132.1 "
+    "against 1.4\u20133.0 for the forest; on temperature bands 0.9\u20132.8 against "
+    "1.3\u20133.9, with Fe\u2013Cr\u2013Ni the single exception (2.8 against 2.1, although "
+    "absolute holdout error remains twice the MLP\u2019s at 0.0132 against 0.0258). "
+    "One instability sits behind the headline: on Fe\u2013Mn\u2013Ni the MLP temperature "
+    "ratios spread 0.9/20.3/0.6 across seeds from a near-zero denominator, "
+    "downweighted in the ratio-of-means headline (1.1).")
+REGION_P2 = (
+    "The ideal-form control (Table 11, panel B) confirms the penalty is "
+    "spatial, not volumetric. At equal training size and on identical test rows, "
+    "the training-size effect stays within 0.97\u20131.12 (mean 1.03) while removing "
+    "the band still costs 0.93\u20133.84 (mean 2.01). The MLP degrades least in nine "
+    "of ten combinations. Error therefore tracks data coverage, not data volume.")
+TABLE12_CAP = (
+    "Table 12. Region-matched band reanalysis. Panel A: holdout mean MAE on band "
+    "rows divided by in-distribution mean MAE on the identical rows (ratio of "
+    "means; per-seed ratios in parentheses). Panel B repeats the comparison in "
+    "ideal form \u2014 identical test rows and equal training size \u2014 reporting the "
+    "band-in/band-out ratio H/I with the training-size effect I/main in parentheses.")
+
+EXT_H2 = "Extension to Quaternary, Carbide, and Fe-Free Systems"
+EXT_PS = [
+    ("The full protocol re-run on the four extension systems shows the "
+     "smooth-coexistence ranking survives four inputs (Table 13). On quaternary "
+     "Fe\u2013Cr\u2013Ni\u2013C, the renorm head reaches 0.0037 MAE against 0.0075 for the "
+     "forest, a twofold margin larger than on any ternary. On Fe\u2013Cr\u2013C, "
+     "sigmoid/\u03a3 reaches 0.0029 against 0.0055. Beyond iron, renorm leads "
+     "Cr\u2013Co\u2013Ni (0.0055 against 0.0070) and sigmoid/\u03a3 leads nine-phase "
+     "Cr\u2013Ni\u2013Mn (0.0036 against 0.0052). Sparsemax, which collapses on every Fe "
+     "system, competes on dilute nine-phase targets (0.0048)."),
+    ("The detector gap widens exactly where phases get rarer, and the gated head "
+     "transfers with no retuning. The quaternary bare MLP misses the rarer carbides "
+     "and Fe\u2013Cr\u2013C collapses to 0.559 macro-AUPRC, while the gated head reaches "
+     "0.965 and 0.922. On the Fe-free systems the bare MLP misses HCP_A3 (0.02) and "
+     "MNNI, and the gated head reaches 0.979 and 0.971 at best-or-tied MAE. The "
+     "spatial protocols give the same qualitative answers: composition-band holdout "
+     "costs about 2\u20133.5 times the control and strict extrapolation fails on every "
+     "tested axis, worst in temperature (22\u201324 times on the transfer systems). The "
+     "exception is Cr\u2013Co\u2013Ni bands, which test easier than the control (0.8 times, "
+     "both bands FCC-dominated)."),
+]
+TABLE13_CAP = (
+    "Table 13. Scope-extension systems. (A) System and dataset statistics. "
+    "(B) Test MAE (mean over three seeds), best per system in bold. "
+    "(C) Contiguous-band and strict-extrapolation holdouts against size-matched "
+    "random controls. (D) Phase-set validation against the full eligible set.")
+
+ANCHOR_H2 = "Experimental Anchor"
+ANCHOR_P = (
+    "Four published DTA transition temperatures bound the surrogate\u2019s "
+    "contribution against the database\u2019s own disagreement with experiment "
+    "(Figure 10). Three Fe\u2013C\u2013Cr alloy transitions come from Drozdov\u2019a et "
+    "al. [36] and one Fe\u2013Cr\u2013Ni liquidus from Yamada et al. [37]. At the "
+    "10\u207b\u2074 detection threshold the surrogate matches full CALPHAD within 21 K "
+    "(mean 17.75 K), the same order as the database\u2019s own mean deviation "
+    "from experiment (19 K, median 8 K, driven by a single +59 K outlier). The "
+    "surrogate term is larger on three of the four alloys. With n = 4, neither "
+    "term can be declared limiting.")
+FIG10_CAP = (
+    "Figure 10. Experimental anchor: CALPHAD and surrogate liquid/solid fractions "
+    "versus temperature for four alloys with published DTA transition temperatures "
+    "(dotted markers). Three Fe\u2013C\u2013Cr alloys from Drozdov\u2019a et al. [36] and "
+    "one Fe\u2013Cr\u2013Ni alloy from Yamada et al. [37].")
+
+SCREEN_H2 = "High-Throughput Screening"
+SCREEN_PS = [
+    ("Fe\u2013Cr\u2013Ni was screened at T = 1000 K, below liquid appearance and at a "
+     "service-relevant temperature, for a lean-nickel austenitic window: fully "
+     "austenitic (FCC \u2265 0.99), sigma-free and melt-free (each \u2264 10\u207b\u00b3), with "
+     "nickel capped at 12 mol% (Table 14, Figure 11). The screen evaluated 501,501 "
+     "compositions on a 10\u207b\u00b3 simplex grid in 0.4 s, shortlisting 10,936 hits "
+     "(2.18%). Every shortlisted alloy checked was confirmed: all 11 Pareto-frontier "
+     "points (minimal Ni per Cr bin, falling from 7.5% Ni at 1.5% Cr to 4.8% near "
+     "12\u201313% Cr) under the full 28-phase set, all 400 points of a random hit subset, "
+     "and the remaining 10,525 in a follow-up run with zero misses: 10,936 of 10,936. "
+     "Treating the in-scope background miss rate (4 of 76) as representative, recall "
+     "is about 0.8. The misses cluster at decision boundaries, and ensemble spread "
+     "flags the worst one (Figure 12, panel a; AUROC 0.86; the clear failure carries "
+     "ten times the shortlist 95th-percentile spread). The threshold sweep over the "
+     "811-point pool gives precision 1.00 at all nine FCC\u2013sigma combinations "
+     "(Figure 12, panel b; Table 14)."),
+    ("One screen amortises the pipeline several times over. Against a measured "
+     "0.41 s per full-set solve and 268 s training, break-even is near 10\u2074 "
+     "points; the 501,501-point screen pays back roughly 7 to 50 times in a "
+     "single query. Half the training data buys most of the accuracy (0.0121 at 50% "
+     "against 0.0091 full). Commercial-grade projections show no grade-name bias: "
+     "AISI 304 is correctly refused on its 3.7% CALPHAD sigma, and ferritic 430 is "
+     "refused in agreement."),
+    ("With carbon in the query the screen still works, and its failures mark "
+     "the model\u2019s edge (Table 15, Figure 13). On quaternary Fe\u2013Cr\u2013Ni\u2013C, "
+     "330,000 compositions screen in 0.5 s with 14,475 hits (4.39%). The frontier "
+     "reaches 2.9% Ni at near-zero Cr, with carbon substituting for both Ni and Cr. "
+     "Of 20 frontier points 15 confirm; the 5 rejections form one contiguous Cr pocket "
+     "where the screen over-smooths a two-phase region at its decision edge. "
+     "Combined shortlist precision is 0.98 (14,143/14,475) at recall about 0.8. "
+     "Disagreement gates transfer (AUROC 0.856), and break-even near 10\u2074 points "
+     "means the screen pays back roughly 10 to 30 times."),
+]
+TABLE14_CAP = (
+    "Table 14. Application case: lean-Ni austenitic screen at 1000 K on "
+    "Fe\u2013Cr\u2013Ni. Break-even is the one-time cost divided by the measured "
+    "0.41 s per-point full-set saving.")
+FIG11_CAP = (
+    "Figure 11. Screen operating characteristics. (a) Shortlist spread "
+    "distribution (10,936 points) with the four in-scope misses and the "
+    "90/95/99th-percentile gates. (b) Pool precision and recall across the "
+    "FCC\u2013sigma threshold grid: precision is 1.00 at all nine combinations.")
+TABLE15_CAP = (
+    "Table 15. Application case: quaternary lean-Ni screen with carbon at "
+    "1000 K on Fe\u2013Cr\u2013Ni\u2013C.")
+FIG13_CAP = (
+    "Figure 13. Quaternary screen with carbon at 1000 K. (a) Pareto frontier of "
+    "minimal Ni versus Cr: 15 of 20 frontier points confirm; the 5 rejections form "
+    "one contiguous pocket. (b) Surrogate-versus-CALPHAD FCC parity on the "
+    "validated shortlist.")
+FIG12_CAP = (
+    "Figure 12. Lean-Ni austenitic screen at 1000 K. (a) Gibbs triangle coloured "
+    "by surrogate FCC: shortlist, Pareto frontier of minimal Ni per Cr bin (all 11 "
+    "full-CALPHAD-confirmed) and the four in-scope misses. (b) The frontier as "
+    "minimal qualifying Ni versus Cr. (c) Data efficiency: test MAE versus "
+    "training-set size.")
+
+DISCUSS_ADD1 = (
+    " The ideal-form control sharpens this picture into an operational rule. At "
+    "equal training size, removing a contiguous band still doubles the error on "
+    "average (0.93\u20133.84, mean 2.01), while equal-size subsampling elsewhere "
+    "changes it by only 3%. Error therefore tracks data coverage, not data volume. "
+    "For screening loops, coverage of the query region matters more than sheer "
+    "dataset size, and the constrained MLP degrades least in nine of ten "
+    "band\u2013system combinations.")
+DISCUSS_ADD2 = (
+    " The two validated screens quantify the filter economics. Break-even near "
+    "10\u2074 points against payback of 7\u201350 times (ternary) and 10\u201330 times "
+    "(quaternary) in a single query, with shortlist precision 1.00 and 0.98 and "
+    "recall about 0.8 on both. The boundary conditions stand: one temperature each "
+    "on two systems, and trusting the screen still requires spot CALPHAD \u2014 the "
+    "screens above spent about 11,000 full-set solves on validation.")
+LIMIT_ADD = (
+    " Three further bounds apply. Only one solver generated all labels, so solver "
+    "disagreement is unexplored. All nine systems come from one assessed steel "
+    "database, which isolates model behaviour from database variation but holds "
+    "database error fixed. The gated remedy was evaluated under shift on two "
+    "systems only, with one composition-extrapolation reversal.")
+
+CONC_ADD = [
+    ("Presence supervision closes the gap. The gated two-stage head lifts "
+     "macro-AUPRC to 0.91\u20130.99 on all nine systems (best classical detector "
+     "beaten on eight) while leading the forest in MAE. Presence supervision, "
+     "not architecture, resolves the sharp-boundary cases."),
+    ("Penalties are spatial, not volumetric. The ideal-form control holds training "
+     "size fixed and still doubles the error on band removal (mean 2.01) against a "
+     "3% size effect. Error tracks coverage, and strict extrapolation remains "
+     "unsupported on every axis tested."),
+    ("Generality across dimension and chemistry. Rankings, gap, remedy, and "
+     "protocols transfer to a quaternary, a carbide ternary, and two Fe-free "
+     "ternaries (88,542 equilibria total). The sparse head is competitive only on "
+     "dilute nine-phase targets."),
+    ("Screening pays. Two validated lean-nickel screens (501,501 and 330,000 "
+     "compositions; precision 1.00 and 0.98) pay back data costs several times over, "
+     "with ensemble disagreement as a shortlist triage gate and a four-point "
+     "experimental anchor bounding database disagreement."),
+]
+
+NEW_REFS = [
+    "33.\tStoco, C.B., et al., Accelerating phase prediction via CALPHAD-informed "
+    "machine learning and data augmentation. Computational Materials Science, "
+    "2026. 272: p. 114834.",
+    "34.\tOtis, R. and Z.-K. Liu, pycalphad: CALPHAD-based computational "
+    "thermodynamics in Python. Journal of Open Research Software, 2017. 5: p. 1.",
+    "35.\tMatCalc, Open thermodynamic databases. 2023. https://www.matcalc.at/.",
+    "36.\tDrozdov\u2019a, L\u2019., et al., Temperatures of liquidus, solidus and "
+    "peritectic transformation of Fe\u2013C\u2013Cr based alloys. In: METAL 2017 \u2014 26th "
+    "International Conference on Metallurgy and Materials, Brno, Czech Republic, "
+    "2017. pp. 65\u201370.",
+    "37.\tYamada, A., et al., Determination of liquidus and solidus surfaces at "
+    "iron-rich region of Fe\u2013Cr\u2013Ni system. Tetsu-to-Hagan\u2019e, 1987. 73: pp. "
+    "1676\u20131683.",
+]
