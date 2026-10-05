@@ -157,8 +157,11 @@ FIG1_CAPTION = (
     "interpolation, contiguous interior-band holdout, and strict one-sided "
     "extrapolation, the two spatial ones each with a size-matched random control "
     "\u2014 plus secondary analyses (ablations, boundary-error analysis, "
-    "region-matched reanalysis with an ideal-form control, uncertainty screening, "
-    "the experimental anchor, and two validated high-throughput screens).")
+    "region-matched reanalysis with an ideal-form control, and uncertainty "
+    "screening, dashed arrows). (4) Deployment: a four-point experimental "
+    "anchor and two validated high-throughput screens (a 501,501-composition "
+    "ternary screen and a 330,000-composition quaternary screen), with "
+    "ensemble disagreement gating the ternary screen.")
 
 # --------------------------------------------------------------------------
 # LaTeX table parsing

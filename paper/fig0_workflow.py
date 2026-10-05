@@ -1,16 +1,22 @@
 """Figure 0: study workflow for the introduction.
 
-A schematic of the pipeline only (no results): CALPHAD data generation,
-the cluster-stratified split, the parallel model families, and the three
-evaluation protocols (each spatial one with a size-matched random control),
-plus the two secondary analyses. Purely schematic -- no numbers are read
-from artefacts beyond the fixed protocol constants stated in the text.
+A schematic of the pipeline only (no results): CALPHAD data generation
+(including the four scope-extension systems), the cluster-stratified split,
+the parallel model families (including the presence-gated head), the three
+evaluation protocols (each spatial one with a size-matched random control,
+plus the region-matched reanalysis with its ideal-form control and the
+uncertainty-triage analysis), and the deployment band (experimental anchor
+and two validated high-throughput screens). Purely schematic -- no numbers
+are read from artefacts beyond the fixed protocol constants stated in the
+text.
 
-Layout: three horizontal bands, all connectors are arrows with heads (no
+Layout: four horizontal bands, all connectors are arrows with heads (no
 headless lines). The two model families converge into a single "trained
-surrogates" node, which fans out to the three evaluation protocols; the two
-secondary analyses (ablations, boundary-error analysis) are fed by dashed
-arrows.
+surrogates" node, which fans out to the three evaluation protocols; the
+three secondary analyses (ablations, boundary-error analysis, uncertainty
+triage) are fed by dashed arrows. A deployment trunk carries the trained
+surrogates to the anchor and the two screens; ensemble disagreement gates
+the ternary screen (dashed).
 
 Usage: py -3.12 paper/fig0_workflow.py
 """
@@ -48,7 +54,7 @@ BASE = "#fbfbfa"; BASE_EC = "#9a9a8e"
 SEC = "#777777"                           # secondary-analysis arrows
 
 W = 11.6
-H = 11.5
+H = 14.6
 BAND_L = 0.30
 BAND_R = 11.30
 
@@ -211,31 +217,36 @@ def build():
     L = Layout()
     CX = (BAND_L + BAND_R) / 2          # centre x
 
-    # columns: the three protocols; secondary analyses sit in the reserved
+    # columns: the three protocols; the trunk and the dashed drops use the
     # corridors between columns so no vertical drop crosses any box
     X_L, X_M, X_R = 2.05, CX, 9.50      # interp / band-holdout / extrapolation
-    X_A, X_B = 3.85, 7.72               # ablate, boundary
+    TRUNK_X = 7.60                       # free corridor, trained -> deployment
+    DROP_A = 3.87                        # free corridor for the left drops
 
     # ============================================================ BAND 1
-    b1y0, b1y1 = 7.05, 11.20
+    b1y0, b1y1 = 10.00, 14.30
     L.band(b1y0, b1y1, "1  CALPHAD DATA GENERATION  (pycalphad + MatCalc)", DATA)
 
-    L.box("db", CX, 10.45, 4.6, 0.62,
+    L.box("db", CX, 13.62, 4.6, 0.62,
           "MatCalc steel database  mc_fe_v2.062\n"
           "custom parser \u2192 five Fe-based ternary subsystems",
           fc=DATA_LT, ec=DATA)
-    L.box("probe", CX, 9.59, 5.4, 0.62,
+    L.box("probe", CX, 12.76, 5.4, 0.62,
           "Probe-driven phase sets\n"
           "2,000 probe points \u00b7 retain phases ever active \u00b7 K = 4\u20139 targets",
           fc=DATA_LT, ec=DATA)
-    L.box("sample", CX, 8.73, 5.6, 0.66,
+    L.box("sample", CX, 11.90, 5.6, 0.66,
           "Structured sampling \u2014 five strategies, 11,220 candidates\n"
           "Fe-weighted uniform \u00b7 sigma-focused \u00b7 isothermal grid\n"
           "liquidus-zone \u00b7 near-pure-Fe draws",
           fc=DATA_LT, ec=DATA, fs=FS_SMALL)
-    L.box("gate", CX, 7.80, 3.4, 0.86,
+    L.box("gate", CX, 11.12, 3.4, 0.86,
           "mass-balance gate\n$|\\Sigma N^\\phi - 1| < 10^{-6}$",
           shape="diamond", fc=GATE_LT, ec=GATE, fs=FS_SMALL)
+    L.box("ext", CX, 10.28, 7.5, 0.50,
+          "Scope-extension systems \u2014 identical pipeline: quaternary Fe\u2013Cr\u2013Ni\u2013C \u00b7 "
+          "carbide Fe\u2013Cr\u2013C \u00b7 Fe-free Cr\u2013Co\u2013Ni, Cr\u2013Ni\u2013Mn  \u2192  88,542 total",
+          fc=DATA_LT, ec=DATA, fs=FS_SMALL)
 
     L.arrow([L.edge("db", "b"), L.edge("probe", "t")],
             name="db->probe", orig="db", dest="probe")
@@ -243,38 +254,42 @@ def build():
             name="probe->sample", orig="probe", dest="sample")
     L.arrow([L.edge("sample", "b"), L.edge("gate", "t")],
             name="sample->gate", orig="sample", dest="gate")
+    L.arrow([L.edge("gate", "b"), L.edge("ext", "t")],
+            name="gate->ext", orig="gate", dest="ext")
 
     # ============================================================ BAND 2
-    b2y0, b2y1 = 3.05, 6.80
+    b2y0, b2y1 = 6.45, 9.75
     L.band(b2y0, b2y1, "2  SPLIT  +  MODEL FAMILIES", MODEL)
 
-    L.box("split", CX, 6.12, 6.4, 0.62,
+    L.box("split", CX, 9.05, 6.4, 0.62,
           "Cluster-stratified split  64 / 16 / 20  (train / val / test)\n"
           "KMeans k = 6 on (x\u2082, x\u2083, T) \u00b7 seeds 42, 123, 2024 \u00b7 "
           "test never touched in fitting",
           fc=MODEL_LT, ec=MODEL)
 
     # two parallel model branches
-    L.box("mlp", CX - 2.75, 4.825, 4.6, 0.86,
+    L.box("mlp", CX - 2.75, 7.90, 4.6, 1.05,
           "Constrained MLP  (3 \u00d7 192)\n"
           "six heads: sigmoid \u00b7 residue \u00b7 sparsemax \u00b7\n"
           "softmax \u00b7 sigmoid/\u03a3 \u00b7 renorm\n"
+          "+ presence-gated two-stage head (fraction \u00d7 presence)\n"
           "+ probes: power-norm \u00b7 sum-to-one penalty",
           fc=MODEL_LT, ec=MODEL, fs=FS_SMALL)
-    L.box("base", CX + 2.75, 4.90, 4.6, 0.72,
+    L.box("base", CX + 2.75, 7.94, 4.6, 0.80,
           "Classical baselines\n"
           "ridge \u00b7 k-NN \u00b7 XGBoost \u00b7 random forest\n"
           "each raw and after post-hoc renormalization",
           fc=MODEL_LT, ec=MODEL, fs=FS_SMALL)
 
     # convergence node: everything that gets fitted, before evaluation
-    L.box("trained", CX, 3.57, 4.6, 0.55,
+    L.box("trained", CX, 6.88, 4.6, 0.75,
           "Trained surrogates\n"
-          "six heads \u00b7 four baselines \u00b7 three seeds",
+          "six heads + gated head \u00b7 four baselines \u00b7 three seeds\n"
+          "seed spread \u2192 U1 triage score",
           fc=MODEL_LT, ec=MODEL, fs=FS_SMALL)
 
-    L.arrow([L.edge("gate", "b"), L.edge("split", "t")],
-            name="gate->split", orig="gate", dest="split")
+    L.arrow([L.edge("ext", "b"), L.edge("split", "t")],
+            name="ext->split", orig="ext", dest="split")
 
     # fork: split -> mlp / base (elbow arrows)
     sy = L.edge("split", "b")[1]
@@ -294,66 +309,102 @@ def build():
             name="base->trained", orig="base", dest="trained")
 
     # ============================================================ BAND 3
-    b3y0, b3y1 = 0.30, 2.80
+    b3y0, b3y1 = 3.15, 6.20
     L.band(b3y0, b3y1, "3  EVALUATION PROTOCOLS", EVAL)
 
     # three evaluation protocols (row 1 of band 3)
-    L.box("interp", X_L, 1.77, 3.3, 0.66,
+    L.box("interp", X_L, 5.45, 3.3, 0.70,
           "Interpolation test\n"
-          "MAE \u00b7 closure \u00b7 detection \u00b7 admissibility\n"
+          "MAE \u00b7 closure \u00b7 detection (AUPRC) \u00b7 admissibility\n"
           "paired bootstrap",
           fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
-    L.box("bandhold", X_M, 1.72, 3.5, 0.66,
+    L.box("bandhold", X_M, 5.45, 3.5, 0.70,
           "Contiguous interior-band holdout\n"
           "T \u2208 [1200,1400] K \u00b7 x\u2082 \u2208 [0.25,0.35]\n"
-          "+ size-matched control \u00b7 region-matched reanalysis",
+          "+ size-matched control \u00b7 region-matched reanalysis\n"
+          "+ ideal-form control (H/I)",
           fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
-    L.box("extrap", X_R, 1.72, 3.4, 0.66,
+    L.box("extrap", X_R, 5.45, 3.2, 0.70,
           "Strict one-sided extrapolation\n"
           "x\u2082: \u2264 0.25 \u2192 > 0.35 \u00b7 T: \u2264 1200 K \u2192 > 1400 K\n"
           "+ size-matched random control",
           fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
 
     # fan-out: every evaluation box gets its own arrow, each one starting
-
     # on the bottom edge of "Trained surrogates". The start x's follow the
     # left-to-right order of the targets, so no two arrows cross.
-
     tb = L.edge("trained", "b")[1]
 
-    JY = 2.48                              # elbow height for the outer arrows
+    JY = 6.02                              # elbow height for the outer arrows
 
     x_i = L.edge("trained", "l")[0] + 0.10
     x_e = L.edge("trained", "r")[0] - 0.10
     L.arrow([(x_i, tb), (x_i, JY), (X_L, JY), L.edge("interp", "t")],
-
             name="trained->interp", orig="trained", dest="interp")
-
     L.arrow([(CX, tb), L.edge("bandhold", "t")],
-
             name="trained->band", orig="trained", dest="bandhold")
-
     L.arrow([(x_e, tb), (x_e, JY), (X_R, JY), L.edge("extrap", "t")],
-
             name="trained->extrap", orig="trained", dest="extrap")
 
     # secondary analyses (row 2 of band 3), dashed = derived analyses
-    L.box("ablate", X_A, 0.77, 3.3, 0.52,
+    L.box("ablate", 3.00, 4.25, 2.8, 0.60,
           "Ablations: width \u00b7 loss \u00b7 penalty\n"
           "presence-threshold sensitivity 10\u207b\u2074\u201310\u207b\u00b2",
           fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
-    L.box("boundary", X_B, 0.77, 3.3, 0.52,
+    L.box("u1", 5.90, 4.25, 2.8, 0.60,
+          "Uncertainty triage\n"
+          "U1 spread ranks per-row error\n"
+          "U2 input distance: no power",
+          fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
+    L.box("boundary", 9.20, 4.25, 2.6, 0.60,
           "Boundary-error analysis\n"
-          "MAE vs. distance to nearest active-phase-set shift",
+          "MAE vs. distance to phase-set shift",
           fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
 
-    L.arrow([(X_A, tb), L.edge("ablate", "t")], color=SEC, ls="--",
-
+    L.arrow([(DROP_A, tb), (DROP_A, L.edge("ablate", "t")[1])],
+            color=SEC, ls="--",
             name="trained->ablate", orig="trained", dest="ablate")
-
-    L.arrow([(X_B, tb), L.edge("boundary", "t")], color=SEC, ls="--",
-
+    # elbow to the U1 box through the row gap (no corridor available there)
+    u1top = L.edge("u1", "t")
+    L.arrow([(DROP_A, tb), (DROP_A, 4.85), (u1top[0], 4.85), u1top],
+            color=SEC, ls="--",
+            name="trained->u1", orig="trained", dest="u1")
+    L.arrow([(7.80, tb), (7.80, L.edge("boundary", "t")[1])],
+            color=SEC, ls="--",
             name="trained->boundary", orig="trained", dest="boundary")
+
+    # ============================================================ BAND 4
+    b4y0, b4y1 = 0.25, 2.85
+    L.band(b4y0, b4y1, "4  DEPLOYMENT: EXPERIMENTAL ANCHOR + HIGH-THROUGHPUT SCREENS", EVAL)
+
+    L.box("anchor", 2.05, 1.50, 3.0, 1.00,
+          "Experimental anchor\n"
+          "4 DTA points vs CALPHAD\n"
+          "surrogate within 21 K of solver",
+          fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
+    L.box("screenT", 5.80, 1.50, 3.2, 1.00,
+          "Lean-Ni screen (Fe\u2013Cr\u2013Ni, 1000 K)\n"
+          "501,501 compositions in 0.4 s\n"
+          "10,936 hits \u00b7 shortlist precision 1.00",
+          fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
+    L.box("screenQ", 9.35, 1.50, 3.0, 1.00,
+          "Quaternary screen (+C, 1000 K)\n"
+          "330,000 in 0.5 s \u00b7 14,475 hits\n"
+          "shortlist precision 0.98",
+          fc=EVAL_LT, ec=EVAL, fs=FS_SMALL)
+
+    # deployment trunk: trained surrogates flow to anchor and screens
+    L.arrow([(TRUNK_X, tb), (TRUNK_X, 2.35)],
+            name="trunk", orig="trained", dest="screenQ")
+    for bx, nm in ((2.05, "anchor"), (5.80, "screenT"), (9.35, "screenQ")):
+        top = L.edge(nm, "t")
+        L.arrow([(TRUNK_X, 2.35), (bx, 2.35), top],
+                name=f"trunk->{nm}", orig="trained", dest=nm)
+    # U1 gates the ternary screen (elbow to stay axis-aligned)
+    L.arrow([(u1top[0], L.edge("u1", "b")[1]), (u1top[0], 2.35),
+             (L.edge("screenT", "t")[0], 2.35), L.edge("screenT", "t")],
+            color=SEC, ls="--",
+            name="u1->screenT", orig="u1", dest="screenT")
 
     L.qc()
     for wmsg in L.warns:

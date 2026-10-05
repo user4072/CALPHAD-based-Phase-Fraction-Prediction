@@ -236,15 +236,21 @@ probe-driven phase sets fix the target dimensionality, structured sampling
 draws 11{,}220 raw design points per system (8{,}880 of which fall inside
 the valid sub-simplex and are submitted to the solver), and the
 equilibrium convergence and mass-balance gate accepts 44{,}397 equilibria
-in total. (2) A cluster-stratified 64/16/20
-split feeds a constrained MLP with six output heads (plus two mechanism
+in total, and four scope-extension systems add 44{,}145 more (88{,}542 in
+total). (2) A cluster-stratified 64/16/20
+split feeds a constrained MLP with six fraction-only heads and a
+presence-gated two-stage head (plus two mechanism
 probes) and four classical baselines, all fitted under one fixed protocol
 and three seeds. (3) Three evaluation protocols --- interpolation,
 contiguous interior-band holdout, and strict one-sided extrapolation, the
 two spatial ones each with a size-matched random control --- plus
 secondary analyses (ablations, boundary-error analysis, the
-presence-gated remedy, uncertainty screening, and the experimental
-anchor, dashed arrows). Four scope-extension systems (quaternary
+region-matched reanalysis with its ideal-form control, and uncertainty
+screening, dashed arrows). (4) Deployment: a four-point experimental
+anchor and two validated high-throughput screens (a 501{,}501-composition
+ternary screen and a 330{,}000-composition quaternary screen), with
+ensemble disagreement gating the ternary screen. The four scope-extension
+systems (quaternary
 Fe--Cr--Ni--C, Fe--Cr--C, and Fe-free Cr--Co--Ni and Cr--Ni--Mn) reuse
 the same pipeline end to end and are
 reported in Sections~\ref{sec:extensions} and~\ref{sec:anchor}.}
