@@ -40,7 +40,15 @@ SPATIAL_APPEND = (
     " As a complementary reference, a region-matched reanalysis is also reported: for each band, the band-holdout error is compared against the main-study models on the identical band rows inside the interpolation test set. Its residual confound is a roughly 15% training-size difference. The ideal-form control removes it by retraining at equal size: band rows kept in training, with an equal number of random non-band rows dropped instead, on identical test rows.")
 
 FIG1_CAPTION = (
-    "Figure 1. Study pipeline. (1) CALPHAD data generation: five Fe-based ternary subsystems are extracted from the open MatCalc steel database, probe-driven phase sets fix the target dimensionality, structured sampling draws 11,220 candidate points per system, and a mass-balance gate accepts 44,397 equilibria in total; four scope-extension systems (quaternary Fe\u2013Cr\u2013Ni\u2013C, Fe\u2013Cr\u2013C, and Fe-free Cr\u2013Co\u2013Ni and Cr\u2013Ni\u2013Mn) reuse the same pipeline and add 44,145 equilibria (88,542 in total). (2) A cluster-stratified 64/16/20 split feeds a constrained MLP with six fraction-only heads and a presence-gated two-stage head, plus four classical baselines, all fitted under one fixed protocol and three seeds. (3) Three evaluation protocols \u2014 interpolation, contiguous interior-band holdout, and strict one-sided extrapolation, the two spatial ones each with a size-matched random control \u2014 plus secondary analyses (ablations, boundary-error analysis, region-matched reanalysis with an ideal-form control, and uncertainty screening, dashed arrows). (4) Deployment: a four-point experimental anchor and two validated high-throughput screens (a 501,501-composition ternary screen and a 330,000-composition quaternary screen), with ensemble disagreement gating the ternary screen.")
+    "Figure 1. Study pipeline. CALPHAD data generation from the open MatCalc "
+    "steel database (five Fe-based ternaries, 44,397 equilibria; four "
+    "scope-extension systems add 44,145 more, 88,542 in total); "
+    "cluster-stratified 64/16/20 split; a constrained MLP with six "
+    "fraction-only heads and a presence-gated two-stage head plus four "
+    "classical baselines; evaluation under interpolation, contiguous "
+    "interior-band holdout with matched controls, and strict one-sided "
+    "extrapolation; deployment through a four-point experimental anchor "
+    "and two validated high-throughput screens.")
 
 GATED_H2 = "Closing the Detector Gap with a Presence-Gated Head"
 GATED_PS = [
