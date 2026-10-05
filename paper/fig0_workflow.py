@@ -1,10 +1,11 @@
-"""Figure 0: study workflow for the introduction.
+"""Figure 0: study workflow schematic.
 
-A Stoco-style single-flow schematic: five solid color blocks with white
-bold titles (data -> split -> train -> evaluate -> deploy), one labeled
-arrow between consecutive blocks, and small side annotations. No bands,
-no parallel rails, no elbows. Purely schematic -- no numbers are read
-from artefacts beyond the fixed protocol constants stated in the text.
+Single-column (89 mm) technical schematic in the style of a journal method
+figure: five stacked stage blocks on a warm-to-cool progression, each with a
+drawn vector glyph (T-x grid, cluster-stratified split triangle, MLP with
+simplex output, temperature-band holdout, phase-fraction screen), black
+labelled arrows naming the data object transferred, and a left elbow marking
+the held-out rows. Purely schematic -- no result metrics appear in the figure.
 
 Usage: py -3.12 paper/fig0_workflow.py
 """
@@ -15,262 +16,236 @@ from pathlib import Path
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Polygon
+import numpy as np
+from matplotlib.patches import Circle, FancyArrowPatch, FancyBboxPatch, Polygon, Rectangle
 
 ROOT = Path(__file__).resolve().parent.parent
 FIG = ROOT / "paper" / "figures"
 os.makedirs(FIG, exist_ok=True)
 
 mpl.rcParams.update({
-    "font.family": "serif",
-    "font.serif": ["DejaVu Serif"],
-    "font.size": 10.0,
-    "figure.dpi": 150,
+    "font.family": "sans-serif",
+    "font.sans-serif": ["DejaVu Sans"],
+    "font.size": 7.0,
+    "figure.dpi": 200,
     "savefig.dpi": 500,
     "savefig.bbox": "tight",
-    "savefig.pad_inches": 0.06,
+    "savefig.pad_inches": 0.02,
     "axes.unicode_minus": False,
 })
 
-# palette: one neutral base + semantic accents
-INK = "#1f1f1f"
-DATA = "#2d6a9e"; DATA_LT = "#dcebf5"     # CALPHAD / data stage
-MODEL = "#b56a2e"; MODEL_LT = "#f8eddf"   # model families
-EVAL = "#4c7a3d"; EVAL_LT = "#e9f0e4"     # evaluation protocols
-GATE = "#b5862a"; GATE_LT = "#fdf3dd"     # decision / acceptance gate
-BASE = "#fbfbfa"; BASE_EC = "#9a9a8e"
-SEC = "#777777"                           # secondary-analysis arrows
+INK = "#33404D"
+W, H = 3.50, 5.52
 
-W = 6.40
-H = 8.60
-BAND_L = 0.30
-BAND_R = 11.30
+CX, BW, BH, GAP = 1.50, 2.44, 0.72, 0.44
+LEFT, RIGHT = CX - BW / 2, CX + BW / 2
+CYS = [H - 0.44 - i * (BH + GAP) for i in range(5)]
 
-FS_HEAD = 12.0
-FS_BODY = 10.0
-FS_SMALL = 8.6
+GLYPH_X0, GLYPH_X1 = 0.36, 0.94
+TEXT_X0, TEXT_X1 = 1.00, 2.68
+FS_TITLE, FS_SUB, FS_ARROW, FS_SIDE = 7.0, 5.6, 5.0, 5.0
 
-PAD_H = 0.16
-PAD_V = 0.10
+# warm-to-cool stage progression (hue family sampled from the reference style,
+# deepened so that white bold text stays legible in print)
+STAGE_FC = ["#D9535B", "#E08B4C", "#C7921F", "#7FA845", "#4A8FBF"]
+CLUSTER = ["#C0504D", "#E8A33D", "#4E8FBF"]
+
+LW = 0.7
+GLW = 0.28
 
 
-def _measure(scratch, text, fs, weight="normal"):
-    t = scratch.text(0.5, 0.5, text, fontsize=fs, ha="center", va="center",
-                     weight=weight, linespacing=1.25)
+def _measure(scratch, s, fs, weight="normal"):
+    t = scratch.text(0.5, 0.5, s, fontsize=fs, ha="center", va="center",
+                     weight=weight, linespacing=1.30)
     scratch.canvas.draw()
     bb = t.get_window_extent(renderer=scratch.canvas.get_renderer())
     t.remove()
     return bb.width / scratch.dpi, bb.height / scratch.dpi
 
 
-class Layout:
-    def __init__(self):
-        self.scratch = plt.figure(figsize=(4, 4))
-        self.fig = plt.figure(figsize=(W, H))
-        self.ax = self.fig.add_axes([0, 0, 1, 1])
-        self.ax.set_xlim(0, W)
-        self.ax.set_ylim(0, H)
-        self.ax.axis("off")
-        self.boxes = []
-        self.arrows = []
-        self.warns = []
+def g_grid(ax, cy, warns):
+    """T-x sampling grid with an equilibrium envelope."""
+    x0, x1, y0, y1 = 0.38, 0.92, cy - 0.19, cy + 0.25
+    ax.add_patch(Rectangle((x0, y0), x1 - x0, y1 - y0, fill=False,
+                           edgecolor=INK, linewidth=LW, zorder=6))
+    for f in (1 / 3, 2 / 3):
+        ax.plot([x0, x1], [y0 + (y1 - y0) * f] * 2, color=INK, linewidth=0.35,
+                linestyle=(0, (2, 2)), zorder=5)
+        ax.plot([x0 + (x1 - x0) * f] * 2, [y0, y1], color=INK, linewidth=0.35,
+                linestyle=(0, (2, 2)), zorder=5)
+    xs = np.array([0.425, 0.545, 0.665, 0.785, 0.885])
+    ys = y0 + (y1 - y0) * np.array([0.16, 0.34, 0.58, 0.80, 0.92])
+    ax.plot(xs, ys, color=INK, linewidth=0.85, zorder=6)
+    ax.plot(xs, ys, "o", ms=1.7, mfc=INK, mec="none", zorder=7)
+    if min(ys) < y0 or max(ys) > y1:
+        warns.append("glyph grid: envelope outside frame")
 
-    # -- primitives ---------------------------------------------------------
-    def rbox(self, cx, cy, w, h, fc, ec, lw=1.2, radius=0.08, zorder=3):
-        self.ax.add_patch(FancyBboxPatch((cx - w / 2, cy - h / 2), w, h,
-                                         boxstyle=f"round,pad=0,rounding_size={radius}",
-                                         facecolor=fc, edgecolor=ec,
-                                         linewidth=lw, zorder=zorder))
 
-    def diamond(self, cx, cy, w, h, fc, ec, lw=1.3):
-        self.ax.add_patch(Polygon([(cx, cy + h / 2), (cx + w / 2, cy),
-                                   (cx, cy - h / 2), (cx - w / 2, cy)],
-                                  closed=True, facecolor=fc, edgecolor=ec,
-                                  linewidth=lw, zorder=3))
+def g_split(ax, cy, warns):
+    """Composition triangle with three KMeans clusters."""
+    rng = np.random.default_rng(7)
+    cx, top, half = 0.65, cy + 0.27, 0.26
+    hh = half * np.sqrt(3) / 2
+    A, B, C = (cx, top), (cx - half, top - hh), (cx + half, top - hh)
+    ax.add_patch(Polygon([A, B, C], closed=True, fill=False, edgecolor=INK,
+                         linewidth=LW, zorder=6))
+    for k, col in enumerate(CLUSTER):
+        for _ in range(5):
+            u, v = rng.random(), rng.random()
+            if u + v > 1:
+                u, v = 1 - u, 1 - v
+            w = 1 - u - v
+            px = u * A[0] + v * B[0] + w * C[0]
+            py = u * A[1] + v * B[1] + w * C[1]
+            ax.add_patch(Circle((px, py), 0.019, fc=col, ec="white",
+                                linewidth=0.3, zorder=7))
+    if not (GLYPH_X0 <= cx - half and cx + half <= GLYPH_X1):
+        warns.append("glyph split: triangle wider than glyph lane")
 
-    def band(self, y0, y1, header, color):
-        self.rbox((BAND_L + BAND_R) / 2, (y0 + y1) / 2, BAND_R - BAND_L,
-                  y1 - y0, "#fafaf7", "#c9c9bd", lw=1.0, radius=0.12,
-                  zorder=1)
-        # filled header strip with white bold text (modern journal look);
-        # the strip sits above everything (zorder 5) so connector drops
-        # pass behind it instead of crossing the header text
-        strip_h = 0.46
-        self.ax.add_patch(FancyBboxPatch(
-            (BAND_L + 0.02, y1 - strip_h), BAND_R - BAND_L - 0.04, strip_h - 0.06,
-            boxstyle="round,pad=0,rounding_size=0.09",
-            facecolor=color, edgecolor=color, linewidth=0, zorder=5))
-        self.ax.text(0.80, y1 - strip_h / 2 - 0.01, header, ha="left",
-                     va="center", fontsize=FS_HEAD, color="white",
-                     weight="bold", zorder=6)
 
-    def text(self, x, y, s, fs=FS_BODY, color=INK, weight="normal",
-             ha="center", va="center"):
-        return self.ax.text(x, y, s, ha=ha, va=va, fontsize=fs, color=color,
-                            weight=weight, linespacing=1.25, zorder=4)
+def g_mlp(ax, cy, warns):
+    """Feed-forward surrogate with an explicit simplex output bracket."""
+    cols_x = [0.395, 0.565, 0.735, 0.885]
+    counts = [3, 4, 4, 2]
+    nodes = {}
+    for x, n in zip(cols_x, counts):
+        nodes[x] = [cy + (i - (n - 1) / 2) * 0.125 for i in range(n)]
+    for a, b in zip(cols_x[:-1], cols_x[1:]):
+        for ya in nodes[a]:
+            for yb in nodes[b]:
+                ax.plot([a, b], [ya, yb], color=INK, linewidth=GLW, zorder=4)
+    for x, ys in nodes.items():
+        for y in ys:
+            ax.add_patch(Circle((x, y), 0.0245, fc="white", ec=INK,
+                                linewidth=0.75, zorder=6))
+    ax.plot([0.915, 0.933, 0.933, 0.915],
+            [cy - 0.0625, cy - 0.0625, cy + 0.0625, cy + 0.0625],
+            color=INK, linewidth=0.6, zorder=6)
+    if 0.933 > GLYPH_X1:
+        warns.append("glyph mlp: bracket outside glyph lane")
 
-    # -- interior size for a shape -----------------------------------------
-    def _inner(self, shape, w, h):
-        if shape == "diamond":
-            return (w - 0.22) * 0.72, h * 0.62
-        return w, h
 
-    def _fit(self, shape, w, h, tw, th):
-        for _ in range(8):
-            iw, ih = self._inner(shape, w, h)
-            dw = (tw + 2 * PAD_H) - iw
-            dh = (th + 2 * PAD_V) - ih
-            if dw <= 0 and dh <= 0:
-                break
-            w += max(dw, 0.0) * 1.15
-            h += max(dh, 0.0) * 1.15
-        return w, h
+def g_bands(ax, cy, warns):
+    """Envelope over a temperature axis with held-out bands."""
+    x0, x1, y0, y1 = 0.38, 0.92, cy - 0.19, cy + 0.25
+    ax.add_patch(Rectangle((x0, y0), x1 - x0, y1 - y0, fill=False,
+                           edgecolor=INK, linewidth=LW, zorder=6))
+    w = x1 - x0
+    for a, b in ((0.16, 0.30), (0.56, 0.70)):
+        ax.add_patch(Rectangle((x0 + w * a, y0), w * (b - a), y1 - y0,
+                               fc=INK, alpha=0.11, ec="none", zorder=4))
+        for e in (a, b):
+            ax.plot([x0 + w * e] * 2, [y0, y1], color=INK, linewidth=0.5,
+                    linestyle=(0, (2, 1.6)), zorder=5)
+    xs = np.linspace(x0 + 0.015, x1 - 0.015, 60)
+    ys = y0 + (y1 - y0) * (0.30 + 0.52 * np.abs(np.sin((xs - x0) * 8.5)))
+    ax.plot(xs, ys, color=INK, linewidth=0.85, zorder=6)
+    if ys.min() < y0 or ys.max() > y1:
+        warns.append("glyph bands: envelope outside frame")
 
-    def box(self, name, cx, cy, w, h, lines, shape="rbox",
-            fc=BASE, ec=BASE_EC, lw=1.2, fs=FS_BODY, weight="normal"):
-        tw, th = _measure(self.scratch, lines, fs, weight)
-        w, h = self._fit(shape, w, h, tw, th)
-        if shape == "diamond":
-            self.diamond(cx, cy, w, h, fc, ec, lw)
-        else:
-            self.rbox(cx, cy, w, h, fc, ec, lw)
-        self.text(cx, cy, lines, fs=fs, weight=weight)
-        self.boxes.append((name, cx, cy, w, h, shape))
-        iw, ih = self._inner(shape, w, h)
-        if tw > iw - 0.10 or th > ih - 0.05:
-            self.warns.append(f"TEXT-FIT {name}: text {tw:.2f}x{th:.2f} "
-                              f"> inner {iw - 0.10:.2f}x{ih - 0.05:.2f}")
 
-    def edge(self, name, side):
-        b = next(b for b in self.boxes if b[0] == name)
-        if side in ("l", "r"):
-            return b[1] + (b[3] / 2 if side == "r" else -b[3] / 2), b[2]
-        return b[1], b[2] + (b[4] / 2 if side == "t" else -b[4] / 2)
+def g_screen(ax, cy, warns):
+    """Query arrow resolving to a stack of phase-fraction bars."""
+    ax.add_patch(FancyArrowPatch((0.335, cy), (0.435, cy), arrowstyle="-|>",
+                                 mutation_scale=4.5, linewidth=0.7,
+                                 color=INK, shrinkA=0, shrinkB=0, zorder=6))
+    rows = [(1.00, ), (0.66, ), (0.42, )]
+    y = cy + 0.175
+    for (frac,) in rows:
+        ax.add_patch(Rectangle((0.475, y), 0.40 * frac, 0.082,
+                               fc="#EEF2F5", ec=INK, linewidth=0.55,
+                               zorder=6))
+        y -= 0.125
+    if 0.475 + 0.40 > GLYPH_X1:
+        warns.append("glyph screen: bar outside glyph lane")
 
-    def top_at(self, name, x):
-        """Point on the top edge of a box at a given x."""
-        b = next(b for b in self.boxes if b[0] == name)
-        return x, b[2] + b[4] / 2
 
-    def arrow(self, pts, color="#444444", lw=1.3, ls="-", scale=13,
-              name=None, orig=None, dest=None):
-        # arrows are drawn above the boxes (zorder 4) so the heads are
-        # never hidden by the box they point into
-        for i in range(len(pts) - 1):
-            p0, p1 = pts[i], pts[i + 1]
-            if i == len(pts) - 2:
-                self.ax.add_patch(FancyArrowPatch(p0, p1, arrowstyle="-|>",
-                                                  mutation_scale=scale,
-                                                  linewidth=lw, color=color,
-                                                  linestyle=ls, shrinkA=0,
-                                                  shrinkB=0, zorder=4))
-            else:
-                self.ax.plot([p0[0], p1[0]], [p0[1], p1[1]], color=color,
-                             lw=lw, ls=ls, solid_capstyle="round", zorder=4)
-        if name:
-            self.arrows.append((pts, name, orig, dest))
+GLYPH = [g_grid, g_split, g_mlp, g_bands, g_screen]
 
-    # -- QC -----------------------------------------------------------------
-    def qc(self):
-        for i in range(len(self.boxes)):
-            for j in range(i + 1, len(self.boxes)):
-                a, b = self.boxes[i], self.boxes[j]
-                ax0, ay0 = a[1] - a[3] / 2, a[2] - a[4] / 2
-                ax1, ay1 = a[1] + a[3] / 2, a[2] + a[4] / 2
-                bx0, by0 = b[1] - b[3] / 2, b[2] - b[4] / 2
-                bx1, by1 = b[1] + b[3] / 2, b[2] + b[4] / 2
-                ox = min(ax1, bx1) - max(ax0, bx0)
-                oy = min(ay1, by1) - max(ay0, by0)
-                if ox > 0.02 and oy > 0.02:
-                    self.warns.append(f"OVERLAP {a[0]} x {b[0]}: "
-                                      f"{ox:.2f}x{oy:.2f}")
-        for b in self.boxes:
-            x0, y0 = b[1] - b[3] / 2, b[2] - b[4] / 2
-            if (x0 < 0.005 or x0 + b[3] > W - 0.005
-                    or y0 < 0.005 or y0 + b[4] > H - 0.005):
-                self.warns.append(f"BOX-OUT {b[0]} at {x0:.2f},{y0:.2f}")
-        for pts, name, orig, dest in self.arrows:
-            skip = {orig, dest}
-            for b in self.boxes:
-                if b[0] in skip:
-                    continue
-                bx0, by0 = b[1] - b[3] / 2, b[2] - b[4] / 2
-                bx1, by1 = b[1] + b[3] / 2, b[2] + b[4] / 2
-                for i in range(len(pts) - 1):
-                    x0, y0 = pts[i]
-                    x1, y1 = pts[i + 1]
-                    if x0 == x1:
-                        if bx0 < x0 < bx1 and min(y0, y1) < by1 and max(y0, y1) > by0:
-                            self.warns.append(f"ARROW-THRU {name} -> {b[0]}")
-                    elif y0 == y1:
-                        if by0 < y0 < by1 and min(x0, x1) < bx1 and max(x0, x1) > bx0:
-                            self.warns.append(f"ARROW-THRU {name} -> {b[0]}")
-                    else:
-                        self.warns.append(f"DIAGONAL {name}: "
-                                          f"{x0},{y0} -> {x1},{y1}")
+STAGES = [
+    ("data", "CALPHAD MODELING",
+     "MatCalc steel database\n9 Fe-base alloy systems"),
+    ("split", "STRATIFIED SPLIT",
+     "cluster-stratified 64 / 16 / 20\nKMeans k = 6, 3 seeds"),
+    ("train", "SURROGATE TRAINING",
+     "simplex-constrained MLP + gated head\nridge, k-NN, XGBoost, forest"),
+    ("eval", "EVALUATION",
+     "interpolation, band holdout,\nextrapolation; ideal-form control"),
+    ("deploy", "DEPLOYMENT",
+     "experimental anchor and\ntwo high-throughput screens"),
+]
+
+LINKS = ["phase fractions", "train / val / test", "fitted surrogates",
+         "phase fractions at (x, T)"]
 
 
 def build():
-    mpl.rcParams.update({"font.family": "sans-serif",
-                         "font.sans-serif": ["DejaVu Sans"]})
-    L = Layout()
-    CX = 3.20  # centred single column
+    fig = plt.figure(figsize=(W, H))
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.set_xlim(0, W)
+    ax.set_ylim(0, H)
+    ax.axis("off")
+    scratch = plt.figure(figsize=(4, 4))
+    warns = []
 
-    stages = [
-        ("data", "#3b82c4", "CALPHAD DATA",
-         "MatCalc steel database", "9 alloy systems"),
-        ("split", "#e08a2e", "SPLIT",
-         "cluster-stratified 64 / 16 / 20", "KMeans k = 6 \u00b7 3 seeds"),
-        ("train", "#d14f4f", "TRAIN MODELS",
-         "constrained MLP + gated head", "ridge \u00b7 k-NN \u00b7 XGBoost \u00b7 random forest"),
-        ("eval", "#62a33c", "EVALUATE",
-         "interpolation \u00b7 band holdout \u00b7 extrapolation",
-         "ideal-form control (H/I) \u00b7 U1 triage"),
-        ("deploy", "#7c6bc0", "DEPLOY",
-         "experimental anchor + 2 screens", "lean-Ni queries at 1000 K"),
-    ]
-    links = ["equilibria", "train \u00b7 val \u00b7 test",
-             "trained surrogates", "queries"]
+    for i, ((name, title, sub), cy, fc) in enumerate(zip(STAGES, CYS, STAGE_FC)):
+        ax.add_patch(FancyBboxPatch(
+            (LEFT, cy - BH / 2), BW, BH,
+            boxstyle="round,pad=0,rounding_size=0.055",
+            facecolor=fc, edgecolor=fc, linewidth=0, zorder=3))
+        GLYPH[i](ax, cy, warns)
+        ax.text(TEXT_X0, cy + 0.135, title, ha="left", va="center",
+                fontsize=FS_TITLE, color="white", weight="bold", zorder=6)
+        ax.text(TEXT_X0, cy - 0.115, sub, ha="left", va="center",
+                fontsize=FS_SUB, color="white", linespacing=1.30, zorder=6)
+        tw, _ = _measure(scratch, title, FS_TITLE, "bold")
+        sw, _ = _measure(scratch, sub, FS_SUB)
+        if tw > TEXT_X1 - TEXT_X0 - 0.02:
+            warns.append(f"TITLE-FIT {name}: {tw:.3f}in > "
+                         f"{TEXT_X1 - TEXT_X0:.3f}in")
+        if sw > TEXT_X1 - TEXT_X0 - 0.02:
+            warns.append(f"SUB-FIT {name}: {sw:.3f}in > "
+                         f"{TEXT_X1 - TEXT_X0:.3f}in")
+        if cy - BH / 2 < 0 or cy + BH / 2 > H:
+            warns.append(f"BOX-OUT {name}")
 
-    BW, BH, GAP = 4.30, 1.02, 0.55
-    cys = [H - 0.95 - i * (BH + GAP) for i in range(len(stages))]
-    for (name, color, title, l1, l2), cy in zip(stages, cys):
-        L.rbox(CX, cy, BW, BH, color, color, lw=1.4, radius=0.14)
-        L.text(CX, cy + 0.24, title, fs=13.0, color="white", weight="bold")
-        L.text(CX, cy - 0.10, l1, fs=10.0, color="white")
-        L.text(CX, cy - 0.33, l2, fs=10.0, color="white")
-        L.boxes.append((name, CX, cy, BW, BH, "rbox"))
+    for i, lab in enumerate(LINKS):
+        y0, y1 = CYS[i] - BH / 2, CYS[i + 1] + BH / 2
+        ax.add_patch(FancyArrowPatch((CX, y0), (CX, y1), arrowstyle="-|>",
+                                     mutation_scale=6.0, linewidth=0.9,
+                                     color=INK, shrinkA=0, shrinkB=0, zorder=4))
+        lw_, _ = _measure(scratch, lab, FS_ARROW)
+        ax.text(CX + 0.075, (y0 + y1) / 2, lab, ha="left", va="center",
+                fontsize=FS_ARROW, color=INK, zorder=4)
+        if CX + 0.075 + lw_ > W - 0.02:
+            warns.append(f"ARROW-FIT {lab}: right edge {CX + 0.075 + lw_:.3f}in")
 
-    for i, lab in enumerate(links):
-        y0 = cys[i] - BH / 2
-        y1 = cys[i + 1] + BH / 2
-        L.arrow([(CX, y0), (CX, y1)], color="#444444", lw=1.6, scale=15,
-                name="flow%d" % i, orig=stages[i][0], dest=stages[i + 1][0])
-        L.ax.text(CX + 0.30, (y0 + y1) / 2, lab, ha="left", va="center",
-                  fontsize=8.5, color="#555555", zorder=4)
+    ex = LEFT - 0.10
+    y_top, y_bot = CYS[1] - BH / 2, CYS[3] + BH / 2
+    ax.plot([ex, ex], [y_bot, y_top], color=INK, linewidth=0.9, zorder=4)
+    for yy in (y_top, y_bot):
+        ax.plot([ex, ex + 0.055], [yy, yy], color=INK, linewidth=0.9, zorder=4)
+    ax.text(ex - 0.055, (y_top + y_bot) / 2, "held-out rows", ha="center",
+            va="center", rotation=90, fontsize=FS_SIDE, color=INK, zorder=4)
 
-    # left bracket: held-out test rows (split -> evaluate), Stoco-style
-    bx = CX - BW / 2 - 0.45
-    y_top, y_bot = cys[1], cys[3]
-    L.ax.plot([bx, bx], [y_bot, y_top], color="#444444", lw=1.3, zorder=4)
-    L.ax.plot([bx, bx + 0.12], [y_top, y_top], color="#444444", lw=1.3,
-              zorder=4)
-    L.ax.plot([bx, bx + 0.12], [y_bot, y_bot], color="#444444", lw=1.3,
-              zorder=4)
-    L.ax.text(bx - 0.14, (y_top + y_bot) / 2, "held-out test rows",
-              ha="center", va="center", rotation=90, fontsize=8.5,
-              color="#555555", zorder=4)
+    ax.add_patch(FancyArrowPatch((RIGHT + 0.30, CYS[2] + 0.02),
+                                 (RIGHT - 0.02, CYS[2] + 0.02),
+                                 arrowstyle="-|>", mutation_scale=5.0,
+                                 linewidth=0.8, color=STAGE_FC[4],
+                                 shrinkA=0, shrinkB=0, zorder=6))
+    ax.text(RIGHT + 0.33, CYS[2] + 0.02, r"$\Sigma f_i = 1$", ha="left",
+            va="center", fontsize=5.4, color=STAGE_FC[4], zorder=6)
+    if RIGHT + 0.33 + 0.34 > W:
+        warns.append("CALLOUT: simplex label overflows canvas")
 
-    L.qc()
-    for wmsg in L.warns:
-        print("  QC:", wmsg)
-
+    plt.close(scratch)
     for ext in ("pdf", "png"):
-        L.fig.savefig(FIG / f"fig0_workflow.{ext}")
-    plt.close(L.fig)
-    plt.close(L.scratch)
+        fig.savefig(FIG / f"fig0_workflow.{ext}")
+    plt.close(fig)
+    for wmsg in warns:
+        print("  QC:", wmsg)
     print("wrote fig0_workflow.pdf/.png")
-    return L.warns
+    return warns
 
 
 if __name__ == "__main__":
