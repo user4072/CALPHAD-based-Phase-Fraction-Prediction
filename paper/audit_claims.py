@@ -1077,7 +1077,15 @@ def g_remedy():
     check_exact("tex:conclusions gated reduces MAE on all five ternaries",
                 sum(1 for r in ratios if r < 1), 5)
     lead9 = 0
-    for f in sorted(glob.glob(os.path.join(MODELS, "results_remedy*.json"))):
+    # Development-seed remedy files only. The confirmatory fresh-seed files
+    # (results_remedy_freshseeds*) carry a comparison block whose baseline_mae
+    # comes from the development-seed forest, so folding them in here would
+    # pair a fresh-seed gated MAE against a development-seed baseline.
+    DEV_REMEDY = ["results_remedy.json", "results_remedy_fecrnic.json",
+                  "results_remedy_fecrc.json", "results_remedy_crconi.json",
+                  "results_remedy_crnimn.json"]
+    for fn in DEV_REMEDY:
+        f = os.path.join(MODELS, fn)
         for _, c in J(f)["comparison"].items():
             rf = c["baseline_mae"].get("rf")
             lead9 += int(rf is not None and
@@ -2099,6 +2107,143 @@ def g_screen():
                 sorted(_rows.values()), [8877, 8880, 8880, 8880, 8880])
 
 
+# ============================ confirmatory fresh-seed and derived-quantity checks
+def g_confirmatory():
+    """Seed-matched confirmatory run of the gated head, and the derived
+    recall / break-even quantities that the prose now quotes.
+
+    The gated remedy was designed after inspecting detector failures on the
+    development splits (42/123/2024), so its headline claim is re-tested here
+    on three seeds that appear nowhere else in the repository, against
+    classical detectors fitted on those same seeds.
+    """
+    import numpy as np
+    SEEDS = [1009, 20260905, 31337]
+    ORDER = ["fecrni", "fecrmn", "fecrmo", "fecrv", "femnni",
+             "fecrnic", "fecrc", "crconi", "crnimn"]
+    files = {"results_remedy_freshseeds.json": ORDER[:5]}
+    for s in ORDER[5:]:
+        files[f"results_remedy_freshseeds_{s}.json"] = [s]
+    gated = {}
+    for fn, syss in files.items():
+        p = os.path.join(MODELS, fn)
+        if not os.path.exists(p):
+            check_exact(f"confirm:{fn} present", False, True)
+            continue
+        for _, v in J(p)["runs"].items():
+            if v.get("variant") == "gated":
+                gated.setdefault(v["system"], []).append((v["seed"], v))
+    check_exact("confirm:gated runs over nine systems", len(gated), 9)
+    seeds_ok = all(sorted(r[0] for r in v) == sorted(SEEDS)
+                for v in gated.values())
+    check_exact("confirm:every system ran the three held-out seeds",
+                seeds_ok, True)
+
+    CONF = os.path.join(MODELS, "gated_confirmatory.json")
+    if not os.path.exists(CONF):
+        check_exact("confirm:gated_confirmatory.json present", False, True)
+    else:
+        c = J(CONF)
+        per = c["per_system"]
+        ga = [per[s]["gated_auprc"] for s in ORDER]
+        check_exact("confirm:gated macro-AUPRC floor on fresh seeds",
+                    round(min(ga), 2), 0.88)
+        check_exact("confirm:gated macro-AUPRC ceiling on fresh seeds",
+                    round(max(ga), 2), 0.99)
+        check_exact("confirm:gated beats best classical on eight of nine",
+                    c["wins"], 8)
+        loss = [s for s in ORDER if not per[s]["gated_wins"]]
+        check_exact("confirm:single loss is Fe-Cr-V", loss, ["fecrv"])
+
+    # seed-matched MAE against the seed-matched random forest
+    lead = 0
+    for s in ORDER:
+        b = os.path.join(MODELS, f"results_baselines_freshseeds_{s}.json")
+        if not os.path.exists(b) or s not in gated:
+            continue
+        src = J(b)
+        vals = [src[f"rf_renorm_s{x}"]["mean_mae"] for x in SEEDS
+                if f"rf_renorm_s{x}" in src]
+        if vals:
+            lead += int(np.mean([r[1]["mae"] for r in gated[s]]) <
+                        float(np.mean(vals)))
+    check_exact("confirm:gated stays ahead of the seed-matched forest on MAE",
+                lead, 9)
+
+
+def g_screen_derived():
+    """Recall and break-even as the tables now generate them.
+
+    Both were previously hardcoded prose numbers; they are now derived from
+    the stored grids and checkpoints, and are checked here against the values
+    quoted in manuscript5_text.py and tab/screen*.tex.
+    """
+    import numpy as np
+    from scipy.stats import beta
+
+    def recall(npz_rel, miss, ntot, pos_cap, tp):
+        z = np.load(os.path.join(ROOT, npz_rel))
+        X, hit = z["X"], z["hit_idx"]
+        nonhit = np.ones(X.shape[0], bool)
+        nonhit[hit] = False
+        n = int(((X[:, 2] <= pos_cap) & nonhit).sum())
+        lo = beta.ppf(0.025, miss, ntot - miss + 1)
+        hi = beta.ppf(0.975, miss + 1, ntot - miss)
+        r = lambda p: 1.0 / (1.0 + p * n / tp)
+        return r(miss / ntot), r(hi), r(lo), n
+
+    rec, lo, hi, n = recall(
+        os.path.join("paper", "screen_data",
+                     "screen_fecrni_T1000K_step0.001.npz"), 4, 76, 0.12, 10936)
+    check_exact("screen:ternary in-scope non-hit denominator", n, 102925)
+    check_exact("screen:ternary in-scope recall", round(rec, 2), 0.67)
+    check_exact("screen:ternary recall CI low", round(lo, 2), 0.45)
+    check_exact("screen:ternary recall CI high", round(hi, 2), 0.88)
+
+    qrec, qlo, qhi, qn = recall(
+        os.path.join("paper", "screen_data",
+                     "screen_fecrnic_T1000K_box.npz"), 5, 131, 0.12, 14475)
+    check_exact("screen:quaternary in-scope non-hit denominator", qn, 117525)
+    check_exact("screen:quaternary in-scope recall", round(qrec, 2), 0.76)
+    check_exact("screen:quaternary recall CI low", round(qlo, 2), 0.59)
+    check_exact("screen:quaternary recall CI high", round(qhi, 2), 0.91)
+
+    # break-even from the stored cost components
+    sv = J(os.path.join(PAPER, "screen_data",
+                        "validate_fecrni_T1000K_step0.001.json"))
+    full = sv["calphad_s_per_point_wall"]
+    probe = sv["probe_set"]["s_per_point_wall"]
+    opt = (8880 * probe + 2000 * full + 268) / full
+    con = (8880 * 2.5 + 2000 * 2.5 + 268) / full
+    check_exact("screen:ternary break-even optimistic, x10^3",
+                round(opt / 1e3, 1), 9.7)
+    check_exact("screen:ternary break-even conservative, x10^4",
+                round(con / 1e4, 1), 6.7)
+    check_prose("screen:ternary payback 'about 7' (501,501/conservative)",
+                501501 / con, 7, 8)
+    check_prose("screen:ternary payback 'about 50' (501,501/optimistic)",
+                501501 / opt, 51, 52)
+
+    svq = J(os.path.join(PAPER, "screen_data",
+                         "validate_fecrnic_T1000K_box.json"))
+    qfull = svq["calphad_s_per_point_wall"]
+    qprobe = svq["probe_set"]["s_per_point_wall"]
+    qopt = (13192 * qprobe + 2000 * qfull + 660) / qfull
+    qcon = (13192 * 2.5 + 2000 * 2.5 + 660) / qfull
+    check_exact("screen:quaternary break-even optimistic, x10^3",
+                round(qopt / 1e3, 1), 11.6)
+    check_exact("screen:quaternary break-even conservative, x10^4",
+                round(qcon / 1e4, 1), 2.8)
+    check_prose("screen:quaternary payback 'about 10-12' (330,000/conservative)",
+                330000 / qcon, 10, 12)
+    check_prose("screen:quaternary payback 'about 28-30' (330,000/optimistic)",
+                330000 / qopt, 28, 30)
+
+    # validation cost quoted in the discussion
+    check_exact("screen:total full-set validation solves",
+                11 + 400 + 400 + 10525 + 20 + 400 + 400 + 14055, 26211)
+
+
 # ================================================================== main
 def main():
     for fn in (g_counts, g_probe, g_csv, g_heads, g_penalty, g_sparsemax,
@@ -2106,7 +2251,8 @@ def main():
                g_penalties_holdout, g_remedy, g_uncertainty, g_phase_set,
                g_anchor, g_ext_heads, g_transfer, g_followups, g_region_ideal,
                g_winners, g_threshold, g_recompute,
-               g_structural, g_nv, g_screen):
+               g_structural, g_nv, g_screen, g_confirmatory,
+               g_screen_derived):
         guarded(fn)
     n_pass = sum(1 for st, _, _ in results if st == "PASS")
     n_fail = sum(1 for st, _, _ in results if st == "FAIL")

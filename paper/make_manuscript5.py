@@ -50,6 +50,231 @@ SUP = {"-9": "\u207b\u2079", "-8": "\u207b\u2078", "-3": "\u207b\u00b3",
 SUB = {"2": "\u2082", "3": "\u2083"}
 
 
+# --------------------------------------------------------------------------
+# Section-count reduction
+# --------------------------------------------------------------------------
+# The submission carried 28 content headings, 13 of them under Results, which
+# read as a sequence of short reports rather than an argument. Each entry merges
+# a contiguous run of sibling headings into one: the first keeps its position
+# and takes the new title, the rest are removed so their text flows on under the
+# merged heading. Headings are unnumbered and the body carries no numbered
+# section references, so merging invalidates no cross-reference.
+HEADING_MERGES = [
+    # Methods: 3 H2 + 7 H3 -> 2 H2 + 5 H3
+    ("Thermodynamic Database and Phase-Set Selection",
+     "Thermodynamic Description", ["Probe-driven Phase Sets"]),
+    ("Sampling, Acceptance, and Extension Datasets",
+     "Sampling and Acceptance", ["Scope-Extension Datasets"]),
+    ("Architectures, Simplex Constraints, and the Gated Head",
+     "Neural-Network Architectures and Simplex Constraints",
+     ["Presence-Gated Two-Stage Head"]),
+    ("Baselines, Splits, and Metrics",
+     "Baseline Models", ["Splitting Protocols and Evaluation Metrics"]),
+    # Results: 13 H2 -> 8 H2
+    ("Interpolation Accuracy and Simplex Closure",
+     "Predictive Accuracy on the Interpolation Split",
+     ["Mass-Balance Simplex Closure"]),
+    ("The Regressor\u2013Detector Gap and the Presence-Gated Remedy",
+     "The Regressor\u2013Detector Gap",
+     ["Closing the Detector Gap with a Presence-Gated Head"]),
+    ("Spatial Generalization and Its Limits",
+     "Spatial Generalization and Extrapolation Limits",
+     ["Region-Matched Reanalysis and the Ideal-Form Control"]),
+    ("Ablations and Failed Constraint Mechanisms",
+     "Model Ablations",
+     ["Evaluation of Failed Constraint Mechanisms (Negative Results)"]),
+    ("Error Localization",
+     "Phase Field Visualization and Error Concentration", []),
+    ("Transfer to Quaternary, Carbide, and Fe-Free Systems",
+     "Extension to Quaternary, Carbide, and Fe-Free Systems", []),
+    ("Experimental Anchor and High-Throughput Screening",
+     "Experimental Anchor", ["High-Throughput Screening"]),
+    # Discussion: 5 H2 -> 3 H2
+    ("Topological Dependencies and the Reality of Spatial Generalization",
+     "Topological Dependencies and Spatial Concentration of Error",
+     ["The Reality of Spatial Generalization in Alloy Design"]),
+    ("Thermodynamic Fidelity versus Numerical Emulation",
+     "Thermodynamic Fidelity versus Numerical Emulation",
+     ["The Metallurgy of the Regressor\u2013Detector Gap"]),
+    ("Limitations and Mechanistic Insights from Negative Results",
+     "Limitations and Mechanistic Insights from Negative Results", []),
+]
+
+# Headings to drop one level, so the protocol family sits with the other
+# Methods subsections instead of standing as a third top-level section.
+HEADING_DEMOTIONS = [
+    ("Spatial Generalization Evaluation Protocols",
+     "Spatial Generalization Protocols"),
+]
+
+
+# --------------------------------------------------------------------------
+# Methods corrections and restorations
+# --------------------------------------------------------------------------
+# Manuscript (5) is assembled by injecting new prose into a copy of
+# Manuscript (4). Several inherited Methods statements were either wrong or
+# incomplete, and much of the training detail exists in paper_cms.tex but never
+# reached the submission. Each entry below is applied to the copy: SUBSTITUTIONS
+# swap a substring inside its paragraph, ADDITIONS insert a new paragraph after
+# the paragraph containing the anchor. Both fail loudly when the anchor is
+# absent, so a change upstream cannot silently skip a correction.
+METHOD_SUBSTITUTIONS = [
+    # Temperature sampling is not uniform: five strategies with disjoint
+    # sub-ranges are combined, which the inherited text stated as uniform.
+    ("sampled uniformly across the 700 to 2000 K domain",
+     "sampled on the 700 to 2000 K domain by five deterministic strategies "
+     "with deliberately disjoint sub-ranges (uniform, sigma-field focus, "
+     "liquidus zone, near-pure-Fe, and five fixed isothermal slices), so the "
+     "temperature distribution is deliberately non-uniform"),
+    # The sub-simplex was applied but never defined, and two different rules
+    # are used in the code.
+    ("resided within the defined sub-simplex",
+     "resided within the design sub-simplex, which is x2 + x3 <= 0.995 for "
+     "the five ternaries and a solute sum <= 0.95 for the four "
+     "scope-extension systems, whose compositions are drawn from bounded "
+     "design boxes"),
+    # The probe is not a uniform Dirichlet draw, and is not Dirichlet at all
+    # for two of the four extension systems.
+    ("2,000 Dirichlet draws to identify which phases were actively present",
+     "2,000 draws to identify which phases were actively present: Dirichlet "
+     "with concentration vector (0.5, 0.3, 0.2) over (Fe, x2, x3) for the "
+     "five ternaries, and uniform draws inside the bounded design box for the "
+     "quaternary and the carbide system, with a phase entering the target set "
+     "when its summed molar amount exceeds 1e-6 in at least one draw"),
+    # Seeds were named only as a count.
+    ("all experiments were averaged over three distinct random "
+     "initialization seeds",
+     "all experiments were averaged over three fixed seeds (42, 123 and 2024) "
+     "that control network initialisation, dropout masks, the k-means cluster "
+     "assignment and the per-cluster partition; data generation, the phase "
+     "probe and the random holdout controls use separate fixed seeds (42, 7 "
+     "and 1000 or 2000 plus the model seed), and the evaluation partition is a "
+     "fixed 4,000-row subsample shared across seeds so that seed comparisons "
+     "are paired"),
+]
+
+METHOD_ADDITIONS = [
+    ("The core predictive model was a multilayer perceptron",
+     "Each block of the network is Linear followed by LayerNorm, SiLU and "
+     "dropout at 0.1. Training used AdamW with learning rate 3e-4 and weight "
+     "decay 5e-4, cosine annealing over at most 300 epochs, mini-batches of "
+     "128, gradient-norm clipping at 1.0, and early stopping on validation MAE "
+     "with patience 40 epochs. Weights use the default initialisation. The "
+     "training protocol was fixed before any evaluation and no hyperparameter "
+     "was tuned, so the reported models are not architecture-optimal."),
+    ("To contextualize the neural network performance, four classical",
+     "The baselines were fitted one output channel at a time with fixed, "
+     "untuned hyperparameters: ridge regression with alpha = 1 and "
+     "distance-weighted k-nearest neighbours with k = 10 on standardised "
+     "features; XGBoost with 500 trees, maximum depth 8, learning rate 0.05, "
+     "row and column subsampling of 0.8, an MAE evaluation metric and early "
+     "stopping after 50 rounds on the validation partition; and a random "
+     "forest of 500 trees with maximum depth 20 on raw features. No neural or "
+     "classical model was tuned, and the lever is material: a learning-rate "
+     "sweep moves the renorm head from 0.0131 at 1e-4 to 0.0084 at 1e-3 "
+     "against 0.0106 at the fixed default, while the renorm-versus-softmax "
+     "ordering persists at the tuned value."),
+    ("Crucially, these models were evaluated not just for closure",
+     "Capacity is not matched across heads. The softmax and sparsemax heads "
+     "apply a single linear map from the shared trunk, whereas every other "
+     "head adds a per-phase two-layer output block with a learnable per-phase "
+     "scale, so the softmax shortfall should not be read as a "
+     "constraint-mechanism result alone."),
+    ("For standard interpolation evaluations, data points were divided",
+     "Two properties of the split qualify the interpolation numbers. The split "
+     "unit is the individual composition-temperature row, not the composition, "
+     "so the compositions that carry more than one sampled temperature have "
+     "rows in more than one partition and the results are interpolation rather "
+     "than composition-level generalisation. The partition also does not group "
+     "near-duplicate rows, and dense sampling regions place near-identical "
+     "points on both sides of a split boundary, which makes interpolation "
+     "errors optimistic for every model evaluated; no grouped split was "
+     "evaluated."),
+    ("Table 1. Summary of the investigated ternary systems",
+     "The eligible phase counts behind these columns are system-specific: 28, "
+     "31, 29, 25 and 29 for the five ternaries, and 35, 32, 23 and 30 for the "
+     "four scope-extension systems. The 28-phase set used to re-solve the "
+     "Fe-Cr-Ni screening shortlist is therefore the full eligible set of that "
+     "system, not a common phase basis shared with the extension systems."),
+    ("Running complete equilibrium calculations with all eligible phases",
+     "Because that database cannot be parsed by pycalphad in its raw form, the "
+     "parser and the Gibbs-energy minimiser both affect the labels, so the "
+     "analysis used Python 3.12 with pycalphad 0.11.2, PyTorch 2.8.0 and "
+     "XGBoost 3.3.0, and the remaining pinned versions are listed with the "
+     "archived release. Equilibria were generated with eight parallel worker "
+     "processes and the surrogates were trained on a single NVIDIA RTX 3060, "
+     "so all reported wall-clock timings are single-workstation figures."),
+]
+
+
+def _replace_in_runs(paragraph, old, new):
+    """Swap a substring inside one run, or report that it spans runs."""
+    for r in paragraph.runs:
+        if old in r.text:
+            r.text = r.text.replace(old, new)
+            return True
+    return False
+
+
+def apply_method_fixes(doc):
+    """Apply the Methods corrections and restorations to the copy."""
+    for old, new in METHOD_SUBSTITUTIONS:
+        for p in doc.paragraphs:
+            if old in p.text:
+                if not _replace_in_runs(p, old, new):
+                    raise SystemExit(
+                        "substitution spans runs, refusing to rebuild the "
+                        f"paragraph and drop inline math: {old[:60]!r}")
+                break
+        else:
+            raise SystemExit(f"methods substitution not found: {old[:60]!r}")
+    added = 0
+    for anchor, text in METHOD_ADDITIONS:
+        for k, p in enumerate(doc.paragraphs):
+            if anchor in p.text:
+                insert_para(doc, k, text, style="Normal", after=True)
+                added += 1
+                break
+        else:
+            raise SystemExit(f"methods addition anchor not found: {anchor[:60]!r}")
+    return added
+
+
+def _find_heading(doc, text):
+    for k, p in enumerate(doc.paragraphs):
+        if p.text.strip() == text and p.style.name.startswith("Heading"):
+            return k
+    raise SystemExit(f"heading not found: {text!r}")
+
+
+def merge_headings(doc):
+    """Collapse runs of sibling headings to cut the section count.
+
+    Returns (removed, renamed). Fails loudly if an expected heading is absent,
+    so a change in the inherited manuscript cannot silently drop a merge.
+    """
+    removed = renamed = 0
+    for new_title, first, absorbed in HEADING_MERGES:
+        i = _find_heading(doc, first)
+        if new_title != first:
+            doc.paragraphs[i].text = new_title
+            renamed += 1
+        for target in absorbed:
+            j = _find_heading(doc, target)
+            if j < i:
+                raise SystemExit(
+                    f"absorbed heading precedes its keeper: {target!r}")
+            el = doc.paragraphs[j]._element
+            el.getparent().remove(el)
+            removed += 1
+    for old, new in HEADING_DEMOTIONS:
+        i = _find_heading(doc, old)
+        doc.paragraphs[i].style = doc.styles["Heading 3"]
+        doc.paragraphs[i].text = new
+        renamed += 1
+    return removed, renamed
+
+
 def clean_cell(s):
     s = re.sub(r"\bXGB\b", "XGBoost", s)
     s = s.strip()
@@ -294,6 +519,11 @@ def main():
                   "integrated with pycalphad [34] to extract")
     doc.paragraphs[mi].text = t
 
+    # ---- 3b. methods corrections and restorations ----
+    n_added = apply_method_fixes(doc)
+    print(f"methods: {len(METHOD_SUBSTITUTIONS)} substitutions, "
+          f"{n_added} paragraphs added")
+
     # ---- 4. Figure 1: replace image + caption ----
     shape = doc.inline_shapes[0]
     rid = shape._inline.graphic.graphicData.pic.blipFill.blip.embed
@@ -522,6 +752,10 @@ def main():
     ex = find_idx(doc, "Extrapolation Limits:")
     for j, par in enumerate(CONC_ADD):
         insert_para(doc, ex + j, par, after=True)
+
+    # ---- 14a. section-count reduction ----
+    removed, renamed = merge_headings(doc)
+    print(f"headings: removed {removed}, renamed {renamed}")
 
     # ---- 14b. renumber tables/figures in physical order ----
     tmap, fmap = renumber_captions_and_refs(doc)

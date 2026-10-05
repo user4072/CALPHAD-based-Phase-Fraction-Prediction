@@ -249,11 +249,13 @@ solves (audited `_cal_run` solver). Audit group `g_screen`: 10/10 PASS.
 |---|---|---|---|
 | tab:screen | 501,501 screened / 10,936 hits (2.18 %) | screen_data/screen_*.json | P |
 | tab:screen | frontier 11 pts; validated 11/11 + 400/400 + bg-in-scope 4/76 | screen_data/validate_*.json/.npz | P |
-| tab:screen | shortlist precision 1.00 (411 pts); in-scope recall ~0.8 (4/76 miss rate over ~45.6k in-scope non-hits) | validate_*.npz + area arithmetic | P |
+| tab:screen | shortlist precision 1.00 (10,936/10,936 census: 11 frontier + 400 subset + 10,525 follow-up) | validate_all_hits_fecrni JSON (n_ok == n_confirmed) | P |
+| tab:screen | in-scope recall 0.67, 95% CI 0.45--0.88 (4/76 background miss rate over 102,925 in-scope non-hits, uniform extrapolation; worst case, all 4 misses at Cr <= 0.20) | screen_fecrni npz + Clopper-Pearson (audit g_screen_derived) | P |
 | sec:screen | 4 misses: 3 within 0.01 of a cutoff, 1 clear model miss (Fe 0.927/Cr 0.010/Ni 0.063, surr FCC 0.9006 vs 1.0) | validate_*.npz | P |
 | sec:screen | min validated Ni 0.048 near 12--13 % Cr | validate_*.npz frontier | P |
 | sec:screen | full-set 0.41 s/pt wall, probe-set 0.33 s/pt wall, training 268 s | validate_*.json; ckpt time_s (79.1/81.8/106.8) | P |
-| tab:screen | break-even ~1e4 (optimistic) -- ~7e4 (conservative) points; 501k screen pays back ~7--50x | (8880x0.33 + 2000x0.41 + 268)/0.41 ; (8880x2.5 + 2000x2.5 + 268)/0.41 | P |
+| tab:screen | break-even ~9.7e3 (measured probe cost) -- ~6.7e4 (unmeasured 2.5 s prose cost); 501k screen pays back about 7--50x (exact 52x / 8x) | (8880x0.326 + 2000x0.412 + 268)/0.412 ; same with 2.5 s | P |
+| sec:screen | validation census 26,211 full-set solves (11,336 ternary + 14,875 quaternary), ~3% of 831,501 screened | validate_*.json + validate_all_hits_*.json | P |
 | sec:screen | learning curve (identical-protocol retrains): 0.0231 @568 / 0.0173 @1420 / 0.0121 @2840 / 0.0091 @5681; 25 % seed stalls at 0.0217 vs 0.0156/0.0146 | screen_data/learning_fecrni_renorm.json | P |
 | sec:screen | full-data retrain 0.0091 vs Table 3 stored 0.0106 (retrain-to-retrain variation, same order as seed spread) | learning json vs results_heads_fecrni.json | P |
 
@@ -345,9 +347,13 @@ Retrained fecrnic renorm x3 (test 0.0035--0.0038, reproduces published
 330,000 pts in 0.5 s, 14,475 hits (4.39 %); frontier min Ni 0.029.
 Validation (same protocol): frontier 15/20 (failures one contiguous
 Cr pocket, surr 0.90--0.91 vs CAL 0.79--0.89), subset 392/400 (all
-8 misses within ~0.05 of a cutoff), bg in scope 5/131 (recall ~0.8).
-Costs 1.36 s full / 0.94 s probe; training ~660 s; break-even ~1e4--3e4
-(330k screen pays back ~10--30x). Figure 12 + Table tab/screenq.tex +
+8 misses within ~0.05 of a cutoff), follow-up 13,736/14,055 (319 optimistic
+flips at cutoffs, worst CAL FCC 0.731); precision 0.98 = 14,143/14,475 over
+all hits. In-scope recall 0.76, 95% CI 0.59--0.91 (5/131 over 117,525
+in-scope non-hits; audit g_screen_derived).
+Costs 1.36 s full / 0.94 s probe; training ~660 s; break-even ~1.2e4
+(measured) -- ~2.8e4 (unmeasured 2.5 s prose cost); 330k screen pays back
+~10--30x (exact 28x / 12x). Figure 12 + Table tab/screenq.tex +
 Section 14 block; docx Table 15 + Figure 10 mirrored; fig12 in figure
 audit (clean). Audit: 419/0/7.
 
@@ -566,3 +572,11 @@ ideal rows + mirrors; audit g_region_ideal.
 
 
 Docx table renumber (writing pass): captions were physically out of order (gated-shift table labelled Table 14 while sitting 8th); all 15 captions and 24 cross-references renumbered so the docx matches the tex exactly (gated-shift 8, holdout 9, extrap 10, ablation 11, extension 12, region 13, screen 14, screenq 15). Any earlier addendum naming a docx table number refers to the pre-fix label.
+
+## ADDENDUM -- confirmatory fresh-seed gated-head run (2026-10-05)
+
+The gated remedy was designed after inspecting detector failures on the development splits (42/123/2024), so its headline numbers were post-hoc. Retrained the fixed gated recipe, all nine systems, on seeds 1009/20260905/31337 (appear nowhere else in the repo; 7/99 rejected because extra_seeds.json and paired_bootstrap_5seed.json used them on fecrmo/fecrv): train_remedy.py --variants gated --seeds ..., plus --seeds support added to train_baselines.py (npz names already embed the seed, so no collisions) and seed-matched classical baselines fitted on the same three seeds for all nine systems (models/results_baselines_freshseeds_<sys>.json).
+
+Confirmatory macro-AUPRC per-system mean 0.884-0.993 (all 27 seed-level values 0.876-0.997); max |confirmatory - development| = 0.034 (crnimn). Beats the best seed-matched classical detector on 8 of 9; sole loss fecrv 0.989 vs 0.992 xgb (same single exception as development seeds). Ahead of the seed-matched random forest in test MAE on 9 of 9 (gated/rf 0.52-0.91). Costs 12-47% MAE vs the fraction-only MLP on the two carbide systems (prose now says so explicitly).
+
+The per-phase mechanism detail (alpha/beta/MNNI jumps) and bare-MLP contrasts stay on the development seeds and are labelled descriptive. Shift and threshold analyses stay post-hoc and labelled. Audit: g_confirmatory + g_screen_derived added; 614/0/7.

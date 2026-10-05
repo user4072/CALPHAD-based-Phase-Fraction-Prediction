@@ -42,8 +42,8 @@ LEFT, RIGHT = CX - BW / 2, CX + BW / 2
 CYS = [H - 0.44 - i * (BH + GAP) for i in range(5)]
 
 GLYPH_X0, GLYPH_X1 = 0.36, 0.94
-TEXT_X0, TEXT_X1 = 1.00, 2.68
-FS_TITLE, FS_SUB, FS_ARROW, FS_SIDE = 7.0, 5.6, 5.0, 5.0
+TEXT_X0, TEXT_X1 = 0.97, 2.68
+FS_TITLE, FS_SUB, FS_ARROW, FS_SIDE = 6.6, 5.6, 4.8, 5.0
 
 # warm-to-cool stage progression (hue family sampled from the reference style,
 # deepened so that white bold text stays legible in print)
@@ -163,20 +163,20 @@ def g_screen(ax, cy, warns):
 GLYPH = [g_grid, g_split, g_mlp, g_bands, g_screen]
 
 STAGES = [
-    ("data", "CALPHAD MODELING",
-     "MatCalc steel database\n9 Fe-base alloy systems"),
-    ("split", "STRATIFIED SPLIT",
-     "cluster-stratified 64 / 16 / 20\nKMeans k = 6, 3 seeds"),
+    ("data", "DATA GENERATION",
+     "MatCalc steel database\nnine Fe-base alloy systems"),
+    ("split", "DATA PARTITIONING",
+     "cluster-stratified 64 / 16 / 20\nKMeans k = 6, three seeds"),
     ("train", "SURROGATE TRAINING",
      "simplex-constrained MLP + gated head\nridge, k-NN, XGBoost, forest"),
-    ("eval", "EVALUATION",
+    ("eval", "GENERALIZATION TESTS",
      "interpolation, band holdout,\nextrapolation; ideal-form control"),
-    ("deploy", "DEPLOYMENT",
-     "experimental anchor and\ntwo high-throughput screens"),
+    ("deploy", "HIGH-THROUGHPUT SCREENING",
+     "experimental anchor and\ntwo screening campaigns"),
 ]
 
-LINKS = ["phase fractions", "train / val / test", "fitted surrogates",
-         "phase fractions at (x, T)"]
+LINKS = ["phase fractions", "training / validation / test",
+         "fitted surrogates", "phase fractions at (x, T)"]
 
 
 def build():
@@ -200,12 +200,11 @@ def build():
                 fontsize=FS_SUB, color="white", linespacing=1.30, zorder=6)
         tw, _ = _measure(scratch, title, FS_TITLE, "bold")
         sw, _ = _measure(scratch, sub, FS_SUB)
-        if tw > TEXT_X1 - TEXT_X0 - 0.02:
-            warns.append(f"TITLE-FIT {name}: {tw:.3f}in > "
-                         f"{TEXT_X1 - TEXT_X0:.3f}in")
-        if sw > TEXT_X1 - TEXT_X0 - 0.02:
-            warns.append(f"SUB-FIT {name}: {sw:.3f}in > "
-                         f"{TEXT_X1 - TEXT_X0:.3f}in")
+        avail = TEXT_X1 - TEXT_X0 - 0.02
+        if tw > avail:
+            warns.append(f"TITLE-FIT {name}: {tw:.3f}in > {avail:.3f}in")
+        if sw > avail:
+            warns.append(f"SUB-FIT {name}: {sw:.3f}in > {avail:.3f}in")
         if cy - BH / 2 < 0 or cy + BH / 2 > H:
             warns.append(f"BOX-OUT {name}")
 

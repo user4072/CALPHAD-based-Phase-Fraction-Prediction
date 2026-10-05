@@ -45,7 +45,11 @@ def main():
     ap.add_argument("--models", nargs="+", default=["xgb", "rf", "ridge", "knn"])
     ap.add_argument("--system", choices=sorted(SYSTEMS), default="fecrni")
     ap.add_argument("--out", type=str, default=os.path.join(MODELS_DIR, "results_baselines.json"))
+    ap.add_argument("--seeds", nargs="+", type=int, default=None,
+                    help="override the development seeds (42 123 2024); used to "
+                         "fit seed-matched classical baselines for confirmatory runs")
     args = ap.parse_args()
+    seeds = args.seeds if args.seeds else SEEDS
 
     X, Y, df = load_data(args.system)
     box = df["in_stainless_box"].values.astype(bool)
@@ -56,7 +60,7 @@ def main():
 
     results = {}
     rng = np.random.default_rng(0)
-    for seed in SEEDS:
+    for seed in seeds:
         tr, va, te = cluster_split(X, Y, seed)
         te_idx = te[rng.choice(len(te), min(4000, len(te)), replace=False)]
         for name in args.models:

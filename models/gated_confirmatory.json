@@ -1,0 +1,128 @@
+{
+ "seeds": [
+  1009,
+  20260905,
+  31337
+ ],
+ "per_system": {
+  "fecrni": {
+   "label": "Fe-Cr-Ni",
+   "gated_auprc": 0.9931011238784359,
+   "gated_mae": 0.009889130170146624,
+   "classical": {
+    "rf": 0.9884488332115695,
+    "xgb": 0.9882804709960373,
+    "knn": 0.9809232088513563
+   },
+   "best_classical": "rf",
+   "best_classical_auprc": 0.9884488332115695,
+   "gated_wins": true
+  },
+  "fecrmn": {
+   "label": "Fe-Cr-Mn",
+   "gated_auprc": 0.9891849738924178,
+   "gated_mae": 0.008057758832971254,
+   "classical": {
+    "rf": 0.9640911436670754,
+    "xgb": 0.9602717451192714,
+    "knn": 0.9746120623737128
+   },
+   "best_classical": "knn",
+   "best_classical_auprc": 0.9746120623737128,
+   "gated_wins": true
+  },
+  "fecrmo": {
+   "label": "Fe-Cr-Mo",
+   "gated_auprc": 0.883609372397172,
+   "gated_mae": 0.01153066847473383,
+   "classical": {
+    "rf": 0.8613313608520098,
+    "xgb": 0.8670750841085145,
+    "knn": 0.8765699149503358
+   },
+   "best_classical": "knn",
+   "best_classical_auprc": 0.8765699149503358,
+   "gated_wins": true
+  },
+  "fecrv": {
+   "label": "Fe-Cr-V",
+   "gated_auprc": 0.988762394437526,
+   "gated_mae": 0.01057455533494552,
+   "classical": {
+    "rf": 0.989826387735881,
+    "xgb": 0.9916160127343927,
+    "knn": 0.9834488697868696
+   },
+   "best_classical": "xgb",
+   "best_classical_auprc": 0.9916160127343927,
+   "gated_wins": false
+  },
+  "femnni": {
+   "label": "Fe-Mn-Ni",
+   "gated_auprc": 0.9613230426467966,
+   "gated_mae": 0.0030444149548808732,
+   "classical": {
+    "rf": 0.7852679687208678,
+    "xgb": 0.7877112408177265,
+    "knn": 0.91135777598371
+   },
+   "best_classical": "knn",
+   "best_classical_auprc": 0.91135777598371,
+   "gated_wins": true
+  },
+  "fecrnic": {
+   "label": "Fe-Cr-Ni-C",
+   "gated_auprc": 0.9422450212535138,
+   "gated_mae": 0.004062685649842024,
+   "classical": {
+    "rf": 0.852078820886856,
+    "xgb": 0.8800591651403967,
+    "knn": 0.8662603827407306
+   },
+   "best_classical": "xgb",
+   "best_classical_auprc": 0.8800591651403967,
+   "gated_wins": true
+  },
+  "fecrc": {
+   "label": "Fe-Cr-C",
+   "gated_auprc": 0.9112441133774207,
+   "gated_mae": 0.0042295547512670355,
+   "classical": {
+    "rf": 0.9009606691465372,
+    "xgb": 0.9086496439364989,
+    "knn": 0.8920983239755021
+   },
+   "best_classical": "xgb",
+   "best_classical_auprc": 0.9086496439364989,
+   "gated_wins": true
+  },
+  "crconi": {
+   "label": "Cr-Co-Ni",
+   "gated_auprc": 0.9730275529127862,
+   "gated_mae": 0.0040902205898116035,
+   "classical": {
+    "rf": 0.9426715863634311,
+    "xgb": 0.9490454551954244,
+    "knn": 0.9446302773710036
+   },
+   "best_classical": "xgb",
+   "best_classical_auprc": 0.9490454551954244,
+   "gated_wins": true
+  },
+  "crnimn": {
+   "label": "Cr-Ni-Mn",
+   "gated_auprc": 0.9369135419918679,
+   "gated_mae": 0.0035753490713735423,
+   "classical": {
+    "rf": 0.8918609973246081,
+    "xgb": 0.8979052673515472,
+    "knn": 0.9074019300827922
+   },
+   "best_classical": "knn",
+   "best_classical_auprc": 0.9074019300827922,
+   "gated_wins": true
+  }
+ },
+ "wins": 8,
+ "n_systems": 9
+}
