@@ -35,7 +35,8 @@ from manuscript5_text import (NEW_TITLE, NEW_ABSTRACT, HIGHLIGHTS, NEW_KEYWORDS,
     UNC_H2, UNC_P1, UNC_P2, REGION_H2, REGION_P1, REGION_P2, TABLE12_CAP,
     EXT_H2, EXT_PS, TABLE13_CAP, ANCHOR_H2, ANCHOR_P, FIG10_CAP, SCREEN_H2,
     SCREEN_PS, TABLE14_CAP, FIG11_CAP, TABLE15_CAP, FIG13_CAP, FIG12_CAP,
-    DISCUSS_ADD1, DISCUSS_ADD2, LIMIT_ADD, CONC_ADD, NEW_REFS)
+    DISCUSS_ADD1, DISCUSS_ADD2, LIMIT_ADD, CONC_ADD, NEW_REFS, PROJ_PARA,
+    TABLE_SHIFT_CAP)
 
 
 # --------------------------------------------------------------------------
@@ -325,7 +326,20 @@ def main():
     for j, par in enumerate(GATED_PS):
         insert_para(doc, f4 + 1 + j, par, after=True)
     k = f4 + 1 + len(GATED_PS)
-    insert_para(doc, k, TABLE11_CAP, after=True)
+    insert_para(doc, k, TABLE_SHIFT_CAP, after=True)
+    gs = [b for b in parse_tab("gatedshift.tex") if b["cells"]]
+    ghead, grows, gnotes = [], [], []
+    for b in gs:
+        for r, s_, bb in zip(b["cells"], b["spans"], b["bolds"]):
+            if len(r) == 6 and r[0] == "System":
+                ghead.append((r, s_, bb))
+            elif len(r) == 6:
+                grows.append((r, s_, bb))
+            elif len(r) == 1:
+                gnotes.append((r, s_, bb))
+    assert len(grows) == 8, len(grows)
+    insert_table(doc, k + 1, ghead + grows + gnotes, after=True)
+    insert_para(doc, k + 1, TABLE11_CAP, after=True)
     rem = parse_tab("remedy.tex")
     blocks = [b for b in rem if b["cells"]]
     head_rows = []
@@ -347,8 +361,14 @@ def main():
                                   [8], [False]))
     table11 = head_rows + data_rows + note_rows
     assert len(data_rows) == 7, len(data_rows)
-    insert_table(doc, k + 1, table11, after=True)
-    add_figure(doc, k + 2, os.path.join(FIG, "fig8_remedy.png"), FIG9_CAP)
+    insert_table(doc, k + 2, table11, after=True)
+    add_figure(doc, k + 3, os.path.join(FIG, "fig8_remedy.png"), FIG9_CAP)
+
+    # ---- 8b. projection result (end of closure section) ----
+    gh = next(i for i, p in enumerate(doc.paragraphs)
+              if p.text.strip() == "The Regressor" + chr(8211) + "Detector Gap"
+              and "Heading" in p.style.name)
+    insert_para(doc, gh, PROJ_PARA, before=True)
 
     # ---- 9. uncertainty triage (before Spatial Generalization heading) ----
     sidx = next(i for i, p in enumerate(doc.paragraphs)
@@ -531,7 +551,7 @@ def main():
         if m:
             seq.append((m.group(1), int(m.group(2))))
     print("caption order:", seq)
-    assert [n for k, n in seq if k == "Table"] == list(range(1, 16)), seq
+    assert [n for k, n in seq if k == "Table"] == list(range(1, 17)), seq
     assert [n for k, n in seq if k == "Figure"] == list(range(1, 14)), seq
     for tag in ["[33]", "[34]", "[35]", "[36]", "[37]",
                 "88,542", "501,501", "330,000", "0.91\u20130.99",
