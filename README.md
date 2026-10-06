@@ -1,5 +1,6 @@
 ***Simplex Constraints, Spatial Generalization, and the Regressor–Detector Gap in Machine-Learning Surrogates for CALPHAD method Phase-Fraction Prediction
-Benchmark and failure-mode analysis of machine-learning surrogates that***
+Benchmark and failure-mode analysis of machine-learning surrogates that predict equilibrium phase fractions in five Fe-based ternary systems:
+**Fe–Cr–Ni, Fe–Cr–Mn, Fe–Cr–Mo, Fe–Cr–V, Fe–Mn–Ni**.***
 
 predict equilibrium phase fractions in five Fe-based ternary systems:
 **Fe–Cr–Ni, Fe–Cr–Mn, Fe–Cr–Mo, Fe–Cr–V, Fe–Mn–Ni**.
