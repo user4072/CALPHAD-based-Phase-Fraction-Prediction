@@ -1,4 +1,4 @@
-"""GP/RBF baseline pilot (REVISION_PLAN Major-7 "needs experiment").
+"""GP/RBF baseline pilot.
 
 Fits independent Gaussian-process regressors (RBF + WhiteKernel,
 normalize_y) per phase on a documented N=2000-row train subset -- full

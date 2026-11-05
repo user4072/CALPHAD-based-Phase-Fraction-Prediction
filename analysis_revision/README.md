@@ -1,9 +1,9 @@
-# Revision analyses
+# Extended analyses
 
 All analyses in this directory are computed **from stored artefacts**
 (stored per-seed test predictions in `models/pred_*.npz`, result JSONs in
 `models/`, and the raw datasets in `data/raw/`) — no model was retrained.
-They back the revisions described in `REVISION_PLAN.md`.
+They back the extended analyses of the revised study.
 
 ## Files
 

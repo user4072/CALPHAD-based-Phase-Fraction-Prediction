@@ -1,8 +1,7 @@
-"""Clean same-hardware per-point solve-cost measurement (R2.5).
+"""Clean same-hardware per-point solve-cost measurement.
 
-The reviewer asked that the screening payback be quoted from measured
-constants obtained on the same hardware, not from the literature 2.5 s/point
-figure.  The original campaign constants (0.41 s full-set / 0.33 s probe-set
+The screening payback is quoted from measured
+constants obtained on the same hardware.  The original campaign constants (0.41 s full-set / 0.33 s probe-set
 on Fe-Cr-Ni) came from the small validation run; the enlarged audit re-ran
 under concurrent training load, inflating wall times (its probe-set timing
 even exceeds the full-set timing, proving contention).  This script takes a

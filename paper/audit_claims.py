@@ -2178,15 +2178,14 @@ def g_confirmatory():
 
 
 def g_screen_derived():
-    """Recall and break-even as the revision now quotes them.
+    """Recall and break-even as the revised study quotes them.
 
     Recall is computed from the enlarged full-set audits (validate_*.npz:
     in-scope background points whose full-eligible-set solve satisfies the
     query), and the economics from the dedicated same-hardware timing
     measurement (models/screen_timing_clean.json) with the as-incurred
-    single-process data-generation costs.  These values back the revised
-    Manuscript (5).docx; paper_cms.tex prose still carries the pre-revision
-    constants pending its sync.
+    single-process data-generation costs.  These values back the current
+    result tables and the repository README.
     """
     import numpy as np
     from scipy.stats import beta

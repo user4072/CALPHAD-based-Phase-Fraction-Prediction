@@ -1,6 +1,6 @@
-"""Composition-grouped split (R2.3 control).
+"""Composition-grouped split control.
 
-Reviewers note that the published cluster-stratified split is row-based:
+The published cluster-stratified split is row-based:
 the SAME alloy composition at different temperatures can fall into train
 and test. This script rebuilds the split so that groups of near-duplicate
 compositions are atomic:

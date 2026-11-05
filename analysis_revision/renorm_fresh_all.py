@@ -1,4 +1,4 @@
-"""Seed-matched renorm-MLP runs at the confirmatory fresh seeds (R2.5).
+"""Seed-matched renorm-MLP runs at the confirmatory fresh seeds.
 
 Re-runs the published renorm arm (train_mlp --heads renorm) with the
 three fresh seeds 1009 / 20260905 / 31337 -- the same seeds used by

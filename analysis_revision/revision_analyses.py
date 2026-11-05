@@ -1,6 +1,6 @@
 """Revision analyses computed from stored predictions and datasets (no retraining).
 
-Answers the reviewer requests that can be addressed from stored artefacts:
+Analyses answerable from stored artefacts:
   1. Region-matched band controls: MAE on band rows inside the main
      interpolation test set (band data in training) vs the band-holdout MAE
      (band data removed) -- same region, so the ratio isolates the regional

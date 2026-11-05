@@ -1,4 +1,4 @@
-"""Capacity-matched control for the simplex-head comparison (R1.1/R2.2).
+"""Capacity-matched control for the simplex-head comparison.
 
 The published Table 3 softmax/sparsemax arms use a single Linear map to K
 outputs, while every other head uses a per-phase block (Linear-192 + SiLU

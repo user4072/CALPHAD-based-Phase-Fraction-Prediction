@@ -64,7 +64,7 @@ bands in `anchors.csv` (uncertainty column).
   T_L extrapolated onset.
 
 **Comparability caveats (Fe-Cr-C anchor).**
-- Clean system: **no Mo/Mn/Ni in model** — but the paper reports only C and Cr; the balance is
+- Clean system: **no Mo/Mn/Ni in model** — but the model covers only C and Cr; the balance is
   assumed Fe and residual elements are simply *unreported* (titled "Fe-C-Cr based").
 - Probes only the **low-Cr (1.06–4.99 wt%), Ni-free face** of the Fe-Cr-Ni(−C) domain.
 - **Continuous heating/cooling (5–10 °C/min), no isothermal holds** → not strictly equilibrium;
