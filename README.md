@@ -19,7 +19,6 @@ in Machine-Learning Surrogates for CALPHAD Phase-Fraction Prediction"*).
 | `src/fe_surrogate/` | Shared library: system registry, splits, metrics, heads, TDB utilities. |
 | `models/` | Per-seed result JSONs and stored test-set predictions (`pred_*.npz`) for every model × system × seed; source of every number in the paper. |
 | `analysis_revision/` | Revision analyses computed from stored predictions (no retraining): region-matched band controls, extrapolation seen/unseen decomposition, AUPRC, phase-rule (Gibbs) admissibility, active-cell/tail errors, design-space accounting reconstruction, full-set phase validation, inference timing. |
-| `paper/` | Manuscript source and figure generation scripts. 
 | `*.py` (root) | The pipeline: probing, data generation, training, evaluation, and statistical analyses. |
 
 
@@ -78,10 +77,7 @@ pip install -r requirements.txt
    py -3.12 boundary_error.py
    py -3.12 -X utf8 analysis_revision/revision_analyses.py
    ```
-7. **Paper artefacts** (figures, tables, workflow diagram):
-   ```bash
-   py -3.12 paper/figures.py
- 
+
    ```
 
 `REPORT.md` documents the pipeline stage by stage, including the per-strategy
