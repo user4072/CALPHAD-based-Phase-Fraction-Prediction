@@ -1,0 +1,27 @@
+{
+  "system": "fecrnic",
+  "head": "renorm",
+  "seeds": [
+    42,
+    123,
+    2024
+  ],
+  "T_K": 1000.0,
+  "grid": {
+    "cr_step": 0.004,
+    "ni_step": 0.004,
+    "c_step": 0.001
+  },
+  "n_points": 330000,
+  "query": {
+    "FCC_min": 0.9,
+    "CARB_max": 0.05,
+    "SIGMA_max": 0.001,
+    "LIQUID_max": 0.001,
+    "Ni_max": 0.12
+  },
+  "n_hits": 14475,
+  "inference_s": 0.45,
+  "us_per_point_per_seed": 0.451,
+  "device": "cuda"
+}

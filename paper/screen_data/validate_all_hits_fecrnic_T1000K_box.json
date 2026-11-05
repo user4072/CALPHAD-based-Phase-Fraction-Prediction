@@ -1,0 +1,16 @@
+{
+  "tag": "fecrnic_T1000K_box",
+  "n": 14055,
+  "n_ok": 14055,
+  "n_confirmed": 13736,
+  "precision": 0.9773,
+  "query": {
+    "FCC_min": 0.9,
+    "CARB_max": 0.05,
+    "SIGMA_max": 0.001,
+    "LIQUID_max": 0.001,
+    "Ni_max": 0.12
+  },
+  "wall_s": 7790.1,
+  "s_per_point_wall": 0.554
+}
