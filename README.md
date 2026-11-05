@@ -41,7 +41,7 @@ and costed end-to-end screening.
 | `src/fe_surrogate/` | Shared library: system registry, splits, metrics, heads, TDB utilities. |
 | `models/` | Per-seed result JSONs and stored test-set predictions (`pred_*.npz`) for every model × system × seed — including the capacity-matched control, the composition-grouped-split runs, and the fresh-seed confirmatory runs; source of every number in the study. |
 | `analysis_revision/` | Extended analyses computed from stored predictions (no retraining): region-matched and ideal-form spatial controls, extrapolation seen/unseen decomposition, per-phase AUPRC, Gibbs-phase-rule admissibility, active-cell/tail errors, full-set phase validation, inference timing. |
-| `paper/` | Verification and result data: the automated claim audit (`audit_claims.py`, 618 checks tying every reported number to a stored artifact), result figures, screening grids and full-set validation data, table data, and anchor-evaluation results. |
+| `paper/` | Verification and result data: the claim audit (`audit_claims.py`, 618 checks re-deriving every reported number from a stored artifact), result figures, screening grids and full-set validation data, table data, and anchor-evaluation results. |
 | `*.py` (root) | The pipeline: probing, data generation, training, evaluation, and statistical analyses. |
 
 ## Pipeline
