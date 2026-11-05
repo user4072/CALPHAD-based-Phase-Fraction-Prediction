@@ -6,14 +6,12 @@ __pycache__/
 venv/
 
 # --- local-only scratch files ---
-paper/Manuscript (2).docx
-paper/_backup_*.docx
+paper/*.docx
 paper/_backup_*.pptx
 paper/_m3_text.txt
 paper/_dump_m3.py
 paper/_batch*.py
 paper/_citations.py
-paper/_tmp_*.docx
 
 # --- LaTeX build artefacts ---
 paper/paper_cms.aux
@@ -21,7 +19,6 @@ paper/paper_cms.log
 paper/paper_cms.out
 paper/paper_cms.spl
 paper/paper_cms.pdf
-paper/paper_cms.docx
 paper/paper_si.aux
 paper/paper_si.log
 paper/paper_si.out
@@ -47,7 +44,7 @@ analysis_revision/*.log
 analysis_revision/*.err
 
 # --- local-only helpers ---
-paper/docx_edit.py
+paper/docx_edit*.py
 
 # --- Anchor-evaluation checkpoints (retrainable via paper/anchor_eval.py) ---
 paper/anchor_data/anchor_ckpts/
@@ -79,24 +76,15 @@ revise/Graphical_Abstract_v1_backup.pptx
 paper/figures/*_v1_backup.png
 paper/screen_data/screen_analysis_v1_backup.json
 analysis_revision/logs/
-paper/manuscript_2.docx
 
 # --- kept locally, not redistributed ---
 Graphical_Abstract_fe_surrogate.pptx
-paper/Manuscript (5).docx
 paper/figures.py
 paper/make_graphical_abstract.py
-paper/make_manuscript5.py
 paper/figures/ga_hires/
-paper/docx_edit_r2.py
 
 # --- kept locally, excluded from repo ---
-paper/make_manuscript_revised.py
-paper/make_manuscript_r2.py
-paper/make_manuscript_r2b.py
-paper/make_manuscript_r2c.py
-paper/make_manuscript_r2d.py
-paper/make_manuscript_clean.py
+paper/make_manuscript*.py
 paper/final_ground_truth_audit.py
 paper/__pycache__/
 
