@@ -1,0 +1,65 @@
+{
+ "fecrni": {
+  "renorm_auprc_fresh": 0.9912,
+  "gated_auprc": 0.9931,
+  "renorm_mae_fresh": 0.0104,
+  "gated_mae": 0.0099,
+  "mae_ratio": 0.948
+ },
+ "fecrmn": {
+  "renorm_auprc_fresh": 0.6625,
+  "gated_auprc": 0.9892,
+  "renorm_mae_fresh": 0.0087,
+  "gated_mae": 0.0081,
+  "mae_ratio": 0.927
+ },
+ "fecrmo": {
+  "renorm_auprc_fresh": 0.7324,
+  "gated_auprc": 0.8836,
+  "renorm_mae_fresh": 0.0173,
+  "gated_mae": 0.0115,
+  "mae_ratio": 0.665
+ },
+ "fecrv": {
+  "renorm_auprc_fresh": 0.7384,
+  "gated_auprc": 0.9888,
+  "renorm_mae_fresh": 0.0238,
+  "gated_mae": 0.0106,
+  "mae_ratio": 0.444
+ },
+ "femnni": {
+  "renorm_auprc_fresh": 0.3649,
+  "gated_auprc": 0.9613,
+  "renorm_mae_fresh": 0.0126,
+  "gated_mae": 0.003,
+  "mae_ratio": 0.241
+ },
+ "fecrnic": {
+  "renorm_auprc_fresh": 0.8188,
+  "gated_auprc": 0.9422,
+  "renorm_mae_fresh": 0.0037,
+  "gated_mae": 0.0041,
+  "mae_ratio": 1.091
+ },
+ "fecrc": {
+  "renorm_auprc_fresh": 0.5814,
+  "gated_auprc": 0.9112,
+  "renorm_mae_fresh": 0.003,
+  "gated_mae": 0.0042,
+  "mae_ratio": 1.404
+ },
+ "crconi": {
+  "renorm_auprc_fresh": 0.7966,
+  "gated_auprc": 0.973,
+  "renorm_mae_fresh": 0.0052,
+  "gated_mae": 0.0041,
+  "mae_ratio": 0.791
+ },
+ "crnimn": {
+  "renorm_auprc_fresh": 0.8179,
+  "gated_auprc": 0.9369,
+  "renorm_mae_fresh": 0.0041,
+  "gated_mae": 0.0036,
+  "mae_ratio": 0.871
+ }
+}

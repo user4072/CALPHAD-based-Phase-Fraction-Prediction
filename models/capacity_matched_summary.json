@@ -1,0 +1,128 @@
+{
+ "fecrni": {
+  "pub_softmax": 0.013,
+  "cap_softmax": 0.0137,
+  "pub_sparsemax": 0.0444,
+  "cap_sparsemax": 0.0451,
+  "renorm": 0.0106,
+  "cap_softmax_seeds": [
+   0.0115,
+   0.011,
+   0.0187
+  ],
+  "n_params_deep": 225224,
+  "n_params_single": 76996
+ },
+ "fecrmn": {
+  "pub_softmax": 0.0088,
+  "cap_softmax": 0.0071,
+  "pub_sparsemax": 0.0212,
+  "cap_sparsemax": 0.0394,
+  "renorm": 0.0081,
+  "cap_softmax_seeds": [
+   0.0071,
+   0.0075,
+   0.0068
+  ],
+  "n_params_deep": 336974,
+  "n_params_single": 77575
+ },
+ "fecrmo": {
+  "pub_softmax": 0.0148,
+  "cap_softmax": 0.0124,
+  "pub_sparsemax": 0.0573,
+  "cap_sparsemax": 0.0174,
+  "renorm": 0.0159,
+  "cap_softmax_seeds": [
+   0.0128,
+   0.0121,
+   0.0122
+  ],
+  "n_params_deep": 411474,
+  "n_params_single": 77961
+ },
+ "fecrv": {
+  "pub_softmax": 0.0167,
+  "cap_softmax": 0.0267,
+  "pub_sparsemax": 0.0304,
+  "cap_sparsemax": 0.0352,
+  "renorm": 0.0149,
+  "cap_softmax_seeds": [
+   0.0159,
+   0.0158,
+   0.0483
+  ],
+  "n_params_deep": 225224,
+  "n_params_single": 76996
+ },
+ "femnni": {
+  "pub_softmax": 0.0145,
+  "cap_softmax": 0.0145,
+  "pub_sparsemax": 0.0375,
+  "cap_sparsemax": 0.0377,
+  "renorm": 0.014,
+  "cap_softmax_seeds": [
+   0.0138,
+   0.0145,
+   0.0151
+  ],
+  "n_params_deep": 336974,
+  "n_params_single": 77575
+ },
+ "fecrnic": {
+  "pub_softmax": 0.0054,
+  "cap_softmax": 0.0044,
+  "pub_sparsemax": 0.0216,
+  "cap_sparsemax": 0.0115,
+  "renorm": 0.0037,
+  "cap_softmax_seeds": [
+   0.0035,
+   0.0037,
+   0.0059
+  ],
+  "n_params_deep": 411666,
+  "n_params_single": 78153
+ },
+ "fecrc": {
+  "pub_softmax": 0.0045,
+  "cap_softmax": 0.003,
+  "pub_sparsemax": 0.0153,
+  "cap_sparsemax": 0.0197,
+  "renorm": 0.0032,
+  "cap_softmax_seeds": [
+   0.0032,
+   0.0027,
+   0.0032
+  ],
+  "n_params_deep": 411474,
+  "n_params_single": 77961
+ },
+ "crconi": {
+  "pub_softmax": 0.0062,
+  "cap_softmax": 0.0054,
+  "pub_sparsemax": 0.0473,
+  "cap_sparsemax": 0.017,
+  "renorm": 0.0055,
+  "cap_softmax_seeds": [
+   0.0059,
+   0.0049,
+   0.0054
+  ],
+  "n_params_deep": 262474,
+  "n_params_single": 77189
+ },
+ "crnimn": {
+  "pub_softmax": 0.0046,
+  "cap_softmax": 0.0038,
+  "pub_sparsemax": 0.0048,
+  "cap_sparsemax": 0.0053,
+  "renorm": 0.004,
+  "cap_softmax_seeds": [
+   0.0039,
+   0.0038,
+   0.0036
+  ],
+  "n_params_deep": 411474,
+  "n_params_single": 77961
+ }
+}

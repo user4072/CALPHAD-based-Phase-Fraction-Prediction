@@ -1,0 +1,70 @@
+{
+ "tag": "fecrnic_T1000K_box",
+ "Q_u1_gate": {
+  "hits_spread_p50_p90_p95_p99": [
+   0.0002,
+   0.001018,
+   0.002339,
+   0.004688
+  ],
+  "miss_spreads": [
+   0.000369,
+   0.000932,
+   0.000982,
+   0.001029,
+   0.001124,
+   0.001146,
+   0.001519,
+   0.004314,
+   0.011583
+  ],
+  "auroc_miss_vs_hits": 0.9074,
+  "gates": {
+   "q90": {
+    "thr": 0.0010180887766182423,
+    "miss_excluded": 6,
+    "miss_total": 9,
+    "hits_retained_frac": 0.8999654576856649
+   },
+   "q95": {
+    "thr": 0.0023387803230434656,
+    "miss_excluded": 2,
+    "miss_total": 9,
+    "hits_retained_frac": 0.9499827288428325
+   },
+   "q99": {
+    "thr": 0.004687713924795389,
+    "miss_excluded": 1,
+    "miss_total": 9,
+    "hits_retained_frac": 0.9899827288428324
+   }
+  },
+  "n_misses": 9
+ },
+ "Q_threshold_sweep": {
+  "F0.9_C0.05": {
+   "surr_pos": 420,
+   "cal_pos": 412,
+   "precision_pool": 0.969,
+   "recall_pool": 0.9879
+  },
+  "F0.9_C0.1": {
+   "surr_pos": 432,
+   "cal_pos": 436,
+   "precision_pool": 0.9815,
+   "recall_pool": 0.9725
+  },
+  "F0.95_C0.05": {
+   "surr_pos": 383,
+   "cal_pos": 408,
+   "precision_pool": 0.9843,
+   "recall_pool": 0.924
+  },
+  "F0.95_C0.1": {
+   "surr_pos": 383,
+   "cal_pos": 408,
+   "precision_pool": 0.9843,
+   "recall_pool": 0.924
+  }
+ }
+}

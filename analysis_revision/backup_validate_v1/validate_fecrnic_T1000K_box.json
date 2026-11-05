@@ -1,0 +1,47 @@
+{
+  "tag": "fecrnic_T1000K_box",
+  "T_K": 1000.0,
+  "query": {
+    "FCC_min": 0.9,
+    "CARB_max": 0.05,
+    "SIGMA_max": 0.001,
+    "LIQUID_max": 0.001,
+    "Ni_max": 0.12
+  },
+  "frontier": {
+    "n": 20,
+    "n_ok": 20,
+    "n_confirmed": 15,
+    "precision": 0.75
+  },
+  "hit": {
+    "n": 400,
+    "n_ok": 400,
+    "n_confirmed": 392,
+    "precision": 0.98
+  },
+  "bg": {
+    "n": 400,
+    "n_ok": 400,
+    "n_confirmed": 59,
+    "precision": 0.1475
+  },
+  "calphad_wall_s": 1116.4,
+  "calphad_s_per_point_wall": 1.362,
+  "probe_set": {
+    "phases": [
+      "BCC_A2",
+      "BCC_DISL",
+      "CEMENTITE",
+      "FCC_A1",
+      "GRAPHITE",
+      "LIQUID",
+      "M23C6",
+      "M7C3",
+      "SIGMA"
+    ],
+    "n": 30,
+    "s_per_point_wall": 0.939,
+    "n_ok": 30
+  }
+}

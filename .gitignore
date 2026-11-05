@@ -68,3 +68,43 @@ Thumbs.db
 ~$*
 
 paper/1-s2.0-S0927025626003538-main.pdf
+
+# --- Revision rounds 1-2 (2026-11): local-only tooling and QA artifacts ---
+.zcode/
+revise/node_modules/
+revise/render_check/
+revise/package.json
+revise/package-lock.json
+revise/*_backup_*.docx
+revise/Graphical_Abstract_v1_backup.pptx
+revise/Manuscript REVISED_2 (marked up).docx
+revise/Manuscript (5) REVISED (highlighted).docx
+revise/Manuscript (5).docx
+revise/Manuscript (5)_original.docx
+revise/Response to Reviewers (Revision 2_1).docx
+revise/check_highlights*.ps1
+revise/check_clean.ps1
+paper/figures/*_v1_backup.png
+paper/screen_data/screen_analysis_v1_backup.json
+analysis_revision/logs/
+paper/manuscript_2.docx
+
+# --- kept locally, not redistributed (submission assets / docx tooling) ---
+Graphical_Abstract_fe_surrogate.pptx
+paper/Manuscript (5).docx
+paper/figures.py
+paper/make_graphical_abstract.py
+paper/make_manuscript5.py
+paper/figures/ga_hires/
+paper/docx_edit_r2.py
+revise/Manuscript REVISED 3(marked up).docx
+
+# --- docx-editing scripts (user decision: kept locally, excluded from repo) ---
+paper/make_manuscript_revised.py
+paper/make_manuscript_r2.py
+paper/make_manuscript_r2b.py
+paper/make_manuscript_r2c.py
+paper/make_manuscript_r2d.py
+paper/make_manuscript_clean.py
+paper/final_ground_truth_audit.py
+paper/__pycache__/

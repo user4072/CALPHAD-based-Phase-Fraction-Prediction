@@ -1,0 +1,25 @@
+{
+  "workers": 14,
+  "warmup_points": 8,
+  "timed_points": 120,
+  "systems": {
+    "fecrni": {
+      "T_K": 1000.0,
+      "n_full_phases": 28,
+      "n_probe_phases": 4,
+      "full_s_per_point_wall": 0.323,
+      "full_s_per_point_cpu": 4.523,
+      "probe_s_per_point_wall": 0.027,
+      "probe_s_per_point_cpu": 0.381
+    },
+    "fecrnic": {
+      "T_K": 1000.0,
+      "n_full_phases": 35,
+      "n_probe_phases": 9,
+      "full_s_per_point_wall": 0.491,
+      "full_s_per_point_cpu": 6.869,
+      "probe_s_per_point_wall": 0.037,
+      "probe_s_per_point_cpu": 0.516
+    }
+  }
+}
